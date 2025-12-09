@@ -169,7 +169,8 @@
       </div>
     </section>
 
-    <section class="card">
+    <!-- Grilla oculta por defecto -->
+    <section class="card" id="usuariosContainer" style="display:none;">
       <table id="tblUsuarios" aria-label="Tabla de usuarios">
         <thead>
           <tr>
@@ -211,6 +212,11 @@
           <option value="Administración">Administración</option>
           <option value="Asistencial">Asistencial</option>
           <option value="Educación" selected>Educación</option>
+          <option value="Informática">Informática</option>
+          <option value="Dirección Instituto">Dirección Instituto</option>
+          <option value="Gerencia">Gerencia</option>
+          <option value="Auditoría">Auditoría</option>
+          <option value="Gestión">Gestión</option>
         </select>
       </div>
 
@@ -248,13 +254,13 @@
     </div>
   </main>
 
-  <!-- NUEVA PANTALLA: CREA PERFIL A PARTIR DE ROLES -->
+  <!-- GESTOR DE ROLES: CREAR / ELIMINAR PERFIL -->
   <main id="profileView" class="page" aria-hidden="true" style="display:none;">
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div class="page-title">Nuevo Perfil</div>
-          <div class="page-subtitle">Selecciona los roles que formarán el nuevo perfil</div>
+          <div class="page-title">Gestor de Roles</div>
+          <div class="page-subtitle">Crear o eliminar perfiles a partir de roles</div>
         </div>
         <div>
           <button class="btn-secondary" id="btnVolverPerfil">← Volver</button>
@@ -267,7 +273,17 @@
           <option value="Administración">Administración</option>
           <option value="Asistencial">Asistencial</option>
           <option value="Educación">Educación</option>
+          <option value="Informática">Informática</option>
+          <option value="Dirección Instituto">Dirección Instituto</option>
+          <option value="Gerencia">Gerencia</option>
+          <option value="Auditoría">Auditoría</option>
+          <option value="Gestión">Gestión</option>
         </select>
+      </div>
+
+      <div class="form-row">
+        <label>Perfil</label>
+        <select id="cmbPerfilGestion"></select>
       </div>
 
       <div class="form-row">
@@ -278,12 +294,13 @@
       <div class="form-row">
         <label></label>
         <button class="btn-primary" id="btnGuardarPerfil">Guardar perfil</button>
+        <button class="btn-secondary" id="btnEliminarPerfil">Eliminar perfil</button>
       </div>
 
       <hr>
 
       <div class="section-title">Roles disponibles</div>
-      <div class="small-muted">Marca los roles que quieres asociar al nuevo perfil.</div>
+      <div class="small-muted">Marca los roles que quieres asociar al perfil.</div>
 
       <div id="rolesChecklist" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;margin-top:10px;font-size:13px;">
       </div>
@@ -302,7 +319,7 @@
 
 <script>
 /************************************************************************
- * DATOS y ROLES desde catálogo Excel (resumen). [file:1]
+ * DATOS y ROLES desde catálogo Excel (resumen)
  ************************************************************************/
 const perfilesGlobal = [
   "Analista de Sistemas","Médico","Kinesiólogo","Asistente Social",
@@ -436,13 +453,23 @@ const dataPerfiles = {
     { id:"psicologo", nombre:"Psicólogo", roles:["100","102","105","200","214","216","217","305","320","346","370","376","377"] },
     { id:"enfermera", nombre:"Enfermera", roles:["102","105","114","200","213","215","220","305","320","342","351","352","353","359","377"] },
     { id:"asistente_social", nombre:"Asistente Social", roles:["102","105","142","143","144","145","146","200","205","206","215","305","311","312","320","331","341","354","359","360","368","371","377"] }
-  ]
+  ],
+  "Informática":[],
+  "Dirección Instituto":[],
+  "Gerencia":[],
+  "Auditoría":[],
+  "Gestión":[]
 };
 
 const perfilActualPorAmbito = {
   "Educación":"educadora",
   "Administración":"analista_sistemas",
-  "Asistencial":"medico"
+  "Asistencial":"medico",
+  "Informática":null,
+  "Dirección Instituto":null,
+  "Gerencia":null,
+  "Auditoría":null,
+  "Gestión":null
 };
 
 /************************************************************************
@@ -456,6 +483,7 @@ const btnClearMain = document.getElementById("btnClearMain");
 const btnNuevo = document.getElementById("btnNuevo");
 const btnEditar = document.getElementById("btnEditar");
 const btnBuscar = document.getElementById("btnBuscar");
+const usuariosContainer = document.getElementById("usuariosContainer");
 
 const mainView = document.getElementById("mainView");
 const editView = document.getElementById("editView");
@@ -473,8 +501,10 @@ const btnVolver = document.getElementById("btnVolver");
 
 const btnVolverPerfil = document.getElementById("btnVolverPerfil");
 const cmbAmbitoPerfil = document.getElementById("cmbAmbitoPerfil");
+const cmbPerfilGestion = document.getElementById("cmbPerfilGestion");
 const txtNombrePerfil = document.getElementById("txtNombrePerfil");
 const btnGuardarPerfil = document.getElementById("btnGuardarPerfil");
+const btnEliminarPerfil = document.getElementById("btnEliminarPerfil");
 const rolesChecklist = document.getElementById("rolesChecklist");
 
 function abrirModal(){ document.getElementById("modalRoles").style.display = "flex"; }
@@ -496,7 +526,7 @@ let editState = { id_usuario: null, originalRoles: [], perfilesMarcados: [] };
   perfilesGlobal.forEach(p => {
     const o = document.createElement("option"); o.value = p; o.textContent = p; cmbPerfil.appendChild(o);
   });
-  filtrarUsuarios();
+  // No llamamos filtrarUsuarios aquí para que grilla quede oculta al inicio
 })();
 
 /************************************************************************
@@ -529,18 +559,27 @@ btnClearMain.addEventListener("click", () => {
 });
 
 /************************************************************************
- * Grilla
+ * Grilla (ahora controlando visibilidad)
  ************************************************************************/
 function filtrarUsuarios(){
   const perfil = cmbPerfil.value;
   const q = txtUsuario_main.value.trim().toLowerCase();
   stateFiltro.perfil = perfil; stateFiltro.texto = txtUsuario_main.value;
 
+  const tieneCriterio = perfil || q;
+  if(!tieneCriterio){
+    usuariosContainer.style.display = "none";
+    tbody.innerHTML = "";
+    return;
+  }
+
   const lista = usuarios.filter(u => {
     const coincidePerfil = !perfil || u.especialidad === perfil;
     const cadena = (String(u.id) + " " + u.nombre + " " + u.ap_p + " " + u.ap_m + " " + u.especialidad).toLowerCase();
     return ((!q) || cadena.includes(q)) && coincidePerfil;
   });
+
+  usuariosContainer.style.display = lista.length ? "block" : "none";
   pintarGrilla(lista);
 }
 
@@ -598,7 +637,7 @@ btnEditar.addEventListener("click", () => {
   abrirEditorConUsuario(id);
 });
 
-// NUEVO ahora abre pantalla de creación de perfil (no toca editor de usuario)
+// NUEVO abre gestor de perfiles
 btnNuevo.addEventListener("click", () => {
   mainView.style.display = "none";
   editView.style.display = "none";
@@ -606,6 +645,7 @@ btnNuevo.addEventListener("click", () => {
   profileView.setAttribute("aria-hidden","false");
   txtNombrePerfil.value = "";
   cmbAmbitoPerfil.value = "Administración";
+  cargarComboPerfilesGestion();
   pintarChecklistRoles();
   window.scrollTo({top:0, behavior:"smooth"});
 });
@@ -640,20 +680,6 @@ function abrirEditorConUsuario(id_usuario){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-function abrirEditorNuevo(){
-  stateFiltro.perfil = cmbPerfil.value; stateFiltro.texto = txtUsuario_main.value;
-  editState.id_usuario = null; editState.originalRoles = []; editState.perfilesMarcados = [];
-  txtIdUsuario_edit.value = "";
-  txtUsuario_edit.value = "";
-  cmbAmbito.value = "Educación";
-  cargarPerfilesPorAmbito(null);
-  mainView.style.display = "none";
-  profileView.style.display = "none";
-  editView.style.display = "block";
-  editView.setAttribute("aria-hidden","false");
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
 btnVolver.addEventListener("click", cerrarEditorYRestaurar);
 
 function cerrarEditorYRestaurar(){
@@ -664,6 +690,7 @@ function cerrarEditorYRestaurar(){
   profileView.setAttribute("aria-hidden","true");
   cmbPerfil.value = stateFiltro.perfil || "";
   txtUsuario_main.value = stateFiltro.texto || "";
+  // Vuelve al estado de búsqueda actual (si no hay criterio, grilla se oculta)
   filtrarUsuarios();
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -688,8 +715,8 @@ function cargarPerfilesPorAmbito(usuarioObjeto){
     if(usuarioObjeto){
       const interseccion = (p.roles || []).filter(r => (usuarioObjeto.roles||[]).includes(r));
       if(interseccion.length > 0) chk.checked = true;
-    } else {
-      if(p.id === perfilActualId) chk.checked = true;
+    } else if(p.id === perfilActualId){
+      chk.checked = true;
     }
     const lbl = document.createElement("label"); lbl.setAttribute("for",chk.id); lbl.textContent = p.nombre;
     row.appendChild(chk); row.appendChild(lbl); listaPerfilesDiv.appendChild(row);
@@ -699,7 +726,7 @@ function cargarPerfilesPorAmbito(usuarioObjeto){
   if(usuarioObjeto){
     const match = perfilesList.find(p => usuarioObjeto.especialidad && p.nombre.toLowerCase().includes(usuarioObjeto.especialidad.toLowerCase()));
     if(match) cmbPerfilActual.value = match.id;
-  } else {
+  } else if(perfilActualId){
     cmbPerfilActual.value = perfilActualId;
   }
 
@@ -836,7 +863,7 @@ btnGuardar.addEventListener("click", () => {
 });
 
 /************************************************************************
- * NUEVO PERFIL: checklist con roles del Excel
+ * Gestor de roles (perfiles)
  ************************************************************************/
 btnVolverPerfil.addEventListener("click", () => {
   profileView.style.display = "none";
@@ -846,8 +873,44 @@ btnVolverPerfil.addEventListener("click", () => {
   window.scrollTo({top:0, behavior:"smooth"});
 });
 
-function pintarChecklistRoles(){
+function cargarComboPerfilesGestion(){
+  const ambito = cmbAmbitoPerfil.value;
+  const perfilesAmbito = dataPerfiles[ambito] || [];
+  cmbPerfilGestion.innerHTML = "";
+
+  const optEmpty = document.createElement("option");
+  optEmpty.value = "";
+  optEmpty.textContent = "(nuevo perfil)";
+  cmbPerfilGestion.appendChild(optEmpty);
+
+  perfilesAmbito.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.nombre;
+    cmbPerfilGestion.appendChild(opt);
+  });
+
+  cmbPerfilGestion.value = "";
+}
+
+cmbAmbitoPerfil.addEventListener("change", () => {
+  cargarComboPerfilesGestion();
+  txtNombrePerfil.value = "";
+  pintarChecklistRoles();
+});
+
+cmbPerfilGestion.addEventListener("change", () => {
+  const ambito = cmbAmbitoPerfil.value;
+  const perfilesAmbito = dataPerfiles[ambito] || [];
+  const perfilSel = perfilesAmbito.find(p => p.id === cmbPerfilGestion.value);
+  const rolesBase = perfilSel ? perfilSel.roles : [];
+  pintarChecklistRoles(rolesBase);
+  txtNombrePerfil.value = perfilSel ? perfilSel.nombre : "";
+});
+
+function pintarChecklistRoles(preseleccion){
   rolesChecklist.innerHTML = "";
+  const setPre = new Set(preseleccion || []);
   const codigosOrdenados = Object.keys(rolesCatalogo).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
   codigosOrdenados.forEach(cod => {
     const wrapper = document.createElement("label");
@@ -858,6 +921,7 @@ function pintarChecklistRoles(){
     const chk = document.createElement("input");
     chk.type = "checkbox";
     chk.value = cod;
+    if(setPre.has(cod)) chk.checked = true;
     const span = document.createElement("span");
     span.textContent = `${cod} - ${rolesCatalogo[cod] || ""}`;
     wrapper.appendChild(chk);
@@ -869,6 +933,8 @@ function pintarChecklistRoles(){
 btnGuardarPerfil.addEventListener("click", () => {
   const nombre = txtNombrePerfil.value.trim();
   const ambito = cmbAmbitoPerfil.value;
+  const idExistente = cmbPerfilGestion.value || "";
+
   if(!nombre){
     alert("Debe ingresar un nombre de perfil.");
     return;
@@ -879,13 +945,13 @@ btnGuardarPerfil.addEventListener("click", () => {
     return;
   }
 
-  const idNormalizado = nombre.toLowerCase()
+  const idNormalizado = (idExistente || nombre.toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .replace(/[^a-z0-9]+/g,"_")
-    .replace(/^_+|_+$/g,"");
+    .replace(/^_+|_+$/g,""));
 
   const listaAmbito = dataPerfiles[ambito] || [];
-  if(listaAmbito.some(p => p.id === idNormalizado)){
+  if(!idExistente && listaAmbito.some(p => p.id === idNormalizado)){
     alert("Ya existe un perfil con un identificador similar. Cambie el nombre.");
     return;
   }
@@ -896,10 +962,40 @@ btnGuardarPerfil.addEventListener("click", () => {
     roles: Array.from(new Set(seleccionados)).sort((a,b)=>parseInt(a,10)-parseInt(b,10))
   };
 
-  listaAmbito.push(nuevoPerfil);
+  const idx = listaAmbito.findIndex(p => p.id === idNormalizado);
+  if(idx >= 0){
+    listaAmbito[idx] = nuevoPerfil;
+  } else {
+    listaAmbito.push(nuevoPerfil);
+  }
   dataPerfiles[ambito] = listaAmbito;
 
-  alert("Perfil creado. Ahora estará disponible en la edición de usuarios para ese ámbito.");
+  alert("Perfil guardado en el ámbito seleccionado.");
+  cargarComboPerfilesGestion();
+  cmbPerfilGestion.value = idNormalizado;
+});
+
+btnEliminarPerfil.addEventListener("click", () => {
+  const ambito = cmbAmbitoPerfil.value;
+  const idPerfil = cmbPerfilGestion.value;
+  if(!idPerfil){
+    alert("Debe seleccionar un perfil para eliminar.");
+    return;
+  }
+  if(!confirm("¿Eliminar el perfil seleccionado del ámbito? Esta acción no modifica los usuarios actuales.")) return;
+
+  const listaAmbito = dataPerfiles[ambito] || [];
+  const idx = listaAmbito.findIndex(p => p.id === idPerfil);
+  if(idx >= 0){
+    listaAmbito.splice(idx,1);
+    dataPerfiles[ambito] = listaAmbito;
+    alert("Perfil eliminado.");
+    cargarComboPerfilesGestion();
+    txtNombrePerfil.value = "";
+    pintarChecklistRoles([]);
+  } else {
+    alert("Perfil no encontrado.");
+  }
 });
 
 /************************************************************************
@@ -911,4 +1007,3 @@ window.filtrarUsuarios = filtrarUsuarios;
 </script>
 </body>
 </html>
-
