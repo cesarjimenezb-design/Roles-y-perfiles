@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Administración de Permisos - Unificado </title>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Gestor de Roles</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root {
       --rojo-teleton: #F3313F;
@@ -30,24 +30,23 @@
     }
     .topbar-left { display:flex; align-items:center; gap:12px; }
     .logo { display:flex; align-items:center; gap:6px; font-weight:bold; color:var(--rojo-teleton); font-size:18px; }
-    .logo-icon { width:26px; height:26px; border-radius:50%; border:2px solid var(--rojo-teleton); display:inline-flex; align-items:center; justify-content:center; font-size:16px; }
-    .topbar-menu { font-size:12px; color:#777; }
-    .topbar-right { display:flex; align-items:center; gap:14px; font-size:12px; }
-    .user-pill { background-color:var(--rojo-teleton); color:#fff; padding:4px 10px; border-radius:20px; font-weight:600; }
-    .user-subtext { color:#999; font-size:11px; text-align:right; }
-
+    .logo-icon {
+      width:26px; height:26px; border-radius:50%;
+      border:2px solid var(--rojo-teleton);
+      display:inline-flex; align-items:center; justify-content:center;
+      font-size:16px;
+    }
     .page { padding: 18px 24px 30px; max-width:1200px; margin:0 auto; }
-    .page-title { font-size:16px; font-weight:600; margin-bottom:8px; }
-
+    .page-title { font-size:16px; font-weight:600; margin-bottom:4px; }
+    .page-subtitle { font-size:13px; color:#777; margin-bottom:12px; }
     .card {
       background-color:#fff;
       border:1px solid var(--gris-borde);
       padding:18px;
       margin-bottom:20px;
     }
-
     .form-row { display:flex; align-items:center; margin-bottom:12px; gap:10px; }
-    .form-row label { width:70px; font-weight:600; color:var(--gris-texto); }
+    .form-row label { width:90px; font-weight:600; color:var(--gris-texto); }
     input[type="text"], select {
       padding:6px 8px;
       border:1px solid var(--gris-borde);
@@ -70,192 +69,34 @@
     .btn-primary:hover { background:#d2202f; }
     .btn-secondary { background:#fff; color:var(--rojo-teleton); border:1px solid var(--rojo-teleton); }
 
-    table { border-collapse:collapse; width:100%; background:#fff; }
-    th, td { border:1px solid var(--gris-borde); padding:6px 8px; font-size:12px; vertical-align:top; }
-    th { background:#f7f7f7; font-weight:600; text-align:left; }
-    tr:nth-child(even) td { background:#fafafa; }
+    .section-title { font-weight:700; margin-bottom:6px; }
 
-    .col-check { width:40px; text-align:center; }
-    .link-roles { color:#0066cc; text-decoration:underline; cursor:pointer; }
-
-    #listaPredictiva {
-      position:absolute;
-      background:#fff;
-      border:1px solid #ccc;
-      width:320px;
-      max-height:260px;
-      overflow-y:auto;
-      margin-top:2px;
-      list-style:none;
-      padding:0;
-      z-index:40;
+    #rolesChecklist {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:8px;
+      margin-top:10px;
+      font-size:13px;
     }
-    #listaPredictiva li { padding:8px; cursor:pointer; font-size:13px; }
-    #listaPredictiva li:hover { background:#f2f2f2; }
-
-    .input-clear-wrapper { position:relative; display:inline-block; }
-    .input-clear-wrapper input { padding-right:28px; width:320px; }
-    .clear-btn {
-      position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer;
-      font-weight:700; font-size:14px; color:#999; user-select:none;
-    }
-    .clear-btn:hover { color:var(--rojo-teleton); }
-
-    #editView { display:none; max-width:1200px; margin:0 auto; padding-bottom:60px; }
-    .page-subtitle { font-size:13px; color:#777; margin-bottom:10px; }
-    .section-title { font-weight:700; margin-bottom:8px; }
-
-    .layout-grid {
-      display:grid; grid-template-columns:360px 1fr; gap:12px;
-    }
-    .lista-perfiles { border:1px solid var(--gris-borde); max-height:420px; overflow:auto; background:#fff; }
-    .lista-perfiles-item { display:flex; align-items:center; padding:8px; border-bottom:1px solid #eee; font-size:13px;}
-    .lista-perfiles-item label { margin-left:8px; cursor:pointer; }
-    .roles-detalle { border:1px solid var(--gris-borde); padding:8px; min-height:120px; background:#fff; font-size:13px; max-height:420px; overflow:auto; }
-    .roles-table { width:100%; border-collapse:collapse; }
-    .roles-table th, .roles-table td { border:1px solid #eee; padding:6px; font-size:13px; text-align:left; }
-    .roles-table th { background:#fafafa; font-weight:700; }
-
-    .compare-list { margin-top:8px; }
-    .compare-item { padding:6px; margin-bottom:6px; border-radius:4px; display:flex; gap:8px; align-items:center; }
-    .added { background:#e6ffea; color:#136a17; }
-    .removed { background:#ffecec; color:#8b1a1a; text-decoration:line-through; }
-    .unchanged { background:#f7f7f7; color:#333; }
-
-    .small-muted { font-size:12px; color:#777; margin-top:6px; }
 
     @media (max-width:820px){
-      .input-clear-wrapper input { width:100%; }
-      #listaPredictiva { width:100%; }
-      .layout-grid { grid-template-columns:1fr; }
+      .form-row { flex-direction:column; align-items:flex-start; }
+      .form-row label { width:auto; }
+      input[type="text"], select { min-width:100%; width:100%; }
     }
-
   </style>
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-left">
-      <div class="logo"><span class="logo-icon">T</span><span>Teletón</span></div>
-      <div class="topbar-menu">Menú ▾</div>
-    </div>
-    <div class="topbar-right">
-      <div class="user-pill">CJ</div>
-      <div class="user-subtext">Cesar Jimenez<br>IT 131 - SANTIAGO</div>
+      <div class="logo">
+        <span class="logo-icon">T</span><span>Teletón</span>
+      </div>
+      <div class="topbar-menu">Gestor de Roles</div>
     </div>
   </header>
 
-  <main id="mainView" class="page">
-    <div class="page-title">Administración de Permisos</div>
-
-    <section class="card" style="position:relative;">
-      <div class="form-row">
-        <label>Perfil</label>
-        <select id="cmbPerfil"></select>
-      </div>
-
-      <div class="form-row" style="position:relative;">
-        <label>Usuario</label>
-        <div style="position:relative;">
-          <div class="input-clear-wrapper">
-            <input type="text" id="txtUsuario_main" placeholder="Nombre, apellido o usuario" autocomplete="off" />
-            <span class="clear-btn" id="btnClearMain" title="Limpiar búsqueda">×</span>
-          </div>
-          <ul id="listaPredictiva"></ul>
-        </div>
-
-        <button class="btn-primary" id="btnBuscar">Buscar</button>
-       
-        <button class="btn-secondary" id="btnEditar">Editar</button>
-      </div>
-    </section>
-
-    <!-- Grilla oculta por defecto -->
-    <section class="card" id="usuariosContainer" style="display:none;">
-      <table id="tblUsuarios" aria-label="Tabla de usuarios">
-        <thead>
-          <tr>
-            <th style="width:70px;">ID</th>
-            <th>Nombre</th><th>Apellido P</th><th>Apellido M</th><th>Especialidad</th><th>Roles</th><th class="col-check">Sel.</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="small-muted">Tip: haz click en "Ver Roles" para verlos en un modal. Usa la X para limpiar la búsqueda.</div>
-    </section>
-  </main>
-
-  <main id="editView" class="page" aria-hidden="true">
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <div class="page-title">Editar Roles</div>
-          <div class="page-subtitle">Edición avanzada del perfil y roles del usuario</div>
-        </div>
-        <div>
-          <button class="btn-secondary" id="btnVolver">← Volver</button>
-        </div>
-      </div>
-
-      <div class="section-title">Datos del usuario</div>
-      <div class="form-row">
-        <label>ID Usuario</label>
-        <input type="text" id="txtIdUsuario_edit" readonly style="width:120px;" />
-      </div>
-      <div class="form-row">
-        <label>Nombre Usuario</label>
-        <input type="text" id="txtUsuario_edit" readonly />
-      </div>
-
-      <div class="form-row">
-        <label>Ámbito</label>
-        <select id="cmbAmbito">
-          <option value="Administración">Administración</option>
-          <option value="Asistencial">Asistencial</option>
-          <option value="Educación" selected>Educación</option>
-          <option value="Informática">Informática</option>
-          <option value="Dirección Instituto">Dirección Instituto</option>
-          <option value="Gerencia">Gerencia</option>
-          <option value="Auditoría">Auditoría</option>
-          <option value="Gestión">Gestión</option>
-        </select>
-      </div>
-
-      <div class="form-row">
-        <label>Nombre Perfil</label>
-        <select id="cmbPerfilActual"></select>
-      </div>
-
-      <div class="form-row" style="gap:8px;">
-        <label></label>
-        <button class="btn-primary" id="btnGuardar">Guardar cambios</button>
-        <button class="btn-secondary" id="btnRestaurar">Restaurar original</button>
-      </div>
-
-      <hr />
-
-      <div class="section-title">Roles / Perfiles</div>
-      <div class="small-muted">Marca uno o más perfiles a la izquierda para ver sus roles y comparar con los roles actuales del usuario.</div>
-
-      <div class="layout-grid" style="margin-top:10px;">
-        <div>
-          <div class="section-title">Perfiles del ámbito</div>
-          <div class="lista-perfiles" id="listaPerfiles"></div>
-        </div>
-
-        <div>
-          <div class="section-title">Detalle de roles (seleccionados)</div>
-          <div class="roles-detalle" id="detalleRoles"></div>
-
-          <div style="margin-top:12px;" class="section-title">Comparación con roles actuales</div>
-          <div id="compareArea" class="compare-list"></div>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <!-- GESTOR DE ROLES: CREAR / ELIMINAR PERFIL -->
-  <main id="profileView" class="page" aria-hidden="true" style="display:none;">
+  <main id="profileView" class="page">
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -263,7 +104,8 @@
           <div class="page-subtitle">Crear o eliminar perfiles a partir de roles</div>
         </div>
         <div>
-          <button class="btn-secondary" id="btnVolverPerfil">← Volver</button>
+          <!-- Botón Limpiar que vuelve a la página principal -->
+          <button class="btn-secondary" id="btnVolverPerfil">← Limpiar</button>
         </div>
       </div>
 
@@ -302,697 +144,318 @@
       <div class="section-title">Roles disponibles</div>
       <div class="small-muted">Marca los roles que quieres asociar al perfil.</div>
 
-      <div id="rolesChecklist" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;margin-top:10px;font-size:13px;">
-      </div>
+      <div id="rolesChecklist"></div>
     </div>
   </main>
 
-  <div id="modalRoles" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.4); justify-content:center; align-items:center; z-index:80;">
-    <div style="width:520px;background:#fff;border:1px solid #ccc;padding:18px;border-radius:4px; max-height:80vh; overflow:auto;">
-      <h3 style="margin-top:0;font-size:15px;color:#333;">Roles del Usuario</h3>
-      <div id="contenidoRoles" style="margin:12px 0; font-size:13px;"></div>
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button onclick="cerrarModal()" class="btn-secondary">Cerrar</button>
-      </div>
-    </div>
-  </div>
+  <script>
+    /********************************************************************
+     * Catálogo de roles (todos los códigos -> checkboxes)
+     ********************************************************************/
+    const rolesCatalogo = {
+      "100": "Médico",
+      "102": "Tratante indicador con indicaciones",
+      "103": "Tratante jefatura",
+      "105": "Recepción avanzado",
+      "107": "Bloqueo avanzado",
+      "108": "Malla operador",
+      "109": "Malla administrador",
+      "112": "Planificador",
+      "114": "Enfermera",
+      "116": "Planificación consulta",
+      "117": "Agenda consulta",
+      "118": "Vista nacional",
+      "121": "Reemplazo profesional",
+      "123": "Hospitalizado acceso",
+      "124": "Hospitalizado prestador",
+      "125": "Hospitalizado registro",
+      "126": "Admisión",
+      "127": "Reprocesar NAT a SGH",
+      "128": "Ingreso Evolución",
+      "129": "Hospitalizado administración",
+      "141": "Donación Autorizador",
+      "142": "Donación Asistente Social",
+      "143": "Donación Asistente Social Jefatura",
+      "144": "Donación Cajero",
+      "145": "Donación Cajero Avanzado",
+      "146": "Donación Solo Consulta",
+      "147": "Usuario Básico SIC",
+      "148": "Tratante Telerehabilitación TETCA",
+      "149": "Administrativo Informes de Paciente",
+      "200": "PowerBI Nacional",
+      "201": "PowerBI Arica",
+      "202": "PowerBI Iquique",
+      "203": "PowerBI Antofagasta",
+      "204": "PowerBI Calama",
+      "205": "PowerBI Copiapó",
+      "206": "PowerBI Coquimbo",
+      "207": "PowerBI Valparaíso",
+      "208": "PowerBI Talca",
+      "209": "PowerBI Concepción",
+      "210": "PowerBI Temuco",
+      "211": "PowerBI Valdivia",
+      "212": "PowerBI Puerto Montt",
+      "213": "PowerBI Coyhaique",
+      "214": "PowerBI Santiago",
+      "215": "Eliminar Documento Repositorio",
+      "216": "WeeFim Consulta",
+      "217": "WeeFim Evaluador",
+      "218": "WeeFim Digitador",
+      "219": "WeeFim Administrador",
+      "220": "Admisión Orientación",
+      "221": "Administrador SIC",
+      "305": "Perfil PC Visualización",
+      "306": "Perfil PC Médico - Fisiatra",
+      "307": "Perfil PC - Kine Terapia",
+      "308": "Perfil PC - Educación",
+      "310": "Administración de Indicaciones Nacional",
+      "311": "Movilización Asistente Social",
+      "312": "Movilización Historial Asignaciones",
+      "320": "Data Paciente - Profesional Asistencial",
+      "321": "Recepción IT Acreditado",
+      "322": "Administrativo Informe de Epicrisis",
+      "323": "Contingencia: registro atrasado",
+      "331": "Exámenes historial y derivación",
+      "341": "LOP Administrador",
+      "342": "LOP Recepción",
+      "343": "LOP Asistencial",
+      "344": "LOP Indicador",
+      "346": "Fotos y Videos",
+      "350": "Farmacia Receta médica",
+      "351": "Farmacia Despacho botiquín",
+      "352": "Farmacia Informes y Parámetros",
+      "353": "Farmacia Solicitud Insumos",
+      "354": "Data Paciente - Asistente Social",
+      "355": "Data Paciente - Crear Persona",
+      "356": "Data Paciente - Editar Persona",
+      "358": "Data Paciente - Crea Paciente",
+      "359": "Data Paciente - Cambio Estado Paciente",
+      "360": "Perfil Social - Asistente Social",
+      "364": "Data Paciente - Administrador",
+      "366": "Data Paciente - Visualización",
+      "367": "Data Paciente - Educación",
+      "368": "Data Paciente Administrativo",
+      "369": "Data Paciente - Terapéuticos",
+      "370": "Data Paciente - Psicología",
+      "371": "Visualización Evolución",
+      "372": "Cirugía SGH",
+      "373": "Comodato SGH",
+      "374": "Data Paciente - S. Transversal",
+      "375": "Perfil PC - Fonoaudiología",
+      "376": "Perfil social - Psicología",
+      "377": "Perfil social - Visualización",
+      "378": "Perfil social - Educación",
+      "382": "Imprimir Evolución"
+    };
 
-<script>
-/************************************************************************
- * DATOS y ROLES desde catálogo Excel (resumen)
- ************************************************************************/
-const perfilesGlobal = [
-  "Analista de Sistemas","Médico","Kinesiólogo","Asistente Social",
-  "Psicólogo","Educadora","Enfermera","Fonoaudiólogo"
-];
+    /********************************************************************
+     * Perfiles base por ámbito (se sobreescriben con lo del storage)
+     ********************************************************************/
+    const dataPerfiles = {
+      "Educación":[
+        { id:"educadora", nombre:"Educadora", roles:["102","105","308","320","367","378"] },
+        { id:"prof_arte", nombre:"Profesor de arte", roles:["102","105","308","320","367","378"] },
+        { id:"prof_musica", nombre:"Profesor de música", roles:["102","105","308","320","367","378"] }
+      ],
+      "Administración":[
+        { id:"analista_sistemas", nombre:"Analista de Sistemas", roles:["105","108","112","147","200","214","305","355","356","358","368"] },
+        { id:"adm_recepcion", nombre:"Administrativo recepción", roles:["105","108","112","117","126","144","149","220","321","342","344","359","368"] },
+        { id:"adm_informes", nombre:"Administrativo Informes Paciente", roles:["105","149","322","368","371","382"] }
+      ],
+      "Asistencial":[
+        { id:"medico", nombre:"Médico", roles:["100","102","105","123","124","125","200","214","305","306","310","320","331","344","346","350","359","372","373","377"] },
+        { id:"kinesiologo", nombre:"Kinesiólogo", roles:["102","105","107","108","116","117","148","200","206","214","216","217","218","307","320","341","344","346","369","372","373","377"] },
+        { id:"fonoaudiologo", nombre:"Fonoaudiólogo", roles:["102","105","107","108","116","117","148","200","214","216","217","375","320","344","369","372","373","377"] },
+        { id:"psicologo", nombre:"Psicólogo", roles:["100","102","105","200","214","216","217","305","320","346","370","376","377"] },
+        { id:"enfermera", nombre:"Enfermera", roles:["102","105","114","200","213","215","220","305","320","342","351","352","353","359","377"] },
+        { id:"asistente_social", nombre:"Asistente Social", roles:["102","105","142","143","144","145","146","200","205","206","215","305","311","312","320","331","341","354","359","360","368","371","377"] }
+      ],
+      "Informática":[],
+      "Dirección Instituto":[],
+      "Gerencia":[],
+      "Auditoría":[],
+      "Gestión":[]
+    };
 
-const usuarios = [
-  { id:1, nombre:"cesar", ap_p:"jimenez", ap_m:"barrera", especialidad:"Analista de Sistemas", roles:["105","108","112","147","200","214","305","355","356","358","368"] },
-  { id:2, nombre:"cecilia", ap_p:"garcia", ap_m:"mendez", especialidad:"Educadora", roles:["102","105","308","320","367","378"] },
-  { id:3, nombre:"carlos", ap_p:"perez", ap_m:"donoso", especialidad:"Médico", roles:["100","102","105","123","124","320","344","350","372","373","377"] },
-  { id:4, nombre:"pedro", ap_p:"caro", ap_m:"urbina", especialidad:"Kinesiólogo", roles:["102","105","107","108","117","148","307","320","369","372","373","377"] },
-  { id:5, nombre:"hans", ap_p:"weiler", ap_m:"bollio", especialidad:"Asistente Social", roles:["102","105","142","143","144","305","311","320","354","360","368","377"] },
-  { id:6, nombre:"graciela", ap_p:"navarrete", ap_m:"lillo", especialidad:"Enfermera", roles:["102","105","114","200","213","215","220","305","320","342","351","352","353","359","377"] },
-  { id:7, nombre:"pia", ap_p:"suazo", ap_m:"gomez", especialidad:"Fonoaudiólogo", roles:["102","105","148","200","214","216","217","320","369","375","377"] },
-  { id:8, nombre:"roberto", ap_p:"soto", ap_m:"leon", especialidad:"Analista de Sistemas", roles:["105","108","112","147","200","214","305","355","356","358","368"] },
-  { id:9, nombre:"maria", ap_p:"lopez", ap_m:"zuniga", especialidad:"Psicólogo", roles:["100","102","105","200","214","216","217","305","320","346","370","376","377"] },
-  { id:10, nombre:"julia", ap_p:"ruiz", ap_m:"escobar", especialidad:"Educadora", roles:["102","105","308","320","367","378"] }
-];
+    /********************************************************************
+     * Persistencia con localStorage (para compartir con Roles-y-perfiles)
+     ********************************************************************/
+    const STORAGE_KEY_PERFILES = "gestor_roles_perfiles";
 
-const rolesCatalogo = {
-  "100": "Médico",
-  "102": "Tratante indicador con indicaciones",
-  "103": "Tratante jefatura",
-  "105": "Recepción avanzado",
-  "107": "Bloqueo avanzado",
-  "108": "Malla operador",
-  "109": "Malla administrador",
-  "112": "Planificador",
-  "114": "Enfermera",
-  "116": "Planificación consulta",
-  "117": "Agenda consulta",
-  "118": "Vista nacional",
-  "121": "Reemplazo profesional",
-  "123": "Hospitalizado acceso",
-  "124": "Hospitalizado prestador",
-  "125": "Hospitalizado registro",
-  "126": "Admisión",
-  "127": "Reprocesar NAT a SGH",
-  "128": "Ingreso Evolución",
-  "129": "Hospitalizado administración",
-  "141": "Donación Autorizador",
-  "142": "Donación Asistente Social",
-  "143": "Donación Asistente Social Jefatura",
-  "144": "Donación Cajero",
-  "145": "Donación Cajero Avanzado",
-  "146": "Donación Solo Consulta",
-  "147": "Usuario Básico SIC",
-  "148": "Tratante Telerehabilitación TETCA",
-  "149": "Administrativo Informes de Paciente",
-  "200": "PowerBI Nacional",
-  "201": "PowerBI Arica",
-  "202": "PowerBI Iquique",
-  "203": "PowerBI Antofagasta",
-  "204": "PowerBI Calama",
-  "205": "PowerBI Copiapó",
-  "206": "PowerBI Coquimbo",
-  "207": "PowerBI Valparaíso",
-  "208": "PowerBI Talca",
-  "209": "PowerBI Concepción",
-  "210": "PowerBI Temuco",
-  "211": "PowerBI Valdivia",
-  "212": "PowerBI Puerto Montt",
-  "213": "PowerBI Coyhaique",
-  "214": "PowerBI Santiago",
-  "215": "Eliminar Documento Repositorio",
-  "216": "WeeFim Consulta",
-  "217": "WeeFim Evaluador",
-  "218": "WeeFim Digitador",
-  "219": "WeeFim Administrador",
-  "220": "Admisión Orientación",
-  "221": "Administrador SIC",
-  "305": "Perfil PC Visualización",
-  "306": "Perfil PC Médico - Fisiatra",
-  "307": "Perfil PC - Kine Terapia",
-  "308": "Perfil PC - Educación",
-  "310": "Administración de Indicaciones Nacional",
-  "311": "Movilización Asistente Social",
-  "312": "Movilización Historial Asignaciones",
-  "320": "Data Paciente - Profesional Asistencial",
-  "321": "Recepción IT Acreditado",
-  "322": "Administrativo Informe de Epicrisis",
-  "323": "Contingencia: registro atrasado",
-  "331": "Exámenes historial y derivación",
-  "341": "LOP Administrador",
-  "342": "LOP Recepción",
-  "343": "LOP Asistencial",
-  "344": "LOP Indicador",
-  "346": "Fotos y Videos",
-  "350": "Farmacia Receta médica",
-  "351": "Farmacia Despacho botiquín",
-  "352": "Farmacia Informes y Parámetros",
-  "353": "Farmacia Solicitud Insumos",
-  "354": "Data Paciente - Asistente Social",
-  "355": "Data Paciente - Crear Persona",
-  "356": "Data Paciente - Editar Persona",
-  "358": "Data Paciente - Crea Paciente",
-  "359": "Data Paciente - Cambio Estado Paciente",
-  "360": "Perfil Social - Asistente Social",
-  "364": "Data Paciente - Administrador",
-  "366": "Data Paciente - Visualización",
-  "367": "Data Paciente - Educación",
-  "368": "Data Paciente Administrativo",
-  "369": "Data Paciente - Terapéuticos",
-  "370": "Data Paciente - Psicología",
-  "371": "Visualización Evolución",
-  "372": "Cirugía SGH",
-  "373": "Comodato SGH",
-  "374": "Data Paciente - S. Transversal",
-  "375": "Perfil PC - Fonoaudiología",
-  "376": "Perfil social - Psicología",
-  "377": "Perfil social - Visualización",
-  "378": "Perfil social - Educación",
-  "382": "Imprimir Evolución"
-};
-
-const dataPerfiles = {
-  "Educación":[
-    { id:"educadora", nombre:"Educadora", roles:["102","105","308","320","367","378"] },
-    { id:"prof_arte", nombre:"Profesor de arte", roles:["102","105","308","320","367","378"] },
-    { id:"prof_musica", nombre:"Profesor de música", roles:["102","105","308","320","367","378"] }
-  ],
-  "Administración":[
-    { id:"analista_sistemas", nombre:"Analista de Sistemas", roles:["105","108","112","147","200","214","305","355","356","358","368"] },
-    { id:"adm_recepcion", nombre:"Administrativo recepción", roles:["105","108","112","117","126","144","149","220","321","342","344","359","368"] },
-    { id:"adm_informes", nombre:"Administrativo Informes Paciente", roles:["105","149","322","368","371","382"] }
-  ],
-  "Asistencial":[
-    { id:"medico", nombre:"Médico", roles:["100","102","105","123","124","125","200","214","305","306","310","320","331","344","346","350","359","372","373","377"] },
-    { id:"kinesiologo", nombre:"Kinesiólogo", roles:["102","105","107","108","116","117","148","200","206","214","216","217","218","307","320","341","344","346","369","372","373","377"] },
-    { id:"fonoaudiologo", nombre:"Fonoaudiólogo", roles:["102","105","107","108","116","117","148","200","214","216","217","375","320","344","369","372","373","377"] },
-    { id:"psicologo", nombre:"Psicólogo", roles:["100","102","105","200","214","216","217","305","320","346","370","376","377"] },
-    { id:"enfermera", nombre:"Enfermera", roles:["102","105","114","200","213","215","220","305","320","342","351","352","353","359","377"] },
-    { id:"asistente_social", nombre:"Asistente Social", roles:["102","105","142","143","144","145","146","200","205","206","215","305","311","312","320","331","341","354","359","360","368","371","377"] }
-  ],
-  "Informática":[],
-  "Dirección Instituto":[],
-  "Gerencia":[],
-  "Auditoría":[],
-  "Gestión":[]
-};
-
-const perfilActualPorAmbito = {
-  "Educación":"educadora",
-  "Administración":"analista_sistemas",
-  "Asistencial":"medico",
-  "Informática":null,
-  "Dirección Instituto":null,
-  "Gerencia":null,
-  "Auditoría":null,
-  "Gestión":null
-};
-
-/************************************************************************
- * DOM refs
- ************************************************************************/
-const cmbPerfil = document.getElementById("cmbPerfil");
-const txtUsuario_main = document.getElementById("txtUsuario_main");
-const listaPredictiva = document.getElementById("listaPredictiva");
-const tbody = document.querySelector("#tblUsuarios tbody");
-const btnClearMain = document.getElementById("btnClearMain");
-//const btnNuevo = document.getElementById("btnNuevo");
-const btnEditar = document.getElementById("btnEditar");
-const btnBuscar = document.getElementById("btnBuscar");
-const usuariosContainer = document.getElementById("usuariosContainer");
-
-const mainView = document.getElementById("mainView");
-const editView = document.getElementById("editView");
-const profileView = document.getElementById("profileView");
-const txtIdUsuario_edit = document.getElementById("txtIdUsuario_edit");
-const txtUsuario_edit = document.getElementById("txtUsuario_edit");
-const cmbAmbito = document.getElementById("cmbAmbito");
-const cmbPerfilActual = document.getElementById("cmbPerfilActual");
-const listaPerfilesDiv = document.getElementById("listaPerfiles");
-const detalleRolesDiv = document.getElementById("detalleRoles");
-const compareArea = document.getElementById("compareArea");
-const btnGuardar = document.getElementById("btnGuardar");
-const btnRestaurar = document.getElementById("btnRestaurar");
-const btnVolver = document.getElementById("btnVolver");
-
-const btnVolverPerfil = document.getElementById("btnVolverPerfil");
-const cmbAmbitoPerfil = document.getElementById("cmbAmbitoPerfil");
-const cmbPerfilGestion = document.getElementById("cmbPerfilGestion");
-const txtNombrePerfil = document.getElementById("txtNombrePerfil");
-const btnGuardarPerfil = document.getElementById("btnGuardarPerfil");
-const btnEliminarPerfil = document.getElementById("btnEliminarPerfil");
-const rolesChecklist = document.getElementById("rolesChecklist");
-
-function abrirModal(){ document.getElementById("modalRoles").style.display = "flex"; }
-function cerrarModal(){ document.getElementById("modalRoles").style.display = "none"; }
-window.cerrarModal = cerrarModal;
-
-/************************************************************************
- * Estado
- ************************************************************************/
-let stateFiltro = { perfil: "", texto: "" };
-let editState = { id_usuario: null, originalRoles: [], perfilesMarcados: [] };
-
-/************************************************************************
- * Inicialización
- ************************************************************************/
-(function init() {
-  const empty = document.createElement("option"); empty.value=""; empty.textContent="";
-  cmbPerfil.appendChild(empty);
-  perfilesGlobal.forEach(p => {
-    const o = document.createElement("option"); o.value = p; o.textContent = p; cmbPerfil.appendChild(o);
-  });
-  // No llamamos filtrarUsuarios aquí para que grilla quede oculta al inicio
-})();
-
-/************************************************************************
- * Predictiva
- ************************************************************************/
-txtUsuario_main.addEventListener("input", () => {
-  const q = txtUsuario_main.value.toLowerCase().trim();
-  listaPredictiva.innerHTML = "";
-  if(!q) return;
-  const sugerencias = usuarios.filter(u => {
-    return (String(u.id) + " " + u.nombre + " " + u.ap_p + " " + u.ap_m).toLowerCase().includes(q);
-  }).slice(0,20);
-  sugerencias.forEach(u => {
-    const li = document.createElement("li");
-    li.textContent = `${u.nombre} ${u.ap_p} ${u.ap_m} (ID:${u.id})`;
-    li.addEventListener("click", () => {
-      txtUsuario_main.value = `${u.nombre} ${u.ap_p} ${u.ap_m}`;
-      listaPredictiva.innerHTML = "";
-      filtrarUsuarios();
-    });
-    listaPredictiva.appendChild(li);
-  });
-});
-txtUsuario_main.addEventListener("blur", () => setTimeout(()=> listaPredictiva.innerHTML="",200));
-
-btnClearMain.addEventListener("click", () => {
-  txtUsuario_main.value = "";
-  txtUsuario_main.focus();
-  filtrarUsuarios();
-});
-
-/************************************************************************
- * Grilla (ahora controlando visibilidad)
- ************************************************************************/
-function filtrarUsuarios(){
-  const perfil = cmbPerfil.value;
-  const q = txtUsuario_main.value.trim().toLowerCase();
-  stateFiltro.perfil = perfil; stateFiltro.texto = txtUsuario_main.value;
-
-  const tieneCriterio = perfil || q;
-  if(!tieneCriterio){
-    usuariosContainer.style.display = "none";
-    tbody.innerHTML = "";
-    return;
-  }
-
-  const lista = usuarios.filter(u => {
-    const coincidePerfil = !perfil || u.especialidad === perfil;
-    const cadena = (String(u.id) + " " + u.nombre + " " + u.ap_p + " " + u.ap_m + " " + u.especialidad).toLowerCase();
-    return ((!q) || cadena.includes(q)) && coincidePerfil;
-  });
-
-  usuariosContainer.style.display = lista.length ? "block" : "none";
-  pintarGrilla(lista);
-}
-
-function pintarGrilla(lista){
-  tbody.innerHTML = "";
-  lista.forEach(u => {
-    const tr = document.createElement("tr");
-    const rolesLabel = u.roles && u.roles.length ? `${u.roles.length} rol(es)` : "Sin roles";
-    tr.innerHTML = `<td>${u.id}</td>
-                    <td>${u.nombre}</td>
-                    <td>${u.ap_p}</td>
-                    <td>${u.ap_m}</td>
-                    <td>${u.especialidad}</td>
-                    <td><span class="link-roles" data-id="${u.id}">Ver Roles (${rolesLabel})</span></td>
-                    <td class="col-check"><input type="checkbox" name="chkSel" value="${u.id}"></td>`;
-    tbody.appendChild(tr);
-  });
-
-  tbody.querySelectorAll('input[name="chkSel"]').forEach(chk => {
-    chk.addEventListener("change", () => {
-      if(chk.checked) tbody.querySelectorAll('input[name="chkSel"]').forEach(o=>{ if(o!==chk) o.checked=false; });
-    });
-  });
-
-  tbody.querySelectorAll(".link-roles").forEach(link => {
-    link.addEventListener("click", ()=> {
-      const id = parseInt(link.dataset.id,10);
-      const u = usuarios.find(x=>x.id===id);
-      const roles = (u.roles || []).slice().sort((a,b)=> parseInt(a,10)-parseInt(b,10));
-      if(roles.length === 0){
-        document.getElementById("contenidoRoles").innerHTML = "<div>No hay roles asignados.</div>";
-      } else {
-        let html = '<table class="roles-table" style="width:100%"><thead><tr><th style="width:80px">Código</th><th>Descripción</th></tr></thead><tbody>';
-        roles.forEach(c => {
-          const desc = rolesCatalogo[c] || "Descripción no disponible";
-          html += `<tr><td>${c}</td><td>${escapeHtml(desc)}</td></tr>`;
+    function cargarPerfilesDesdeStorage() {
+      const json = localStorage.getItem(STORAGE_KEY_PERFILES);
+      if (!json) return;
+      try {
+        const obj = JSON.parse(json);
+        Object.keys(obj).forEach(amb => {
+          if (!dataPerfiles[amb]) dataPerfiles[amb] = [];
+          dataPerfiles[amb] = obj[amb];
         });
-        html += '</tbody></table>';
-        document.getElementById("contenidoRoles").innerHTML = html;
+      } catch (e) {
+        console.error("Error al leer perfiles desde storage", e);
       }
-      abrirModal();
-    });
-  });
-}
-
-/************************************************************************
- * Botones principales
- ************************************************************************/
-btnBuscar.addEventListener("click", filtrarUsuarios);
-
-btnEditar.addEventListener("click", () => {
-  const sel = document.querySelector('input[name="chkSel"]:checked');
-  if(!sel) return alert("Debe seleccionar un usuario para editar.");
-  const id = parseInt(sel.value,10);
-  abrirEditorConUsuario(id);
-});
-
-
-
-/************************************************************************
- * Edición usuario
- ************************************************************************/
-function abrirEditorConUsuario(id_usuario){
-  const u = usuarios.find(x=>x.id===id_usuario);
-  if(!u) return alert("Usuario no encontrado.");
-
-  stateFiltro.perfil = cmbPerfil.value; stateFiltro.texto = txtUsuario_main.value;
-
-  editState.id_usuario = u.id;
-  editState.originalRoles = Array.from(u.roles || []);
-  editState.perfilesMarcados = [];
-
-  txtIdUsuario_edit.value = u.id;
-  txtUsuario_edit.value = (u.nombre + " " + u.ap_p + " " + u.ap_m).toUpperCase();
-
-  let defaultAmb = "Educación";
-  if(u.especialidad && /analista|administr/i.test(u.especialidad)) defaultAmb = "Administración";
-  if(u.especialidad && /kinesi|médico|medico|asistente|psicólogo|enfermera|fonoaudiólogo/i.test(u.especialidad)) defaultAmb = "Asistencial";
-  cmbAmbito.value = defaultAmb;
-
-  cargarPerfilesPorAmbito(u);
-
-  mainView.style.display = "none";
-  profileView.style.display = "none";
-  editView.style.display = "block";
-  editView.setAttribute("aria-hidden","false");
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
-btnVolver.addEventListener("click", cerrarEditorYRestaurar);
-
-function cerrarEditorYRestaurar(){
-  editView.style.display = "none";
-  profileView.style.display = "none";
-  mainView.style.display = "block";
-  editView.setAttribute("aria-hidden","true");
-  profileView.setAttribute("aria-hidden","true");
-  cmbPerfil.value = stateFiltro.perfil || "";
-  txtUsuario_main.value = stateFiltro.texto || "";
-  // Vuelve al estado de búsqueda actual (si no hay criterio, grilla se oculta)
-  filtrarUsuarios();
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
-/************************************************************************
- * Perfiles por ámbito en edición
- ************************************************************************/
-function cargarPerfilesPorAmbito(usuarioObjeto){
-  const ambito = cmbAmbito.value;
-  const perfilesList = dataPerfiles[ambito] || [];
-  const perfilActualId = perfilActualPorAmbito[ambito] || (perfilesList[0] && perfilesList[0].id);
-
-  cmbPerfilActual.innerHTML = "";
-  perfilesList.forEach(p => {
-    const opt = document.createElement("option"); opt.value = p.id; opt.textContent = p.nombre; cmbPerfilActual.appendChild(opt);
-  });
-
-  listaPerfilesDiv.innerHTML = "";
-  perfilesList.forEach(p => {
-    const row = document.createElement("div"); row.className = "lista-perfiles-item";
-    const chk = document.createElement("input"); chk.type = "checkbox"; chk.value = p.id; chk.id = "chk_"+p.id;
-    if(usuarioObjeto){
-      const interseccion = (p.roles || []).filter(r => (usuarioObjeto.roles||[]).includes(r));
-      if(interseccion.length > 0) chk.checked = true;
-    } else if(p.id === perfilActualId){
-      chk.checked = true;
     }
-    const lbl = document.createElement("label"); lbl.setAttribute("for",chk.id); lbl.textContent = p.nombre;
-    row.appendChild(chk); row.appendChild(lbl); listaPerfilesDiv.appendChild(row);
-    chk.addEventListener("change", mostrarDetalleRolesYComparacion);
-  });
 
-  if(usuarioObjeto){
-    const match = perfilesList.find(p => usuarioObjeto.especialidad && p.nombre.toLowerCase().includes(usuarioObjeto.especialidad.toLowerCase()));
-    if(match) cmbPerfilActual.value = match.id;
-  } else if(perfilActualId){
-    cmbPerfilActual.value = perfilActualId;
-  }
-
-  mostrarDetalleRolesYComparacion();
-}
-
-cmbAmbito.addEventListener("change", () => cargarPerfilesPorAmbito(null));
-
-cmbPerfilActual.addEventListener("change", function(){
-  const newp = this.value;
-  const chk = document.getElementById("chk_"+newp);
-  if(chk){ chk.checked = true; mostrarDetalleRolesYComparacion(); }
-});
-
-/************************************************************************
- * Detalle / comparación de roles
- ************************************************************************/
-function mostrarDetalleRolesYComparacion(){
-  const checked = Array.from(listaPerfilesDiv.querySelectorAll('input[type="checkbox"]:checked')).map(c=>c.value);
-  editState.perfilesMarcados = checked;
-
-  let rolesAgregados = [];
-  checked.forEach(pid => {
-    const perfilObj = (dataPerfiles[cmbAmbito.value]||[]).find(p=>p.id===pid);
-    if(perfilObj && Array.isArray(perfilObj.roles)) rolesAgregados = rolesAgregados.concat(perfilObj.roles);
-  });
-  const rolesResult = Array.from(new Set(rolesAgregados)).sort((a,b)=> parseInt(a,10)-parseInt(b,10));
-
-  detalleRolesDiv.innerHTML = "";
-  if(rolesResult.length === 0){
-    detalleRolesDiv.innerHTML = "<div>No hay perfiles seleccionados.</div>";
-  } else {
-    const table = document.createElement("table");
-    table.className = "roles-table";
-    table.innerHTML = "<thead><tr><th style='width:90px'>Código</th><th>Descripción</th></tr></thead><tbody></tbody>";
-    const tb = table.querySelector("tbody");
-    rolesResult.forEach(c => {
-      const tr = document.createElement("tr");
-      const d = rolesCatalogo[c] || "Descripción no disponible";
-      tr.innerHTML = `<td>${c}</td><td>${escapeHtml(d)}</td>`;
-      tb.appendChild(tr);
-    });
-    detalleRolesDiv.appendChild(table);
-  }
-
-  const currentRoles = editState.originalRoles || [];
-  const resultRoles = rolesResult;
-  const added = resultRoles.filter(r => !currentRoles.includes(r));
-  const removed = currentRoles.filter(r => !resultRoles.includes(r));
-  const unchanged = resultRoles.filter(r => currentRoles.includes(r));
-
-  compareArea.innerHTML = "";
-  if(currentRoles.length === 0 && resultRoles.length === 0){
-    compareArea.innerHTML = "<div class='small-muted'>No hay roles actuales ni resultantes.</div>";
-  } else {
-    added.forEach(a => {
-      const div = document.createElement("div"); div.className = "compare-item added";
-      div.innerHTML = `<strong>+ ${a}</strong> — ${escapeHtml(rolesCatalogo[a]||"")}`;
-      compareArea.appendChild(div);
-    });
-    removed.forEach(r => {
-      const div = document.createElement("div"); div.className = "compare-item removed";
-      div.innerHTML = `<strong>- ${r}</strong> — ${escapeHtml(rolesCatalogo[r]||"")}`;
-      compareArea.appendChild(div);
-    });
-    unchanged.forEach(u => {
-      const div = document.createElement("div"); div.className = "compare-item unchanged";
-      div.innerHTML = `<strong>${u}</strong> — ${escapeHtml(rolesCatalogo[u]||"")}`;
-      compareArea.appendChild(div);
-    });
-  }
-}
-
-/************************************************************************
- * Restaurar original
- ************************************************************************/
-btnRestaurar.addEventListener("click", () => {
-  if(!confirm("Restaurar los roles originales del usuario en esta sesión de edición?")) return;
-  const orig = editState.originalRoles || [];
-  listaPerfilesDiv.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
-  Array.from(listaPerfilesDiv.querySelectorAll('input[type="checkbox"]')).forEach(chk => {
-    const pid = chk.value;
-    const perfilObj = (dataPerfiles[cmbAmbito.value]||[]).find(p=>p.id===pid);
-    if(perfilObj){
-      const inter = perfilObj.roles.filter(r => orig.includes(r));
-      if(inter.length>0) chk.checked = true;
+    function guardarPerfilesEnStorage() {
+      localStorage.setItem(STORAGE_KEY_PERFILES, JSON.stringify(dataPerfiles));
     }
-  });
-  mostrarDetalleRolesYComparacion();
-});
 
-/************************************************************************
- * Guardar usuario
- ************************************************************************/
-btnGuardar.addEventListener("click", () => {
-  if(!confirm("¿Guardar los cambios realizados a los roles/perfiles del usuario?")) return;
-  const id = parseInt(txtIdUsuario_edit.value || "0",10);
-  const checkedProfileIds = Array.from(listaPerfilesDiv.querySelectorAll('input[type="checkbox"]:checked')).map(c=>c.value);
-  if(id){
-    const u = usuarios.find(x=>x.id===id);
-    if(!u) { alert("Usuario no encontrado al guardar."); return; }
-    const perfilSeleccionadoId = cmbPerfilActual.value;
-    const perfilObj = (dataPerfiles[cmbAmbito.value] || []).find(p=>p.id === perfilSeleccionadoId);
-    if(perfilObj) u.especialidad = perfilObj.nombre;
-    let newRoles = [];
-    checkedProfileIds.forEach(pid => {
-      const p = (dataPerfiles[cmbAmbito.value]||[]).find(x=>x.id===pid);
-      if(p && p.roles) newRoles = newRoles.concat(p.roles);
+    /********************************************************************
+     * DOM
+     ********************************************************************/
+    const btnVolverPerfil   = document.getElementById("btnVolverPerfil");
+    const cmbAmbitoPerfil   = document.getElementById("cmbAmbitoPerfil");
+    const cmbPerfilGestion  = document.getElementById("cmbPerfilGestion");
+    const txtNombrePerfil   = document.getElementById("txtNombrePerfil");
+    const btnGuardarPerfil  = document.getElementById("btnGuardarPerfil");
+    const btnEliminarPerfil = document.getElementById("btnEliminarPerfil");
+    const rolesChecklist    = document.getElementById("rolesChecklist");
+
+    /********************************************************************
+     * Lógica Gestor de Roles
+     ********************************************************************/
+    function cargarComboPerfilesGestion(){
+      const ambito = cmbAmbitoPerfil.value;
+      const perfilesAmbito = dataPerfiles[ambito] || [];
+      cmbPerfilGestion.innerHTML = "";
+
+      const optEmpty = document.createElement("option");
+      optEmpty.value = "";
+      optEmpty.textContent = "(nuevo perfil)";
+      cmbPerfilGestion.appendChild(optEmpty);
+
+      perfilesAmbito.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.nombre;
+        cmbPerfilGestion.appendChild(opt);
+      });
+
+      cmbPerfilGestion.value = "";
+    }
+
+    function pintarChecklistRoles(preseleccion){
+      rolesChecklist.innerHTML = "";
+      const setPre = new Set(preseleccion || []);
+      const codigosOrdenados = Object.keys(rolesCatalogo).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+      codigosOrdenados.forEach(cod => {
+        const wrapper = document.createElement("label");
+        wrapper.style.display = "flex";
+        wrapper.style.alignItems = "center";
+        wrapper.style.gap = "6px";
+        wrapper.style.cursor = "pointer";
+
+        const chk = document.createElement("input");
+        chk.type = "checkbox";
+        chk.value = cod;
+        if(setPre.has(cod)) chk.checked = true;
+
+        const span = document.createElement("span");
+        span.textContent = cod + " - " + (rolesCatalogo[cod] || "");
+
+        wrapper.appendChild(chk);
+        wrapper.appendChild(span);
+        rolesChecklist.appendChild(wrapper);
+      });
+    }
+
+    cmbAmbitoPerfil.addEventListener("change", () => {
+      cargarComboPerfilesGestion();
+      txtNombrePerfil.value = "";
+      pintarChecklistRoles();
     });
-    u.roles = Array.from(new Set(newRoles)).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
-    alert("Cambios guardados (demo).");
-  } else {
-    const nuevoId = usuarios.reduce((m,x)=>Math.max(m,x.id),0)+1;
-    const nombre = (txtUsuario_edit.value || "NUEVO").trim().split(" ")[0] || "nuevo";
-    const perfilObj = (dataPerfiles[cmbAmbito.value] || []).find(p=>p.id === cmbPerfilActual.value);
-    const especialidad = perfilObj ? perfilObj.nombre : "";
-    const checkedProfileIdsNuevo = Array.from(listaPerfilesDiv.querySelectorAll('input[type="checkbox"]:checked')).map(c=>c.value);
-    let rolesNew = [];
-    checkedProfileIdsNuevo.forEach(pid => {
-      const p = (dataPerfiles[cmbAmbito.value]||[]).find(x=>x.id===pid);
-      if(p && p.roles) rolesNew = rolesNew.concat(p.roles);
+
+    cmbPerfilGestion.addEventListener("change", () => {
+      const ambito = cmbAmbitoPerfil.value;
+      const perfilesAmbito = dataPerfiles[ambito] || [];
+      const perfilSel = perfilesAmbito.find(p => p.id === cmbPerfilGestion.value);
+      const rolesBase = perfilSel ? perfilSel.roles : [];
+      pintarChecklistRoles(rolesBase);
+      txtNombrePerfil.value = perfilSel ? perfilSel.nombre : "";
     });
-    usuarios.push({
-      id:nuevoId,
-      nombre:nombre.toLowerCase(),
-      ap_p:"",
-      ap_m:"",
-      especialidad:especialidad,
-      roles:Array.from(new Set(rolesNew)).sort((a,b)=>parseInt(a,10)-parseInt(b,10))
+
+    btnGuardarPerfil.addEventListener("click", () => {
+      const nombre = txtNombrePerfil.value.trim();
+      const ambito = cmbAmbitoPerfil.value;
+      const idExistente = cmbPerfilGestion.value || "";
+
+      if(!nombre){
+        alert("Debe ingresar un nombre de perfil.");
+        return;
+      }
+      const seleccionados = Array.from(rolesChecklist.querySelectorAll("input[type='checkbox']:checked")).map(c=>c.value);
+      if(seleccionados.length === 0){
+        alert("Debe seleccionar al menos un rol para el perfil.");
+        return;
+      }
+
+      const idNormalizado = (idExistente || nombre.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .replace(/[^a-z0-9]+/g,"_")
+        .replace(/^_+|_+$/g,""));
+
+      const listaAmbito = dataPerfiles[ambito] || [];
+      if(!idExistente && listaAmbito.some(p => p.id === idNormalizado)){
+        alert("Ya existe un perfil con un identificador similar. Cambie el nombre.");
+        return;
+      }
+
+      const nuevoPerfil = {
+        id: idNormalizado,
+        nombre: nombre,
+        roles: Array.from(new Set(seleccionados)).sort((a,b)=>parseInt(a,10)-parseInt(b,10))
+      };
+
+      const idx = listaAmbito.findIndex(p => p.id === idNormalizado);
+      if(idx >= 0){
+        listaAmbito[idx] = nuevoPerfil;
+      } else {
+        listaAmbito.push(nuevoPerfil);
+      }
+      dataPerfiles[ambito] = listaAmbito;
+
+      guardarPerfilesEnStorage(); // persiste el cambio
+
+      alert("Perfil guardado en el ámbito seleccionado.");
+      cargarComboPerfilesGestion();
+      cmbPerfilGestion.value = idNormalizado;
     });
-    alert("Usuario creado (demo). ID: " + nuevoId);
-  }
-  cerrarEditorYRestaurar();
-});
 
-/************************************************************************
- * Gestor de roles (perfiles)
- ************************************************************************/
-btnVolverPerfil.addEventListener("click", () => {
-  profileView.style.display = "none";
-  profileView.setAttribute("aria-hidden","true");
-  mainView.style.display = "block";
-  filtrarUsuarios();
-  window.scrollTo({top:0, behavior:"smooth"});
-});
+    btnEliminarPerfil.addEventListener("click", () => {
+      const ambito = cmbAmbitoPerfil.value;
+      const idPerfil = cmbPerfilGestion.value;
+      if(!idPerfil){
+        alert("Debe seleccionar un perfil para eliminar.");
+        return;
+      }
+      if(!confirm("¿Eliminar el perfil seleccionado del ámbito? Esta acción no modifica los usuarios actuales.")) return;
 
-function cargarComboPerfilesGestion(){
-  const ambito = cmbAmbitoPerfil.value;
-  const perfilesAmbito = dataPerfiles[ambito] || [];
-  cmbPerfilGestion.innerHTML = "";
+      const listaAmbito = dataPerfiles[ambito] || [];
+      const idx = listaAmbito.findIndex(p => p.id === idPerfil);
+      if(idx >= 0){
+        listaAmbito.splice(idx,1);
+        dataPerfiles[ambito] = listaAmbito;
 
-  const optEmpty = document.createElement("option");
-  optEmpty.value = "";
-  optEmpty.textContent = "(nuevo perfil)";
-  cmbPerfilGestion.appendChild(optEmpty);
+        guardarPerfilesEnStorage(); // persiste el cambio
 
-  perfilesAmbito.forEach(p => {
-    const opt = document.createElement("option");
-    opt.value = p.id;
-    opt.textContent = p.nombre;
-    cmbPerfilGestion.appendChild(opt);
-  });
+        alert("Perfil eliminado.");
+        cargarComboPerfilesGestion();
+        txtNombrePerfil.value = "";
+        pintarChecklistRoles([]);
+      } else {
+        alert("Perfil no encontrado.");
+      }
+    });
 
-  cmbPerfilGestion.value = "";
-}
+    btnVolverPerfil.addEventListener("click", () => {
+      // Vuelve a la página principal con los cambios ya persistidos
+      window.location.href = "https://cesarjimenezb-design.github.io/Roles-y-perfiles/";
+    });
 
-cmbAmbitoPerfil.addEventListener("change", () => {
-  cargarComboPerfilesGestion();
-  txtNombrePerfil.value = "";
-  pintarChecklistRoles();
-});
-
-cmbPerfilGestion.addEventListener("change", () => {
-  const ambito = cmbAmbitoPerfil.value;
-  const perfilesAmbito = dataPerfiles[ambito] || [];
-  const perfilSel = perfilesAmbito.find(p => p.id === cmbPerfilGestion.value);
-  const rolesBase = perfilSel ? perfilSel.roles : [];
-  pintarChecklistRoles(rolesBase);
-  txtNombrePerfil.value = perfilSel ? perfilSel.nombre : "";
-});
-
-function pintarChecklistRoles(preseleccion){
-  rolesChecklist.innerHTML = "";
-  const setPre = new Set(preseleccion || []);
-  const codigosOrdenados = Object.keys(rolesCatalogo).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
-  codigosOrdenados.forEach(cod => {
-    const wrapper = document.createElement("label");
-    wrapper.style.display = "flex";
-    wrapper.style.alignItems = "center";
-    wrapper.style.gap = "6px";
-    wrapper.style.cursor = "pointer";
-    const chk = document.createElement("input");
-    chk.type = "checkbox";
-    chk.value = cod;
-    if(setPre.has(cod)) chk.checked = true;
-    const span = document.createElement("span");
-    span.textContent = `${cod} - ${rolesCatalogo[cod] || ""}`;
-    wrapper.appendChild(chk);
-    wrapper.appendChild(span);
-    rolesChecklist.appendChild(wrapper);
-  });
-}
-
-btnGuardarPerfil.addEventListener("click", () => {
-  const nombre = txtNombrePerfil.value.trim();
-  const ambito = cmbAmbitoPerfil.value;
-  const idExistente = cmbPerfilGestion.value || "";
-
-  if(!nombre){
-    alert("Debe ingresar un nombre de perfil.");
-    return;
-  }
-  const seleccionados = Array.from(rolesChecklist.querySelectorAll("input[type='checkbox']:checked")).map(c=>c.value);
-  if(seleccionados.length === 0){
-    alert("Debe seleccionar al menos un rol para el perfil.");
-    return;
-  }
-
-  const idNormalizado = (idExistente || nombre.toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-    .replace(/[^a-z0-9]+/g,"_")
-    .replace(/^_+|_+$/g,""));
-
-  const listaAmbito = dataPerfiles[ambito] || [];
-  if(!idExistente && listaAmbito.some(p => p.id === idNormalizado)){
-    alert("Ya existe un perfil con un identificador similar. Cambie el nombre.");
-    return;
-  }
-
-  const nuevoPerfil = {
-    id: idNormalizado,
-    nombre: nombre,
-    roles: Array.from(new Set(seleccionados)).sort((a,b)=>parseInt(a,10)-parseInt(b,10))
-  };
-
-  const idx = listaAmbito.findIndex(p => p.id === idNormalizado);
-  if(idx >= 0){
-    listaAmbito[idx] = nuevoPerfil;
-  } else {
-    listaAmbito.push(nuevoPerfil);
-  }
-  dataPerfiles[ambito] = listaAmbito;
-
-  alert("Perfil guardado en el ámbito seleccionado.");
-  cargarComboPerfilesGestion();
-  cmbPerfilGestion.value = idNormalizado;
-});
-
-btnEliminarPerfil.addEventListener("click", () => {
-  const ambito = cmbAmbitoPerfil.value;
-  const idPerfil = cmbPerfilGestion.value;
-  if(!idPerfil){
-    alert("Debe seleccionar un perfil para eliminar.");
-    return;
-  }
-  if(!confirm("¿Eliminar el perfil seleccionado del ámbito? Esta acción no modifica los usuarios actuales.")) return;
-
-  const listaAmbito = dataPerfiles[ambito] || [];
-  const idx = listaAmbito.findIndex(p => p.id === idPerfil);
-  if(idx >= 0){
-    listaAmbito.splice(idx,1);
-    dataPerfiles[ambito] = listaAmbito;
-    alert("Perfil eliminado.");
+    // Inicialización
+    cargarPerfilesDesdeStorage();
     cargarComboPerfilesGestion();
-    txtNombrePerfil.value = "";
-    pintarChecklistRoles([]);
-  } else {
-    alert("Perfil no encontrado.");
-  }
-});
-
-/************************************************************************
- * Util
- ************************************************************************/
-function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-window.filtrarUsuarios = filtrarUsuarios;
-
-</script>
+    pintarChecklistRoles();
+  </script>
 </body>
 </html>
