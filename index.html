@@ -164,7 +164,7 @@
         </div>
 
         <button class="btn-primary" id="btnBuscar">Buscar</button>
-        <button class="btn-secondary" id="btnNuevo">Nuevo</button>
+       
         <button class="btn-secondary" id="btnEditar">Editar</button>
       </div>
     </section>
@@ -480,7 +480,7 @@ const txtUsuario_main = document.getElementById("txtUsuario_main");
 const listaPredictiva = document.getElementById("listaPredictiva");
 const tbody = document.querySelector("#tblUsuarios tbody");
 const btnClearMain = document.getElementById("btnClearMain");
-const btnNuevo = document.getElementById("btnNuevo");
+//const btnNuevo = document.getElementById("btnNuevo");
 const btnEditar = document.getElementById("btnEditar");
 const btnBuscar = document.getElementById("btnBuscar");
 const usuariosContainer = document.getElementById("usuariosContainer");
@@ -637,18 +637,7 @@ btnEditar.addEventListener("click", () => {
   abrirEditorConUsuario(id);
 });
 
-// NUEVO abre gestor de perfiles
-btnNuevo.addEventListener("click", () => {
-  mainView.style.display = "none";
-  editView.style.display = "none";
-  profileView.style.display = "block";
-  profileView.setAttribute("aria-hidden","false");
-  txtNombrePerfil.value = "";
-  cmbAmbitoPerfil.value = "Administración";
-  cargarComboPerfilesGestion();
-  pintarChecklistRoles();
-  window.scrollTo({top:0, behavior:"smooth"});
-});
+
 
 /************************************************************************
  * Edición usuario
