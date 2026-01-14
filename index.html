@@ -1,474 +1,693 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Sistema de Permisos - Administración</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <style>
-    :root {
-      --rojo-teleton: #F3313F;
-      --gris-fondo: #f4f4f4;
-      --gris-borde: #d9d9d9;
-      --gris-texto: #555555;
-      --azul-claro: #e6f7ff;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      font-size: 13px;
-      background-color: var(--gris-fondo);
-      color: var(--gris-texto);
-      min-height: 100vh; 
-      display: flex;
-      flex-direction: column;
-    }
-    .topbar {
-      height: 50px;
-      background-color: #ffffff;
-      border-bottom: 1px solid var(--gris-borde);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      flex-shrink: 0;
-    }
-    .topbar-left { display:flex; align-items:center; gap:20px; }
-    .logo { 
-        display:flex; 
-        align-items:center; 
-        gap:6px; 
-        font-weight:bold; 
-        color:var(--rojo-teleton); 
-        font-size:18px; 
-        cursor:pointer; 
-    }
-    .logo-icon { width:26px; height:26px; border-radius:50%; border:2px solid var(--rojo-teleton); display:inline-flex; align-items:center; justify-content:center; font-size:16px; }
-    
-    /* ESTILOS DEL MENÚ DESPLEGABLE EN TOPBAR */
-    .menu-dropdown { 
-        position:relative; 
-        display:inline-block; 
-        font-size:14px; 
-        color:#333;
-        font-weight: 600;
-        cursor:pointer;
-        height: 50px;
-        display: flex;
-        align-items: center;
-    }
-    .menu-dropdown:hover .dropdown-content { display:block; }
-    .menu-label { 
-        padding-right: 15px; 
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-    .menu-label::after {
-        content: "▼";
-        font-size: 8px;
-        margin-left: 5px;
-    }
+    <meta charset="UTF-8" />
+    <title>Sistema de Permisos - Administración</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+            --rojo-teleton: #F3313F;
+            --gris-fondo: #f4f4f4;
+            --gris-borde: #d9d9d9;
+            --gris-texto: #555555;
+            --azul-claro: #e6f7ff;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 13px;
+            background-color: var(--gris-fondo);
+            color: var(--gris-texto);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            height: 50px;
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--gris-borde);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+        .topbar-left { display:flex; align-items:center; gap:20px; }
+        .logo {
+            display:flex; align-items:center; gap:6px;
+            font-weight:bold; color:var(--rojo-teleton); font-size:18px;
+            cursor:pointer;
+        }
+        .logo-icon {
+            width:26px; height:26px; border-radius:50%;
+            border:2px solid var(--rojo-teleton);
+            display:inline-flex; align-items:center; justify-content:center;
+            font-size:16px;
+        }
 
-    .dropdown-content {
-        display:none;
-        position:absolute;
-        background-color:#fff;
-        min-width:240px;
-        box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1;
-        top: 49px; 
-        left: 0;
-        border: 1px solid var(--gris-borde);
-    }
-    .dropdown-content a {
-        color:#333;
-        padding: 10px 16px;
-        text-decoration:none;
-        display:block;
-        font-weight:normal;
-    }
-    .dropdown-content a:hover {
-        background-color:var(--azul-claro);
-        color: var(--rojo-teleton);
-    }
+        .menu-dropdown {
+            position:relative; display:inline-block;
+            font-size:14px; color:#333; font-weight:600;
+            cursor:pointer; height:50px; display:flex; align-items:center;
+        }
+        .menu-dropdown:hover .dropdown-content { display:block; }
+        .menu-label {
+            padding-right:15px; position:relative; display:flex; align-items:center;
+        }
+        .menu-label::after {
+            content:"▼"; font-size:8px; margin-left:5px;
+        }
+        .dropdown-content {
+            display:none; position:absolute; background-color:#fff;
+            min-width:240px; box-shadow:0 8px 16px rgba(0,0,0,0.2);
+            z-index:1; top:49px; left:0; border:1px solid var(--gris-borde);
+        }
+        .dropdown-content a {
+            color:#333; padding:10px 16px; text-decoration:none;
+            display:block; font-weight:normal;
+        }
+        .dropdown-content a:hover {
+            background-color:var(--azul-claro); color:var(--rojo-teleton);
+        }
 
-    .topbar-right { display:flex; align-items:center; gap:14px; font-size:12px; }
-    .user-pill { background-color:var(--rojo-teleton); color:#fff; padding:4px 10px; border-radius:20px; font-weight:600; }
-    .user-subtext { color:#999; font-size:11px; text-align:right; }
+        .topbar-right { display:flex; align-items:center; gap:14px; font-size:12px; }
+        .user-pill {
+            background-color:var(--rojo-teleton); color:#fff;
+            padding:4px 10px; border-radius:20px; font-weight:600;
+        }
+        .user-subtext { color:#999; font-size:11px; text-align:right; }
 
-    .page { padding: 18px 24px 30px; max-width:1200px; margin:0 auto; width: 100%; }
-    .page-title { font-size:16px; font-weight:600; margin-bottom:8px; }
+        .page {
+            padding:18px 24px 30px;
+            max-width:1200px; margin:0 auto; width:100%;
+        }
+        .page-title { font-size:16px; font-weight:600; margin-bottom:8px; }
+        .page-subtitle { font-size:13px; color:#777; margin-bottom:10px; }
 
-    .card {
-      background-color:#fff;
-      border:1px solid var(--gris-borde);
-      padding:18px;
-      margin-bottom:20px;
-    }
+        .card {
+            background-color:#fff; border:1px solid var(--gris-borde);
+            padding:18px; margin-bottom:20px;
+        }
 
-    /* Estilos de módulos (no modificados a fondo) */
-    .form-row { display:flex; align-items:center; margin-bottom:12px; gap:10px; }
-    .form-row label { width:70px; font-weight:600; color:var(--gris-texto); }
-    input[type="text"], select {
-      padding:6px 8px;
-      border:1px solid var(--gris-borde);
-      border-radius:3px;
-      font-size:13px;
-      min-width:240px;
-      background:#fff;
-    }
-    input[type="text"]:focus, select:focus { outline:none; border-color:var(--rojo-teleton); }
+        .form-row {
+            display:flex; align-items:center;
+            margin-bottom:12px; gap:10px;
+        }
+        .form-row label {
+            width:70px; font-weight:600; color:var(--gris-texto);
+        }
+        input[type="text"], select {
+            padding:6px 8px; border:1px solid var(--gris-borde);
+            border-radius:3px; font-size:13px; min-width:240px; background:#fff;
+        }
+        input[type="text"]:focus, select:focus {
+            outline:none; border-color:var(--rojo-teleton);
+        }
 
-    .btn-primary, .btn-secondary {
-      border:none;
-      padding:6px 16px;
-      font-size:13px;
-      border-radius:3px;
-      cursor:pointer;
-      font-weight:600;
-    }
-    .btn-primary { background:var(--rojo-teleton); color:#fff; }
-    .btn-primary:hover { background:#d2202f; }
-    .btn-secondary { background:#fff; color:var(--rojo-teleton); border:1px solid var(--rojo-teleton); }
+        .btn-primary, .btn-secondary {
+            border:none; padding:6px 16px; font-size:13px;
+            border-radius:3px; cursor:pointer; font-weight:600;
+        }
+        .btn-primary { background:var(--rojo-teleton); color:#fff; }
+        .btn-primary:hover { background:#d2202f; }
+        .btn-secondary {
+            background:#fff; color:var(--rojo-teleton);
+            border:1px solid var(--rojo-teleton);
+        }
+        .btn-secondary:hover { background:#ffe6ea; }
 
-    table { border-collapse:collapse; width:100%; background:#fff; }
-    th, td { border:1px solid var(--gris-borde); padding:6px 8px; font-size:12px; vertical-align:top; }
-    th { background:#f7f7f7; font-weight:600; text-align:left; }
-    tr:nth-child(even) td { background:#fafafa; }
+        table { border-collapse:collapse; width:100%; background:#fff; }
+        th, td {
+            border:1px solid var(--gris-borde);
+            padding:6px 8px; font-size:12px; vertical-align:top;
+        }
+        th { background:#f7f7f7; font-weight:600; text-align:left; }
+        tr:nth-child(even) td { background:#fafafa; }
 
-    .col-check { width:40px; text-align:center; }
-    .link-roles { color:#0066cc; text-decoration:underline; cursor:pointer; }
+        .col-check { width:40px; text-align:center; }
+        .link-roles { color:#0066cc; text-decoration:underline; cursor:pointer; }
 
-    #listaPredictiva {
-      position:absolute;
-      background:#fff;
-      border:1px solid #ccc;
-      width:320px;
-      max-height:260px;
-      overflow-y:auto;
-      margin-top:2px;
-      list-style:none;
-      padding:0;
-      z-index:40;
-    }
-    #listaPredictiva li { padding:8px; cursor:pointer; font-size:13px; }
-    #listaPredictiva li:hover { background:#f2f2f2; }
+        .listaPredictiva {
+            position:absolute; background:#fff; border:1px solid #ccc;
+            width:320px; max-height:260px; overflow-y:auto;
+            margin-top:2px; list-style:none; padding:0; z-index:40;
+        }
+        .listaPredictiva li {
+            padding:8px; cursor:pointer; font-size:13px;
+        }
+        .listaPredictiva li:hover { background:#f2f2f2; }
 
-    .input-clear-wrapper { position:relative; display:inline-block; }
-    .input-clear-wrapper input { padding-right:28px; width:320px; }
-    .clear-btn {
-      position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer;
-      font-weight:700; font-size:14px; color:#999; user-select:none;
-    }
-    .clear-btn:hover { color:var(--rojo-teleton); }
+        .input-clear-wrapper { position:relative; display:inline-block; }
+        .input-clear-wrapper input { padding-right:28px; width:320px; }
+        .clear-btn {
+            position:absolute; right:6px; top:50%;
+            transform:translateY(-50%); cursor:pointer;
+            font-weight:700; font-size:14px; color:#999; user-select:none;
+        }
+        .clear-btn:hover { color:var(--rojo-teleton); }
 
-    #editView, #profileView { display:none; max-width:1200px; margin:0 auto; padding-bottom:60px; }
-    .page-subtitle { font-size:13px; color:#777; margin-bottom:10px; }
-    .section-title { font-weight:700; margin-bottom:8px; }
+        .section-title { font-weight:700; margin-bottom:8px; }
+        .layout-grid {
+            display:grid; grid-template-columns:360px 1fr; gap:12px;
+        }
 
-    .layout-grid {
-      display:grid; grid-template-columns:360px 1fr; gap:12px;
-    }
-    .lista-perfiles { border:1px solid var(--gris-borde); max-height:420px; overflow:auto; background:#fff; }
-    .lista-perfiles-item { display:flex; align-items:center; padding:8px; border-bottom:1px solid #eee; font-size:13px;}
-    .lista-perfiles-item label { margin-left:8px; cursor:pointer; }
-    .roles-detalle { border:1px solid var(--gris-borde); padding:8px; min-height:120px; background:#fff; font-size:13px; max-height:420px; overflow:auto; }
-    .roles-table { width:100%; border-collapse:collapse; }
-    .roles-table th, .roles-table td { border:1px solid #eee; padding:6px; font-size:13px; text-align:left; }
-    .roles-table th { background:#fafafa; font-weight:700; }
+        .lista-perfiles {
+            border:1px solid var(--gris-borde);
+            max-height:420px; overflow:auto; background:#fff;
+        }
+        .lista-perfiles-item {
+            display:flex; align-items:center;
+            padding:8px; border-bottom:1px solid #eee; font-size:13px;
+        }
+        .lista-perfiles-item label { margin-left:8px; cursor:pointer; }
 
-    .compare-list { margin-top:8px; }
-    .compare-item { padding:6px; margin-bottom:6px; border-radius:4px; display:flex; gap:8px; align-items:center; }
-    .added { background:#e6ffea; color:#136a17; }
-    .removed { background:#ffecec; color:#8b1a1a; text-decoration:line-through; }
-    .unchanged { background:#f7f7f7; color:#333; }
+        .roles-detalle {
+            border:1px solid var(--gris-borde); padding:8px;
+            min-height:120px; background:#fff; font-size:13px;
+            max-height:420px; overflow:auto;
+        }
 
-    .small-muted { font-size:12px; color:#777; margin-top:6px; }
+        .roles-table { width:100%; border-collapse:collapse; }
+        .roles-table th, .roles-table td {
+            border:1px solid #eee; padding:6px; font-size:13px; text-align:left;
+        }
+        .roles-table th { background:#fafafa; font-weight:700; }
 
-    @media (max-width:820px){
-      .input-clear-wrapper input { width:100%; }
-      #listaPredictiva { width:100%; }
-      .layout-grid { grid-template-columns:1fr; }
-    }
+        .compare-list { margin-top:8px; }
+        .compare-item {
+            padding:6px; margin-bottom:6px; border-radius:4px;
+            display:flex; gap:8px; align-items:center;
+        }
+        .added { background:#e6ffea; color:#136a17; }
+        .removed { background:#ffecec; color:#8b1a1a; text-decoration:line-through; }
+        .unchanged { background:#f7f7f7; color:#333; }
+        .small-muted { font-size:12px; color:#777; margin-top:6px; }
 
-  </style>
+        /* Tabla ordenada del catálogo de funciones */
+        #catalogoFuncionesChecklist th,
+        #catalogoFuncionesChecklist td {
+            border:1px solid #eee;
+            padding:4px 6px;
+        }
+        #catalogoFuncionesChecklist td.func-nombre {
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            max-width:0;
+        }
+
+        @media (max-width:820px) {
+            .input-clear-wrapper input { width:100%; }
+            .listaPredictiva { width:100%; }
+            .layout-grid { grid-template-columns:1fr; }
+        }
+    </style>
 </head>
 <body>
-  <header class="topbar">
+<header class="topbar">
     <div class="topbar-left">
-      <div class="logo" onclick="mostrarVista('mainView')"><span class="logo-icon">T</span><span>Teletón</span></div>
-      
-      <div class="menu-dropdown">
-        <div class="menu-label">Menú</div>
-        <div class="dropdown-content">
-          <a href="javascript:void(0)" onclick="mostrarVista('mainView')">Administración de Permisos</a>
-          <a href="javascript:void(0)" onclick="mostrarVista('profileView')">Mantenedor Gestor de Roles</a>
+        <div class="logo" onclick="mostrarVista('mainView')">
+            <span class="logo-icon">T</span>
+            <span>Teletón</span>
         </div>
-      </div>
-      
+        <div class="menu-dropdown">
+            <div class="menu-label">Menú</div>
+            <div class="dropdown-content">
+                <a href="javascript:void(0)" onclick="mostrarVista('mainView')">Administración de Permisos</a>
+                <a href="javascript:void(0)" onclick="mostrarVista('profileView')">Mantenedor Gestor de Perfiles</a>
+                <a href="javascript:void(0)" onclick="mostrarVista('functionView')">Mantenedor Funcionalidades (Rol + Función)</a>
+            </div>
+        </div>
     </div>
     <div class="topbar-right">
-      <div class="user-pill">CJ</div>
-      <div class="user-subtext">Cesar Jimenez<br>IT 131 - SANTIAGO</div>
-    </div>
-  </header>
-  
-  <main id="mainView" class="page" style="display:block;"> 
-    <div class="page-title">Administración de Permisos</div>
-
-    <section class="card" style="position:relative;">
-      <div class="form-row">
-        <label>Instituto</label>
-        <select id="cmbInstituto"></select>
-      </div>
-
-      <div class="form-row">
-        <label>Perfil</label>
-        <select id="cmbPerfil"></select>
-      </div>
-
-      <div class="form-row" style="position:relative;">
-        <label>Usuario</label>
-        <div style="position:relative;">
-          <div class="input-clear-wrapper">
-            <input type="text" id="txtUsuario_main" placeholder="Nombre, apellido o usuario" autocomplete="off" />
-            <span class="clear-btn" id="btnClearMain" title="Limpiar búsqueda">×</span>
-          </div>
-          <ul id="listaPredictiva"></ul>
+        <div class="user-pill">CJ</div>
+        <div class="user-subtext">
+            Cesar Jimenez<br />
+            IT 131 - SANTIAGO
         </div>
+    </div>
+</header>
 
-        <button class="btn-primary" id="btnBuscar">Buscar</button>
-        <button class="btn-secondary" id="btnEditar" disabled>Editar</button>
-      </div>
+<!-- VISTA 1: Administración de Permisos -->
+<main id="mainView" class="page" style="display:block;">
+    <div class="page-title">Administración de Permisos</div>
+    <section class="card" style="position:relative;">
+        <div class="form-row">
+            <label>Instituto</label>
+            <select id="cmbInstituto"></select>
+        </div>
+        <div class="form-row">
+            <label>Perfil</label>
+            <select id="cmbPerfil"></select>
+        </div>
+        <div class="form-row" style="position:relative;">
+            <label>Usuario</label>
+            <div style="position:relative;">
+                <div class="input-clear-wrapper">
+                    <input type="text" id="txtUsuariomain" placeholder="Nombre, apellido o usuario" autocomplete="off" />
+                    <span class="clear-btn" id="btnClearMain" title="Limpiar búsqueda">×</span>
+                </div>
+                <ul id="listaPredictiva" class="listaPredictiva"></ul>
+            </div>
+        </div>
+        <div>
+            <button class="btn-primary" id="btnBuscar">Buscar</button>
+            <button class="btn-secondary" id="btnEditar" disabled>Editar</button>
+        </div>
     </section>
 
     <section class="card" id="usuariosContainer" style="display:none;">
-      <table id="tblUsuarios" aria-label="Tabla de usuarios">
-        <thead>
-          <tr>
-            <th style="width:70px;">ID</th>
-            <th>Nombre</th><th>Apellido P</th><th>Apellido M</th><th>Instituto</th><th>Perfil</th><th>Roles</th><th class="col-check">Sel.</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="small-muted">Tip: haz click en "Ver Roles" para verlos en un modal. Usa la X para limpiar la búsqueda.</div>
+        <table id="tblUsuarios" aria-label="Tabla de usuarios">
+            <thead>
+                <tr>
+                    <th style="width:70px;">ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido P</th>
+                    <th>Apellido M</th>
+                    <th>Instituto</th>
+                    <th>Perfil</th>
+                    <th>Roles</th>
+                    <th class="col-check">Sel.</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div class="small-muted">
+            Tip: haz click en <strong>Ver Roles</strong> para verlos en un modal. Usa la X para limpiar la búsqueda.
+        </div>
     </section>
-  </main>
+</main>
 
-  <main id="editView" class="page" aria-hidden="true" style="display:none;">
+<!-- VISTA 2: Editar Roles de Usuario -->
+<main id="editView" class="page" aria-hidden="true" style="display:none;">
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <div class="page-title">Editar Roles</div>
-          <div class="page-subtitle">Edición avanzada del perfil y roles del usuario</div>
-        </div>
-        <div>
-          <button class="btn-secondary" id="btnVolver">← Volver a Búsqueda</button>
-        </div>
-      </div>
-
-      <div class="section-title">Datos del usuario</div>
-      <div class="form-row">
-        <label>ID Usuario</label>
-        <input type="text" id="txtIdUsuario_edit" readonly style="width:120px;" />
-      </div>
-      <div class="form-row">
-        <label>Nombre Usuario</label>
-        <input type="text" id="txtUsuario_edit" readonly />
-      </div>
-      <div class="form-row">
-        <label>Instituto</label>
-        <select id="cmbInstitutoEdit"></select>
-      </div>
-
-      <div class="form-row">
-        <label>Ámbito</label>
-        <select id="cmbAmbito">
-          <option value="Administración">Administración</option>
-          <option value="Asistencial">Asistencial</option>
-          <option value="Educación" selected>Educación</option>
-          <option value="Informática">Informática</option>
-          <option value="Dirección Instituto">Dirección Instituto</option>
-          <option value="Gerencia">Gerencia</option>
-          <option value="Auditoría">Auditoría</option>
-          <option value="Gestión">Gestión</option>
-        </select>
-      </div>
-
-      <div class="form-row">
-        <label>Nombre Perfil</label>
-        <select id="cmbPerfilActual"></select>
-      </div>
-
-      <div class="form-row" style="gap:8px;">
-        <label></label>
-        <button class="btn-primary" id="btnGuardar">Guardar cambios</button>
-        <button class="btn-secondary" id="btnRestaurar">Restaurar original</button>
-      </div>
-
-      <hr />
-
-      <div class="section-title">Roles / Perfiles</div>
-      <div class="small-muted">Marca uno o más perfiles a la izquierda para ver sus roles y comparar con los roles actuales del usuario.</div>
-
-      <div class="layout-grid" style="margin-top:10px;">
-        <div>
-          <div class="section-title">Perfiles del ámbito</div>
-          <div class="lista-perfiles" id="listaPerfiles"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div class="page-title">Editar Roles</div>
+                <div class="page-subtitle">Edición avanzada del perfil y roles del usuario</div>
+            </div>
+            <div>
+                <button class="btn-secondary" id="btnVolver">Volver a Búsqueda</button>
+            </div>
         </div>
 
-        <div>
-          <div class="section-title">Detalle de roles (seleccionados)</div>
-          <div class="roles-detalle" id="detalleRoles"></div>
+        <hr />
 
-          <div style="margin-top:12px;" class="section-title">Comparación con roles actuales</div>
-          <div id="compareArea" class="compare-list"></div>
+        <div class="section-title">Datos del usuario</div>
+        <div class="form-row">
+            <label>ID Usuario</label>
+            <input type="text" id="txtIdUsuarioedit" readonly style="width:120px;" />
         </div>
-      </div>
+        <div class="form-row">
+            <label>Nombre Usuario</label>
+            <input type="text" id="txtUsuarioedit" readonly />
+        </div>
+        <div class="form-row">
+            <label>Instituto</label>
+            <select id="cmbInstitutoEdit"></select>
+        </div>
+        <div class="form-row">
+            <label>Ámbito</label>
+            <select id="cmbAmbito">
+                <option value="Administración">Administración</option>
+                <option value="Asistencial">Asistencial</option>
+                <option value="Educación" selected>Educación</option>
+                <option value="Informática">Informática</option>
+                <option value="Dirección Instituto">Dirección Instituto</option>
+                <option value="Gerencia">Gerencia</option>
+                <option value="Auditoría">Auditoría</option>
+                <option value="Gestión">Gestión</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>Nombre Perfil</label>
+            <select id="cmbPerfilActual"></select>
+        </div>
+        <div class="form-row" style="gap:8px;">
+            <label></label>
+            <button class="btn-primary" id="btnGuardar">Guardar cambios</button>
+            <button class="btn-secondary" id="btnRestaurar">Restaurar original</button>
+        </div>
 
+        <hr />
+
+        <div class="section-title">Roles / Perfiles</div>
+        <div class="small-muted">
+            Marca uno o más perfiles a la izquierda para ver sus roles y comparar con los roles actuales del usuario.
+        </div>
+
+        <div class="layout-grid" style="margin-top:10px;">
+            <div>
+                <div class="section-title">Perfiles del ámbito</div>
+                <div id="listaPerfiles" class="lista-perfiles"></div>
+            </div>
+            <div>
+                <div class="section-title">Detalle de roles (seleccionados)</div>
+                <div id="detalleRoles" class="roles-detalle"></div>
+
+                <div style="margin-top:12px;" class="section-title">Comparación con roles actuales</div>
+                <div id="compareArea" class="compare-list"></div>
+            </div>
+        </div>
     </div>
-  </main>
+</main>
 
-  <main id="profileView" class="page" aria-hidden="true" style="display:none;">
+<!-- VISTA 3: Gestor de Roles (Perfiles) -->
+<main id="profileView" class="page" aria-hidden="true" style="display:none;">
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <div class="page-title">Gestor de Roles</div>
-          <div class="page-subtitle">Crear o eliminar perfiles a partir de roles (Administración de Permisos)</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div class="page-title">Gestor de Perfiles</div>
+                <div class="page-subtitle">Crear o eliminar perfiles a partir de roles (Administración de Permisos)</div>
+            </div>
+            <div>
+                <button class="btn-secondary" onclick="mostrarVista('mainView')">Volver</button>
+            </div>
         </div>
-        <div>
-          <button class="btn-secondary" onclick="mostrarVista('mainView')">← Volver a Administración</button>
+
+        <hr />
+
+        <div class="form-row">
+            <label>Ámbito</label>
+            <select id="cmbAmbitoPerfil">
+                <option value="Administración">Administración</option>
+                <option value="Asistencial">Asistencial</option>
+                <option value="Educación">Educación</option>
+                <option value="Informática">Informática</option>
+                <option value="Dirección Instituto">Dirección Instituto</option>
+                <option value="Gerencia">Gerencia</option>
+                <option value="Auditoría">Auditoría</option>
+                <option value="Gestión">Gestión</option>
+            </select>
         </div>
-      </div>
 
-      <div class="form-row">
-        <label>Ámbito</label>
-        <select id="cmbAmbitoPerfil">
-          <option value="Administración">Administración</option>
-          <option value="Asistencial">Asistencial</option>
-          <option value="Educación">Educación</option>
-          <option value="Informática">Informática</option>
-          <option value="Dirección Instituto">Dirección Instituto</option>
-          <option value="Gerencia">Gerencia</option>
-          <option value="Auditoría">Auditoría</option>
-          <option value="Gestión">Gestión</option>
-        </select>
-      </div>
+        <div class="form-row">
+            <label>Perfil</label>
+            <select id="cmbPerfilGestion"></select>
+        </div>
 
-      <div class="form-row">
-        <label>Perfil</label>
-        <select id="cmbPerfilGestion"></select>
-      </div>
+        <div class="form-row">
+            <label>Nombre</label>
+            <input type="text" id="txtNombrePerfil" placeholder="Nombre del nuevo perfil" />
+        </div>
 
-      <div class="form-row">
-        <label>Nombre</label>
-        <input type="text" id="txtNombrePerfil" placeholder="Nombre del nuevo perfil" />
-      </div>
+        <div class="form-row">
+            <label></label>
+            <button class="btn-primary" id="btnGuardarPerfil">Guardar</button>
+            <button class="btn-secondary" id="btnEliminarPerfil">Eliminar</button>
+        </div>
 
-      <div class="form-row">
-        <label></label>
-        <button class="btn-primary" id="btnGuardarPerfil">Guardar</button>
-        <button class="btn-secondary" id="btnEliminarPerfil">Eliminar</button>
-      </div>
+        <hr />
 
-      <hr>
-
-      <div class="section-title">Roles disponibles</div>
-      <div class="small-muted">Marca los roles que quieres asociar al perfil.</div>
-
-      <div id="rolesChecklist" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;margin-top:10px;font-size:13px;">
-      </div>
+        <div class="section-title">Roles disponibles</div>
+        <div class="small-muted">
+            Marca los roles que quieres asociar al perfil.
+        </div>
+        <div id="rolesChecklist"
+             style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;margin-top:10px;font-size:13px;">
+        </div>
     </div>
-  </main>
+</main>
 
-  <div id="modalRoles" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.4); justify-content:center; align-items:center; z-index:80;">
+<!-- VISTA 4: Mantenedor de Funcionalidades (Rol + Función) -->
+<main id="functionView" class="page" aria-hidden="true" style="display:none;">
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div class="page-title">Mantenedor de Funcionalidades</div>
+                <div class="page-subtitle">Asociación de Roles con Funciones (Rol + Función)</div>
+            </div>
+            <div>
+                <button class="btn-secondary" onclick="mostrarVista('mainView')">
+                    Volver 
+                </button>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="section-title">Filtros</div>
+        <div class="form-row">
+            <label for="cmbRolFuncion">Rol</label>
+            <select id="cmbRolFuncion"></select>
+        </div>
+
+        <div class="form-row">
+            <label for="txtBuscarFuncion">Función</label>
+            <div style="position:relative;">
+                <div class="input-clear-wrapper">
+                    <input type="text"
+                           id="txtBuscarFuncion"
+                           placeholder="Buscar en funciones del rol actual"
+                           autocomplete="off" />
+                    <span class="clear-btn" id="btnClearFuncion" title="Limpiar búsqueda">×</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row" style="justify-content:flex-start; gap:8px;">
+            <label></label>
+            <button class="btn-primary" id="btnBuscarFuncion">Buscar</button>
+            <button class="btn-secondary" id="btnRefrescarFunciones">Refrescar</button>
+        </div>
+
+        <hr />
+
+        <div class="section-title">Funciones asociadas al rol</div>
+        <div class="small-muted">
+            Marca o desmarca funciones para definir qué funcionalidades tiene el rol seleccionado.
+        </div>
+
+        <div class="layout-grid" style="margin-top:10px;">
+            <div>
+                <div class="section-title">Checklist de funciones</div>
+                <div class="small-muted">
+                    Selecciona las funciones que corresponden al rol.
+                </div>
+                <div id="funcionesChecklist"
+                     style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:6px; margin-top:10px; font-size:13px; max-height:420px; overflow:auto; border:1px solid var(--gris-borde); padding:8px; background:#fff;">
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Detalle de funciones del rol</div>
+                <div class="small-muted">
+                    Vista resumen de las funciones actualmente asociadas al rol seleccionado.
+                </div>
+                <div style="margin-top:8px; max-height:420px; overflow:auto; border:1px solid var(--gris-borde); background:#fff;">
+                    <table class="roles-table" id="tblFuncionesRol" aria-label="Tabla de funciones por rol" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th style="width:80px;">RolId</th>
+                                <th>Rol</th>
+                                <th style="width:90px;">FunciónId</th>
+                                <th>Función</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Datos del rol</div>
+        <div class="form-row">
+            <label for="txtNuevoRolId">RolId</label>
+            <input type="text" id="txtNuevoRolId" placeholder="Ej: 390" />
+        </div>
+        <div class="form-row">
+            <label for="txtNuevoRolNombre">Nombre</label>
+            <input type="text" id="txtNuevoRolNombre" placeholder="Nombre del rol (ej: Coordinador clínico)" />
+        </div>
+        <div class="form-row" style="gap:8px;">
+            <label></label>
+            <button class="btn-primary" id="btnNuevoRol">Nuevo</button>
+            <button class="btn-secondary" id="btnEliminarRol">Eliminar rol</button>
+        </div>
+
+        <hr />
+
+        <div class="section-title">Agregar funciones desde catálogo</div>
+        <div class="form-row">
+            <label for="txtBuscarFuncionCatalogo">Buscar</label>
+            <div style="position:relative;">
+                <div class="input-clear-wrapper">
+                    <input type="text"
+                           id="txtBuscarFuncionCatalogo"
+                           placeholder="Buscar por código o texto de función"
+                           autocomplete="off" />
+                    <span class="clear-btn" id="btnClearFuncionCatalogo" title="Limpiar búsqueda">×</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-row" style="justify-content:flex-start; gap:8px;">
+            <label></label>
+            <button class="btn-primary" id="btnFiltrarCatalogoFunciones">Filtrar catálogo</button>
+        </div>
+
+        <div class="small-muted">
+            Marca las funciones del catálogo que quieres agregar al rol actual.
+        </div>
+
+        <!-- Catálogo ordenado en tabla -->
+        <div id="catalogoFuncionesChecklist"
+             style="margin-top:10px; max-height:260px; overflow:auto; border:1px solid var(--gris-borde); background:#fff;">
+            <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                <thead>
+                    <tr>
+                        <th style="width:30px;"></th>
+                        <th style="width:70px;">Id</th>
+                        <th>Función</th>
+                    </tr>
+                </thead>
+                <tbody id="catalogoFuncionesBody"></tbody>
+            </table>
+        </div>
+
+        <div class="form-row" style="gap:8px; margin-top:8px;">
+            <label></label>
+            <button class="btn-primary" id="btnAgregarFuncionesSeleccionadas">
+                Agregar funciones seleccionadas al rol
+            </button>
+        </div>
+
+        <hr />
+
+        <div class="form-row" style="gap:8px; margin-top:12px;">
+            <label></label>
+            <button class="btn-primary" id="btnGuardarFuncionesRol">
+                Guardar cambios del rol
+            </button>
+            <button class="btn-secondary" id="btnRestaurarFuncionesRol">
+                Restaurar 
+            </button>
+        </div>
+
+        <div class="small-muted">
+            Los cambios se aplican solo en esta maqueta; el origen real se mantiene en la planilla o en el sistema productivo.
+        </div>
+    </div>
+</main>
+
+<!-- MODAL ROLES -->
+<div id="modalRoles" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.4); justify-content:center; align-items:center; z-index:80;">
     <div style="width:520px;background:#fff;border:1px solid #ccc;padding:18px;border-radius:4px; max-height:80vh; overflow:auto;">
-      <h3 style="margin-top:0;font-size:15px;color:#333;">Roles del Usuario</h3>
-      <div id="contenidoRoles" style="margin:12px 0; font-size:13px;"></div>
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button onclick="cerrarModal()" class="btn-secondary">Cerrar</button>
-      </div>
+        <h3 style="margin-top:0;font-size:15px;color:#333;">Roles del Usuario</h3>
+        <div id="contenidoRoles" style="margin:12px 0; font-size:13px;"></div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button onclick="cerrarModal()" class="btn-secondary">Cerrar</button>
+        </div>
     </div>
-  </div>
+</div>
 
 <script>
-/************************************************************************
- * DATOS y ROLES (Se mantienen, solo se añade el filtro de inicialización)
- ************************************************************************/
-const institutosGlobal = ["SANTIAGO", "ARICA", "IQUIQUE", "ANTOFAGASTA", "CALAMA", "COPIAPÓ", "COQUIMBO", "VALPARAÍSO", "TALCA", "CONCEPCIÓN", "TEMUCO", "VALDIVIA", "PUERTO MONTT", "COYHAIQUE"];
-let perfilesGlobal = [
-  "Analista de Sistemas","Médico","Kinesiólogo","Asistente Social",
-  "Psicólogo","Educadora","Enfermera","Fonoaudiólogo"
+const institutosGlobal = [
+    "SANTIAGO","ARICA","IQUIQUE","ANTOFAGASTA","CALAMA","COPIAPÓ","COQUIMBO",
+    "VALPARAÍSO","TALCA","CONCEPCIÓN","TEMUCO","VALDIVIA","PUERTO MONTT","COYHAIQUE"
 ];
 
-const USUARIO_SIN_ROLES = "USUARIO_SIN_ROLES_FILTER"; // ID de filtro especial
+let perfilesGlobal = [
+    "Analista de Sistemas","Médico","Kinesiólogo","Asistente Social","Psicólogo",
+    "Educadora","Enfermera","Fonoaudiólogo"
+];
+
+const USUARIOSINROLES = "USUARIOSINROLES";
 
 const usuarios = [
-  // Usuarios con roles (ejemplos previos)
-  { id:1, nombre:"cesar", ap_p:"jimenez", ap_m:"barrera", especialidad:"Analista de Sistemas", instituto:"SANTIAGO", roles:["105","108","112","147","200","214","305","355","356","358","368"] },
-  { id:2, nombre:"cecilia", ap_p:"garcia", ap_m:"mendez", especialidad:"Educadora", instituto:"ARICA", roles:["102","105","308","320","367","378"] },
-  { id:3, nombre:"carlos", ap_p:"perez", ap_m:"donoso", especialidad:"Médico", instituto:"SANTIAGO", roles:["100","102","105","123","124","320","344","350","372","373","377"] },
-  { id:4, nombre:"pedro", ap_p:"caro", ap_m:"urbina", especialidad:"Kinesiólogo", instituto:"CONCEPCIÓN", roles:["102","105","107","108","117","148","307","320","369","372","373","377"] },
-  // Usuarios SIN roles (Nuevos ejemplos)
-  { id:11, nombre:"juana", ap_p:"tapia", ap_m:"rojas", especialidad:"Psicólogo", instituto:"VALPARAÍSO", roles:[] },
-  { id:12, nombre:"rodrigo", ap_p:"sanchez", ap_m:"mora", especialidad:"Administrativo recepción", instituto:"TALCA", roles:[] },
-  { id:13, nombre:"angelica", ap_p:"campos", ap_m:"diaz", especialidad:"Enfermera", instituto:"COQUIMBO", roles:[] },
-  { id:14, nombre:"patricio", ap_p:"lopez", ap_m:"nuñez", especialidad:"Fonoaudiólogo", instituto:"ANTOFAGASTA", roles:[] },
-  { id:15, nombre:"sofia", ap_p:"araya", ap_m:"bravo", especialidad:"Educadora", instituto:"ARICA", roles:[] },
-  // Usuarios con roles mínimos (Nuevos ejemplos)
-  { id:16, nombre:"gabriel", ap_p:"vega", ap_m:"solis", especialidad:"Médico", instituto:"VALDIVIA", roles:["100","320"] },
-  { id:17, nombre:"fernanda", ap_p:"castro", ap_m:"marin", especialidad:"Asistente Social", instituto:"PUERTO MONTT", roles:["354","360","377"] }
+    { id:1, nombre:"cesar", app:"jimenez", apm:"barrera", especialidad:"Analista de Sistemas", instituto:"SANTIAGO", roles:["105","108","112","147","200","214","305","355","356","358","368"] },
+    { id:2, nombre:"cecilia", app:"garcia", apm:"mendez", especialidad:"Educadora", instituto:"ARICA", roles:["102","105","308","320","367","378"] },
+    { id:3, nombre:"carlos", app:"perez", apm:"donoso", especialidad:"Médico", instituto:"SANTIAGO", roles:["100","102","105","123","124","320","344","350","372","373","377"] },
+    { id:4, nombre:"pedro", app:"caro", apm:"urbina", especialidad:"Kinesiólogo", instituto:"CONCEPCIÓN", roles:["102","105","107","108","117","148","307","320","369","372","373","377"] },
+    { id:11, nombre:"juana", app:"tapia", apm:"rojas", especialidad:"Psicólogo", instituto:"VALPARAÍSO", roles:[] },
+    { id:12, nombre:"rodrigo", app:"sanchez", apm:"mora", especialidad:"Administrativo recepcion", instituto:"TALCA", roles:[] },
+    { id:13, nombre:"angelica", app:"campos", apm:"diaz", especialidad:"Enfermera", instituto:"COQUIMBO", roles:[] },
+    { id:14, nombre:"patricio", app:"lopez", apm:"nunez", especialidad:"Fonoaudiólogo", instituto:"ANTOFAGASTA", roles:[] },
+    { id:15, nombre:"sofia", app:"araya", apm:"bravo", especialidad:"Educadora", instituto:"ARICA", roles:[] },
+    { id:16, nombre:"gabriel", app:"vega", apm:"solis", especialidad:"Médico", instituto:"VALDIVIA", roles:["100","320"] },
+    { id:17, nombre:"fernanda", app:"castro", apm:"marin", especialidad:"Asistente Social", instituto:"PUERTO MONTT", roles:["354","360","377"] }
 ];
 
 const rolesCatalogo = {
-  "100": "Médico", "102": "Tratante indicador con indicaciones", "103": "Tratante jefatura", "105": "Recepción avanzado", "107": "Bloqueo avanzado", "108": "Malla operador", "109": "Malla administrador", "112": "Planificador", "114": "Enfermera", "116": "Planificación consulta", "117": "Agenda consulta", "118": "Vista nacional", "121": "Reemplazo profesional", "123": "Hospitalizado acceso", "124": "Hospitalizado prestador", "125": "Hospitalizado registro", "126": "Admisión", "127": "Reprocesar NAT a SGH", "128": "Ingreso Evolución", "129": "Hospitalizado administración", "141": "Donación Autorizador", "142": "Donación Asistente Social", "143": "Donación Asistente Social Jefatura", "144": "Donación Cajero", "145": "Donación Cajero Avanzado", "146": "Donación Solo Consulta", "147": "Usuario Básico SIC", "148": "Tratante Telerehabilitación TETCA", "149": "Administrativo Informes de Paciente", "200": "PowerBI Nacional", "201": "PowerBI Arica", "202": "PowerBI Iquique", "203": "PowerBI Antofagasta", "204": "PowerBI Calama", "205": "PowerBI Copiapó", "206": "PowerBI Coquimbo", "207": "PowerBI Valparaíso", "208": "PowerBI Talca", "209": "PowerBI Concepción", "210": "PowerBI Temuco", "211": "PowerBI Valdivia", "212": "PowerBI Puerto Montt", "213": "PowerBI Coyhaique", "214": "PowerBI Santiago", "215": "Eliminar Documento Repositorio", "216": "WeeFim Consulta", "217": "WeeFim Evaluador", "218": "WeeFim Digitador", "219": "WeeFim Administrador", "220": "Admisión Orientación", "221": "Administrador SIC", "305": "Perfil PC Visualización", "306": "Perfil PC Médico - Fisiatra", "307": "Perfil PC - Kine Terapia", "308": "Perfil PC - Educación", "310": "Administración de Indicaciones Nacional", "311": "Movilización Asistente Social", "312": "Movilización Historial Asignaciones", "320": "Data Paciente - Profesional Asistencial", "321": "Recepción IT Acreditado", "322": "Administrativo Informe de Epicrisis", "323": "Contingencia: registro atrasado", "331": "Exámenes historial y derivación", "341": "LOP Administrador", "342": "LOP Recepción", "343": "LOP Asistencial", "344": "LOP Indicador", "346": "Fotos y Videos", "350": "Farmacia Receta médica", "351": "Farmacia Despacho botiquín", "352": "Farmacia Informes y Parámetros", "353": "Farmacia Solicitud Insumos", "354": "Data Paciente - Asistente Social", "355": "Data Paciente - Crear Persona", "356": "Data Paciente - Editar Persona", "358": "Data Paciente - Crea Paciente", "359": "Data Paciente - Cambio Estado Paciente", "360": "Perfil Social - Asistente Social", "364": "Data Paciente - Administrador", "366": "Data Paciente - Visualización", "367": "Data Paciente - Educación", "368": "Data Paciente Administrativo", "369": "Data Paciente - Terapéuticos", "370": "Data Paciente - Psicología", "371": "Visualización Evolución", "372": "Cirugía SGH", "373": "Comodato SGH", "374": "Data Paciente - S. Transversal", "375": "Perfil PC - Fonoaudiología", "376": "Perfil social - Psicología", "377": "Perfil social - Visualización", "378": "Perfil social - Educación", "382": "Imprimir Evolución"
+    "100": "Médico", "102": "Tratante indicador con indicaciones", "103": "Tratante jefatura", "105": "Recepción avanzado", "107": "Bloqueo avanzado", "108": "Malla operador", "109": "Malla administrador", "112": "Planificador", "114": "Enfermera", "116": "Planificación consulta", "117": "Agenda consulta", "118": "Vista nacional", "121": "Reemplazo profesional", "123": "Hospitalizado acceso", "124": "Hospitalizado prestador", "125": "Hospitalizado registro", "126": "Admisión", "127": "Reprocesar NAT a SGH", "128": "Ingreso Evolución", "129": "Hospitalizado administración", "141": "Donación Autorizador", "142": "Donación Asistente Social", "143": "Donación Asistente Social Jefatura", "144": "Donación Cajero", "145": "Donación Cajero Avanzado", "146": "Donación Solo Consulta", "147": "Usuario Básico SIC", "148": "Tratante Telerehabilitación TETCA", "149": "Administrativo Informes de Paciente", "200": "PowerBI Nacional", "201": "PowerBI Arica", "202": "PowerBI Iquique", "203": "PowerBI Antofagasta", "204": "PowerBI Calama", "205": "PowerBI Copiapó", "206": "PowerBI Coquimbo", "207": "PowerBI Valparaíso", "208": "PowerBI Talca", "209": "PowerBI Concepción", "210": "PowerBI Temuco", "211": "PowerBI Valdivia", "212": "PowerBI Puerto Montt", "213": "PowerBI Coyhaique", "214": "PowerBI Santiago", "215": "Eliminar Documento Repositorio", "216": "WeeFim Consulta", "217": "WeeFim Evaluador", "218": "WeeFim Digitador", "219": "WeeFim Administrador", "220": "Admisión Orientación", "221": "Administrador SIC", "305": "Perfil PC Visualización", "306": "Perfil PC Médico - Fisiatra", "307": "Perfil PC - Kine Terapia", "308": "Perfil PC - Educación", "310": "Administración de Indicaciones Nacional", "311": "Movilización Asistente Social", "312": "Movilización Historial Asignaciones", "320": "Data Paciente - Profesional Asistencial", "321": "Recepción IT Acreditado", "322": "Administrativo Informe de Epicrisis", "323": "Contingencia: registro atrasado", "331": "Exámenes historial y derivación", "341": "LOP Administrador", "342": "LOP Recepción", "343": "LOP Asistencial", "344": "LOP Indicador", "346": "Fotos y Videos", "350": "Farmacia Receta médica", "351": "Farmacia Despacho botiquín", "352": "Farmacia Informes y Parámetros", "353": "Farmacia Solicitud Insumos", "354": "Data Paciente - Asistente Social", "355": "Data Paciente - Crear Persona", "356": "Data Paciente - Editar Persona", "358": "Data Paciente - Crea Paciente", "359": "Data Paciente - Cambio Estado Paciente", "360": "Perfil Social - Asistente Social", "364": "Data Paciente - Administrador", "366": "Data Paciente - Visualización", "367": "Data Paciente - Educación", "368": "Data Paciente Administrativo", "369": "Data Paciente - Terapéuticos", "370": "Data Paciente - Psicología", "371": "Visualización Evolución", "372": "Cirugía SGH", "373": "Comodato SGH", "374": "Data Paciente - S. Transversal", "375": "Perfil PC - Fonoaudiología", "376": "Perfil social - Psicología", "377": "Perfil social - Visualización", "378": "Perfil social - Educación", "382": "Imprimir Evolución"
 };
 
 const dataPerfiles = {
-  "Educación":[
-    { id:"educadora", nombre:"Educadora", roles:["102","105","308","320","367","378"] },
-    { id:"prof_arte", nombre:"Profesor de arte", roles:["102","105","308","320","367","378"] },
-    { id:"prof_musica", nombre:"Profesor de música", roles:["102","105","308","320","367","378"] }
-  ],
-  "Administración":[
-    { id:"analista_sistemas", nombre:"Analista de Sistemas", roles:["105","108","112","147","200","214","305","355","356","358","368"] },
-    { id:"adm_recepcion", nombre:"Administrativo recepción", roles:["105","108","112","117","126","144","149","220","321","342","344","359","368"] },
-    { id:"adm_informes", nombre:"Administrativo Informes Paciente", roles:["105","149","322","368","371","382"] }
-  ],
-  "Asistencial":[
-    { id:"medico", nombre:"Médico", roles:["100","102","105","123","124","125","200","214","305","306","310","320","331","344","346","350","359","372","373","377"] },
-    { id:"kinesiologo", nombre:"Kinesiólogo", roles:["102","105","107","108","116","117","148","200","206","214","216","217","218","307","320","341","344","346","369","372","373","377"] },
-    { id:"fonoaudiologo", nombre:"Fonoaudiólogo", roles:["102","105","107","108","116","117","148","200","214","216","217","375","320","344","369","372","373","377"] },
-    { id:"psicologo", nombre:"Psicólogo", roles:["100","102","105","200","214","216","217","305","320","346","370","376","377"] },
-    { id:"enfermera", nombre:"Enfermera", roles:["102","105","114","200","213","215","220","305","320","342","351","352","353","359","377"] },
-    { id:"asistente_social", nombre:"Asistente Social", roles:["102","105","142","143","144","145","146","200","205","206","215","305","311","312","320","331","341","354","359","360","368","371","377"] }
-  ],
-  "Informática":[],
-  "Dirección Instituto":[],
-  "Gerencia":[],
-  "Auditoría":[],
-  "Gestión":[]
+    "Educación":[
+        {id:"educadora",nombre:"Educadora",roles:["102","105","308","320","367","378"]},
+        {id:"profarte",nombre:"Profesor de arte",roles:["102","105","308","320","367","378"]},
+        {id:"profmusica",nombre:"Profesor de música",roles:["102","105","308","320","367","378"]}
+    ],
+    "Administración":[
+        {id:"analistasistemas",nombre:"Analista de Sistemas",roles:["105","108","112","147","200","214","305","355","356","358","368"]},
+        {id:"admrecepcion",nombre:"Administrativo recepcion",roles:["105","108","112","117","126","144","149","220","321","342","344","359","368"]},
+        {id:"adminformes",nombre:"Administrativo Informes Paciente",roles:["105","149","322","368","371","382"]}
+    ],
+    "Asistencial":[
+        {id:"medico",nombre:"Médico",roles:["100","102","105","123","124","125","200","214","305","306","310","320","331","344","346","350","359","372","373","377"]},
+        {id:"kinesiologo",nombre:"Kinesiólogo",roles:["102","105","107","108","116","117","148","200","206","214","216","217","218","307","320","341","344","346","369","372","373","377"]},
+        {id:"fonoaudiologo",nombre:"Fonoaudiólogo",roles:["102","105","107","108","116","117","148","200","214","216","217","375","320","344","369","372","373","377"]},
+        {id:"psicologo",nombre:"Psicólogo",roles:["100","102","105","200","214","216","217","305","320","346","370","376","377"]},
+        {id:"enfermera",nombre:"Enfermera",roles:["102","105","114","200","213","215","220","305","320","342","351","352","353","359","377"]},
+        {id:"asistentesocial",nombre:"Asistente Social",roles:["102","105","142","143","144","145","146","200","205","206","215","305","311","312","320","331","341","354","359","360","368","371","377"]}
+    ]
 };
 
 const perfilActualPorAmbito = {
-  "Educación":"educadora",
-  "Administración":"analista_sistemas",
-  "Asistencial":"medico",
-  "Informática":null,
-  "Dirección Instituto":null,
-  "Gerencia":null,
-  "Auditoría":null,
-  "Gestión":null
+    "Educación":"educadora",
+    "Administración":"analistasistemas",
+    "Asistencial":"medico",
+    "Informática":null,
+    "Dirección Instituto":null,
+    "Gerencia":null,
+    "Auditoría":null,
+    "Gestión":null
 };
 
-/************************************************************************
- * DOM refs
- ************************************************************************/
+// Catálogo global de funciones (muestra basada en funcion.xlsx)
+const catalogoFuncionesGlobal = [
+    { id:1, nombre:"Teleton.His.Shell.Web.Paciente.Buscar" },
+    { id:6, nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.Index" },
+    { id:10, nombre:"Teleton.His.Shell.Web.Agenda.IndicacionesPaciente" },
+    { id:29, nombre:"Teleton.His.Shell.Web.Paciente.AccesoRapido.IndicacionComodato" },
+    { id:30, nombre:"Teleton.His.Shell.Web.Paciente.AccesoRapido.IndicacionCirugias" },
+    { id:36, nombre:"Teleton.His.Shell.Web.Agenda.EntregaCita.Controles" },
+    { id:37, nombre:"Teleton.His.Shell.Web.Agenda.EntregaCita.Sesiones" },
+    { id:38, nombre:"Teleton.His.Shell.Web.Agenda.Indicacion.Index" },
+    { id:80, nombre:"Teleton.His.Shell.Web.Agenda.Administracion.Vistapanoramica" },
+    { id:82, nombre:"Teleton.His.Shell.Web.Agenda.ConsultaGeneralAgenda.Index" },
+    { id:85, nombre:"Teleton.His.Shell.Web.CallCenter.ContactarCita" },
+    { id:200, nombre:"Teleton.His.Shell.Web.Agenda.IndicacionPaciente.Agendar" },
+    { id:201, nombre:"Teleton.His.Shell.Web.Agenda.IndicacionPaciente.SobreCupo" },
+    { id:203, nombre:"Teleton.His.Shell.Web.Agenda.IndicacionPaciente.EnviarLE" },
+    { id:204, nombre:"Teleton.His.Shell.Web.Agenda.IndicacionPaciente.AnularIndicacion" },
+    { id:207, nombre:"Teleton.His.Shell.Web.Agenda.IndicacionPaciente.ContactarPaciente" },
+    { id:208, nombre:"TeletonHisShellWebAgendaDemandaEspontanea" },
+    { id:209, nombre:"Teleton.His.Shell.Web.Agenda.IndicacionPaciente.NuevaIndicacion" },
+    { id:216, nombre:"Teleton.His.Shell.Web.Agenda.EntregaCita.Controles.SobreCupo" },
+    { id:226, nombre:"Teleton.His.Shell.Web.Agenda.Indicacion.Sacar" },
+    { id:227, nombre:"Teleton.His.Shell.Web.Agenda.Indicacion.Guardar" },
+    { id:252, nombre:"Teleton.His.Shell.Web.Agenda.RepositorioCitaBloqueo" },
+    { id:253, nombre:"Teleton.His.Shell.Web.CallCenter.ContactarCita" },
+    { id:254, nombre:"Teleton.His.Shell.Web.Paciente.VerFullInfoPaciente" },
+    { id:265, nombre:"Teleton.His.Agenda.EscritorioProfesional.Paciente.AccesoRapido.IndicacionLOP" },
+    { id:270, nombre:"Teleton.His.Shell.Web.Paciente.Menu.AccesoRapido" },
+    { id:271, nombre:"Teleton.His.SGH.DatosContacto" },
+    { id:302, nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.RegistrarPrestacion" },
+    { id:303, nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.RegistrarNAS" },
+    { id:318, nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.RegistrarAsistenciaNAS" },
+    { id:327, nombre:"Teleton.His.Agenda.RegistroAsistencia.CambiarRegistroAsistencia" },
+    { id:328, nombre:"Teleton.His.Agenda.Shared.VerObservacionesIndicaciones" },
+    { id:329, nombre:"Teleton.His.Agenda.IndicacionPaciente.ImprimirCitas" },
+    { id:330, nombre:"Teleton.His.Agenda.IndicacionPaciente.VerDetalleTratamiento" },
+    { id:336, nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.ReconvertirActividad" },
+    { id:338, nombre:"Teleton.His.Agenda.IndicacionPaciente.VerTratamientoAgendado" },
+    { id:339, nombre:"Teleton.His.Shell.Web.Paciente.AccesoRapido.IndicaciónControlTratamiento" }
+];
+
 const cmbInstituto = document.getElementById("cmbInstituto");
 const cmbPerfil = document.getElementById("cmbPerfil");
-const txtUsuario_main = document.getElementById("txtUsuario_main");
+const txtUsuariomain = document.getElementById("txtUsuariomain");
 const listaPredictiva = document.getElementById("listaPredictiva");
 const tbody = document.querySelector("#tblUsuarios tbody");
 const btnClearMain = document.getElementById("btnClearMain");
@@ -479,8 +698,10 @@ const usuariosContainer = document.getElementById("usuariosContainer");
 const mainView = document.getElementById("mainView");
 const editView = document.getElementById("editView");
 const profileView = document.getElementById("profileView");
-const txtIdUsuario_edit = document.getElementById("txtIdUsuario_edit");
-const txtUsuario_edit = document.getElementById("txtUsuario_edit");
+const functionView = document.getElementById("functionView");
+
+const txtIdUsuarioedit = document.getElementById("txtIdUsuarioedit");
+const txtUsuarioedit = document.getElementById("txtUsuarioedit");
 const cmbInstitutoEdit = document.getElementById("cmbInstitutoEdit");
 const cmbAmbito = document.getElementById("cmbAmbito");
 const cmbPerfilActual = document.getElementById("cmbPerfilActual");
@@ -498,457 +719,505 @@ const btnGuardarPerfil = document.getElementById("btnGuardarPerfil");
 const btnEliminarPerfil = document.getElementById("btnEliminarPerfil");
 const rolesChecklist = document.getElementById("rolesChecklist");
 
+const cmbRolFuncion = document.getElementById("cmbRolFuncion");
+const txtBuscarFuncion = document.getElementById("txtBuscarFuncion");
+const btnClearFuncion = document.getElementById("btnClearFuncion");
+const btnBuscarFuncion = document.getElementById("btnBuscarFuncion");
+const btnRefrescarFunciones = document.getElementById("btnRefrescarFunciones");
+const funcionesChecklist = document.getElementById("funcionesChecklist");
+const tblFuncionesRolBody = document.querySelector("#tblFuncionesRol tbody");
+const btnGuardarFuncionesRol = document.getElementById("btnGuardarFuncionesRol");
+const btnRestaurarFuncionesRol = document.getElementById("btnRestaurarFuncionesRol");
+const txtNuevoRolId = document.getElementById("txtNuevoRolId");
+const txtNuevoRolNombre = document.getElementById("txtNuevoRolNombre");
+const btnNuevoRol = document.getElementById("btnNuevoRol");
+const btnEliminarRol = document.getElementById("btnEliminarRol");
+
+const txtBuscarFuncionCatalogo = document.getElementById("txtBuscarFuncionCatalogo");
+const btnClearFuncionCatalogo = document.getElementById("btnClearFuncionCatalogo");
+const btnFiltrarCatalogoFunciones = document.getElementById("btnFiltrarCatalogoFunciones");
+const catalogoFuncionesBody = document.getElementById("catalogoFuncionesBody");
+const btnAgregarFuncionesSeleccionadas = document.getElementById("btnAgregarFuncionesSeleccionadas");
+
 function escapeHtml(unsafe) {
+    if (!unsafe) return "";
     return unsafe
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/\"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 }
 
-function abrirModal(){ document.getElementById("modalRoles").style.display = "flex"; }
-function cerrarModal(){ document.getElementById("modalRoles").style.display = "none"; }
+function abrirModal() {
+    document.getElementById("modalRoles").style.display = "flex";
+}
+function cerrarModal() {
+    document.getElementById("modalRoles").style.display = "none";
+}
 window.cerrarModal = cerrarModal;
 
 function mostrarVista(vistaId) {
-    mainView.style.display = 'none';
-    editView.style.display = 'none';
-    profileView.style.display = 'none';
+    mainView.style.display = "none";
+    editView.style.display = "none";
+    profileView.style.display = "none";
+    functionView.style.display = "none";
 
-    document.getElementById(vistaId).style.display = 'block';
-    document.getElementById(vistaId).setAttribute("aria-hidden", "false");
-    window.scrollTo({top:0, behavior:'smooth'});
+    mainView.setAttribute("aria-hidden","true");
+    editView.setAttribute("aria-hidden","true");
+    profileView.setAttribute("aria-hidden","true");
+    functionView.setAttribute("aria-hidden","true");
 
-    // Deshabilitar botón Editar si no estamos en mainView o no hay usuario seleccionado
-    btnEditar.disabled = vistaId !== 'mainView' || !document.querySelector('input[name="chkSel"]:checked');
+    document.getElementById(vistaId).style.display = "block";
+    document.getElementById(vistaId).setAttribute("aria-hidden","false");
+    window.scrollTo({top:0,behavior:"smooth"});
 
-    if (vistaId === 'profileView') {
+    btnEditar.disabled = (vistaId !== "mainView") || !document.querySelector("input[name='chkSel']:checked");
+
+    if (vistaId === "profileView") {
         txtNombrePerfil.value = "";
         cmbAmbitoPerfil.value = "Administración";
         cargarComboPerfilesGestion();
-        pintarChecklistRoles();
+        pintarChecklistRoles([]);
     }
-    
-    // Si volvemos a mainView, forzamos el filtro a la selección actual para actualizar la grilla
-    if (vistaId === 'mainView') {
+    if (vistaId === "mainView") {
         filtrarUsuarios();
     }
+    if (vistaId === "functionView") {
+        inicializarFunctionView();
+    }
 }
-window.mostrarVista = mostrarVista; 
+window.mostrarVista = mostrarVista;
 
-/************************************************************************
- * Estado
- ************************************************************************/
-let stateFiltro = { perfil: "", texto: "", instituto: "" };
-let editState = { id_usuario: null, originalRoles: [], perfilesMarcados: [] };
+let stateFiltro = { perfil:"", texto:"", instituto:"" };
+let editState = { idusuario:null, originalRoles:[], perfilesMarcados:[] };
 
-/************************************************************************
- * Inicialización
- ************************************************************************/
 function recargarComboPerfilesGlobal() {
-  cmbPerfil.innerHTML = "";
-  
-  // Opción 1: Todos (vacío)
-  const empty = document.createElement("option"); empty.value=""; empty.textContent="";
-  cmbPerfil.appendChild(empty);
+    cmbPerfil.innerHTML = "";
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "";
+    cmbPerfil.appendChild(empty);
 
-  // Opción 2: Sin Roles Asignados (NUEVA FUNCIÓN)
-  const sinRoles = document.createElement("option"); sinRoles.value = USUARIO_SIN_ROLES; sinRoles.textContent = "⚠️ Sin roles asignados";
-  cmbPerfil.appendChild(sinRoles);
-  
-  // Opciones 3: Perfiles definidos
-  const allPerfiles = new Set(perfilesGlobal);
-  Object.keys(dataPerfiles).forEach(ambito => {
-      dataPerfiles[ambito].forEach(p => allPerfiles.add(p.nombre));
-  });
+    const sinRoles = document.createElement("option");
+    sinRoles.value = USUARIOSINROLES;
+    sinRoles.textContent = "Sin roles asignados";
+    cmbPerfil.appendChild(sinRoles);
 
-  perfilesGlobal = Array.from(allPerfiles).sort();
+    const allPerfiles = new Set(perfilesGlobal);
+    Object.keys(dataPerfiles).forEach(ambito => {
+        dataPerfiles[ambito].forEach(p => allPerfiles.add(p.nombre));
+    });
+    perfilesGlobal = Array.from(allPerfiles).sort();
 
-  perfilesGlobal.forEach(p => {
-    const o = document.createElement("option"); o.value = p; o.textContent = p; cmbPerfil.appendChild(o);
-  });
+    perfilesGlobal.forEach(p => {
+        const o = document.createElement("option");
+        o.value = p;
+        o.textContent = p;
+        cmbPerfil.appendChild(o);
+    });
 }
 
-(function init() {
-  const empty = document.createElement("option"); empty.value=""; empty.textContent="";
+function init() {
+    recargarComboPerfilesGlobal();
 
-  // Inicializar Perfiles (Especialidad) - INCLUYE EL NUEVO FILTRO
-  recargarComboPerfilesGlobal();
-
-  // Inicializar Institutos
-  const emptyI = empty.cloneNode(true);
-  cmbInstituto.appendChild(emptyI);
-  institutosGlobal.forEach(i => {
-    const o = document.createElement("option"); o.value = i; o.textContent = i; cmbInstituto.appendChild(o);
-  });
-
-  // Mostrar la vista de Administración de Permisos por defecto
-  mostrarVista('mainView');
-  
-  // Establecer el filtro inicial en "Sin roles asignados" y ejecutar la búsqueda
-  cmbPerfil.value = USUARIO_SIN_ROLES;
-  filtrarUsuarios(); 
-  
-  btnEditar.disabled = true;
-
-})();
-
-/************************************************************************
- * Predictiva
- ************************************************************************/
-txtUsuario_main.addEventListener("input", () => {
-  const q = txtUsuario_main.value.toLowerCase().trim();
-  listaPredictiva.innerHTML = "";
-  if(!q) return;
-  const sugerencias = usuarios.filter(u => {
-    return (String(u.id) + " " + u.nombre + " " + u.ap_p + " " + u.ap_m).toLowerCase().includes(q);
-  }).slice(0,20);
-  sugerencias.forEach(u => {
-    const li = document.createElement("li");
-    li.textContent = `${u.nombre} ${u.ap_p} ${u.ap_m} (ID:${u.id})`;
-    li.addEventListener("click", () => {
-      txtUsuario_main.value = `${u.nombre} ${u.ap_p} ${u.ap_m}`;
-      listaPredictiva.innerHTML = "";
-      filtrarUsuarios();
+    const emptyI = document.createElement("option");
+    emptyI.value = "";
+    emptyI.textContent = "";
+    cmbInstituto.appendChild(emptyI);
+    institutosGlobal.forEach(i => {
+        const o = document.createElement("option");
+        o.value = i;
+        o.textContent = i;
+        cmbInstituto.appendChild(o);
     });
-    listaPredictiva.appendChild(li);
-  });
+
+    mostrarVista("mainView");
+    cmbPerfil.value = USUARIOSINROLES;
+    filtrarUsuarios();
+    btnEditar.disabled = true;
+}
+
+txtUsuariomain.addEventListener("input", () => {
+    const q = txtUsuariomain.value.toLowerCase().trim();
+    listaPredictiva.innerHTML = "";
+    if (!q) return;
+    const sugerencias = usuarios
+        .filter(u => (String(u.id) + " " + u.nombre + " " + u.app + " " + u.apm).toLowerCase().includes(q))
+        .slice(0,20);
+    sugerencias.forEach(u => {
+        const li = document.createElement("li");
+        li.textContent = `${u.nombre} ${u.app} ${u.apm}  (ID:${u.id})`;
+        li.addEventListener("click", () => {
+            txtUsuariomain.value = `${u.nombre} ${u.app} ${u.apm}`;
+            listaPredictiva.innerHTML = "";
+            filtrarUsuarios();
+        });
+        listaPredictiva.appendChild(li);
+    });
 });
-txtUsuario_main.addEventListener("blur", () => setTimeout(()=> listaPredictiva.innerHTML="",200));
+
+txtUsuariomain.addEventListener("blur", () => {
+    setTimeout(() => (listaPredictiva.innerHTML = ""), 200);
+});
 
 btnClearMain.addEventListener("click", () => {
-  txtUsuario_main.value = "";
-  txtUsuario_main.focus();
-  filtrarUsuarios();
+    txtUsuariomain.value = "";
+    txtUsuariomain.focus();
+    filtrarUsuarios();
 });
 
-/************************************************************************
- * Grilla (LÓGICA DE FILTRADO ACTUALIZADA)
- ************************************************************************/
-function filtrarUsuarios(){
-  const instituto = cmbInstituto.value;
-  const perfil = cmbPerfil.value;
-  const q = txtUsuario_main.value.trim().toLowerCase();
-  stateFiltro.instituto = instituto;
-  stateFiltro.perfil = perfil;
-  stateFiltro.texto = txtUsuario_main.value;
+function filtrarUsuarios() {
+    const instituto = cmbInstituto.value;
+    const perfil = cmbPerfil.value;
+    const q = txtUsuariomain.value.trim().toLowerCase();
 
-  const tieneCriterioBusqueda = q;
-  const tieneCriterioFiltro = instituto || perfil;
+    stateFiltro.instituto = instituto;
+    stateFiltro.perfil = perfil;
+    stateFiltro.texto = txtUsuariomain.value;
 
-  if(!tieneCriterioFiltro && !tieneCriterioBusqueda){
-    usuariosContainer.style.display = "none";
+    const tieneCriterioBusqueda = !!q;
+    const tieneCriterioFiltro = !!instituto || !!perfil;
+
+    if (!tieneCriterioFiltro && !tieneCriterioBusqueda) {
+        usuariosContainer.style.display = "none";
+        tbody.innerHTML = "";
+        btnEditar.disabled = true;
+        return;
+    }
+
+    const lista = usuarios.filter(u => {
+        const coincideInstituto = !instituto || u.instituto === instituto;
+        let coincidePerfil = true;
+
+        if (perfil === USUARIOSINROLES) {
+            coincidePerfil = (!u.roles || u.roles.length === 0);
+        } else if (perfil) {
+            coincidePerfil = (u.especialidad === perfil);
+        }
+
+        const cadena = String(
+            u.id + " " + u.nombre + " " + u.app + " " + u.apm + " " + u.especialidad + " " + u.instituto
+        ).toLowerCase();
+        let coincideTexto = true;
+        if (q) coincideTexto = cadena.includes(q);
+        return coincideInstituto && coincidePerfil && coincideTexto;
+    });
+
+    usuariosContainer.style.display = lista.length ? "block" : "none";
+    pintarGrilla(lista);
+}
+
+function pintarGrilla(lista) {
     tbody.innerHTML = "";
-    btnEditar.disabled = true;
-    return;
-  }
-
-  const lista = usuarios.filter(u => {
-    const coincideInstituto = !instituto || u.instituto === instituto;
-    
-    let coincidePerfil;
-    if (perfil === USUARIO_SIN_ROLES) {
-        // Nuevo filtro: Solo usuarios sin roles
-        coincidePerfil = u.roles && u.roles.length === 0;
-    } else {
-        // Filtro normal por perfil o todos los perfiles
-        coincidePerfil = !perfil || u.especialidad === perfil;
-    }
-
-    const cadena = (String(u.id) + " " + u.nombre + " " + u.ap_p + " " + u.ap_m + " " + u.especialidad + " " + u.instituto).toLowerCase();
-    
-    // Si estamos filtrando por SIN ROLES, la búsqueda por texto debe ignorar el campo 'especialidad', 
-    // pero si estamos buscando por texto, debe ignorar el filtro SIN ROLES para evitar resultados inesperados.
-    
-    let coincideTexto = true;
-    if (q) {
-        coincideTexto = cadena.includes(q);
-    }
-
-    return coincidePerfil && coincideInstituto && coincideTexto;
-  });
-
-  usuariosContainer.style.display = lista.length ? "block" : "none";
-  pintarGrilla(lista);
-}
-
-function pintarGrilla(lista){
-  tbody.innerHTML = "";
-  lista.forEach(u => {
-    const tr = document.createElement("tr");
-    const rolesLabel = u.roles && u.roles.length ? `${u.roles.length} rol(es)` : "<span style='color:red; font-weight:700;'>SIN ROLES</span>";
-    tr.innerHTML = `<td>${u.id}</td>
-                    <td>${u.nombre}</td>
-                    <td>${u.ap_p}</td>
-                    <td>${u.ap_m}</td>
-                    <td>${u.instituto || '-'}</td>
-                    <td>${u.especialidad}</td>
-                    <td><span class="link-roles" data-id="${u.id}">Ver Roles (${rolesLabel})</span></td>
-                    <td class="col-check"><input type="checkbox" name="chkSel" value="${u.id}"></td>`;
-    tbody.appendChild(tr);
-  });
-
-  tbody.querySelectorAll('input[name="chkSel"]').forEach(chk => {
-    chk.addEventListener("change", () => {
-      // Lógica para que solo se pueda seleccionar un usuario
-      tbody.querySelectorAll('input[name="chkSel"]').forEach(o=>{ 
-          if(o!==chk) o.checked=false; 
-      });
-      // Habilitar o deshabilitar el botón de editar
-      btnEditar.disabled = !chk.checked;
+    lista.forEach(u => {
+        const tr = document.createElement("tr");
+        const rolesLabel = (u.roles && u.roles.length)
+            ? `<span class="link-roles" data-id="${u.id}">Ver Roles (${u.roles.length})</span>`
+            : `<span style="color:red;font-weight:700;">SIN ROLES</span>`;
+        tr.innerHTML = `
+            <td>${u.id}</td>
+            <td>${escapeHtml(u.nombre)}</td>
+            <td>${escapeHtml(u.app)}</td>
+            <td>${escapeHtml(u.apm)}</td>
+            <td>${escapeHtml(u.instituto)}</td>
+            <td>${escapeHtml(u.especialidad)}</td>
+            <td>${rolesLabel}</td>
+            <td class="col-check"><input type="checkbox" name="chkSel" value="${u.id}"></td>
+        `;
+        tbody.appendChild(tr);
     });
-  });
 
-  tbody.querySelectorAll(".link-roles").forEach(link => {
-    link.addEventListener("click", ()=> {
-      const id = parseInt(link.dataset.id,10);
-      const u = usuarios.find(x=>x.id===id);
-      const roles = (u.roles || []).slice().sort((a,b)=> parseInt(a,10)-parseInt(b,10));
-      if(roles.length === 0){
-        document.getElementById("contenidoRoles").innerHTML = "<div>No hay roles asignados.</div>";
-      } else {
-        let html = '<table class="roles-table" style="width:100%"><thead><tr><th style="width:80px">Código</th><th>Descripción</th></tr></thead><tbody>';
-        roles.forEach(c => {
-          const desc = rolesCatalogo[c] || "Descripción no disponible";
-          html += `<tr><td>${c}</td><td>${escapeHtml(desc)}</td></tr>`;
+    tbody.querySelectorAll("input[name='chkSel']").forEach(chk => {
+        chk.addEventListener("change", () => {
+            tbody.querySelectorAll("input[name='chkSel']").forEach(o => {
+                if (o !== chk) o.checked = false;
+            });
+            btnEditar.disabled = !chk.checked;
         });
-        html += '</tbody></table>';
-        document.getElementById("contenidoRoles").innerHTML = html;
-      }
-      abrirModal();
     });
-  });
 
-  // Asegurar el estado inicial del botón Editar después de pintar la grilla
-  const sel = document.querySelector('input[name="chkSel"]:checked');
-  btnEditar.disabled = !sel;
+    tbody.querySelectorAll(".link-roles").forEach(link => {
+    link.addEventListener("click", () => {
+        const id = parseInt(link.dataset.id, 10);
+        const u = usuarios.find(xx => xx.id === id);
+        if (!u) return;
+        pintarModalRolesComparativo(u);
+        abrirModal();
+    });
+});
+
+const sel = document.querySelector("input[name='chkSel']:checked");
+    btnEditar.disabled = !sel;
 }
 
-// Eventos de cambio en los filtros
 cmbInstituto.addEventListener("change", filtrarUsuarios);
 cmbPerfil.addEventListener("change", filtrarUsuarios);
-
-/************************************************************************
- * Botones principales
- ************************************************************************/
 btnBuscar.addEventListener("click", filtrarUsuarios);
 
 btnEditar.addEventListener("click", () => {
-  const sel = document.querySelector('input[name="chkSel"]:checked');
-  if(!sel) return alert("Debe seleccionar un usuario para editar.");
-  const id = parseInt(sel.value,10);
-  abrirEditorConUsuario(id);
+    const sel = document.querySelector("input[name='chkSel']:checked");
+    if (!sel) {
+        alert("Debe seleccionar un usuario para editar.");
+        return;
+    }
+    const id = parseInt(sel.value,10);
+    abrirEditorConUsuario(id);
 });
 
-/************************************************************************
- * Edición usuario
- ************************************************************************/
-function abrirEditorConUsuario(id_usuario){
-  const u = usuarios.find(x=>x.id===id_usuario);
-  if(!u) return alert("Usuario no encontrado.");
+function abrirEditorConUsuario(idusuario) {
+    const u = usuarios.find(xx => xx.id === idusuario);
+    if (!u) {
+        alert("Usuario no encontrado.");
+        return;
+    }
 
-  stateFiltro.instituto = cmbInstituto.value;
-  stateFiltro.perfil = cmbPerfil.value;
-  stateFiltro.texto = txtUsuario_main.value;
+    stateFiltro.instituto = cmbInstituto.value;
+    stateFiltro.perfil = cmbPerfil.value;
+    stateFiltro.texto = txtUsuariomain.value;
 
-  editState.id_usuario = u.id;
-  editState.originalRoles = Array.from(u.roles || []);
-  editState.perfilesMarcados = [];
+    editState.idusuario = u.id;
+    editState.originalRoles = Array.from(u.roles);
+    editState.perfilesMarcados = [];
 
-  txtIdUsuario_edit.value = u.id;
-  txtUsuario_edit.value = (u.nombre + " " + u.ap_p + " " + u.ap_m).toUpperCase();
+    txtIdUsuarioedit.value = u.id;
+    txtUsuarioedit.value = `${u.nombre} ${u.app} ${u.apm}`.toUpperCase();
 
-  cmbInstitutoEdit.innerHTML = "";
-  institutosGlobal.forEach(i => {
-    const o = document.createElement("option"); o.value = i; o.textContent = i; cmbInstitutoEdit.appendChild(o);
-  });
-  cmbInstitutoEdit.value = u.instituto || "SANTIAGO"; 
+    cmbInstitutoEdit.innerHTML = "";
+    institutosGlobal.forEach(i => {
+        const o = document.createElement("option");
+        o.value = i;
+        o.textContent = i;
+        cmbInstitutoEdit.appendChild(o);
+    });
+    cmbInstitutoEdit.value = u.instituto || "SANTIAGO";
 
-  let defaultAmb = "Educación";
-  if(u.especialidad && /analista|administr/i.test(u.especialidad)) defaultAmb = "Administración";
-  if(u.especialidad && /kinesi|médico|medico|asistente|psicólogo|enfermera|fonoaudiólogo/i.test(u.especialidad)) defaultAmb = "Asistencial";
-  cmbAmbito.value = defaultAmb;
+    let defaultAmb = "Educación";
+    if (/analista|administ/i.test(u.especialidad)) defaultAmb = "Administración";
+    if (/kinesi|m?dico|medico|asistente|psic[oó]logo|enfermera|fonoaudi[oó]logo/i.test(u.especialidad)) defaultAmb = "Asistencial";
 
-  cargarPerfilesPorAmbito(u);
-
-  mostrarVista('editView');
+    cmbAmbito.value = defaultAmb;
+    cargarPerfilesPorAmbito(u);
+    mostrarVista("editView");
 }
 
-btnVolver.addEventListener("click", () => mostrarVista('mainView'));
+btnVolver.addEventListener("click", () => {
+    mostrarVista("mainView");
+});
 
+function cargarPerfilesPorAmbito(usuarioObjeto) {
+    const ambito = cmbAmbito.value;
+    const perfilesList = dataPerfiles[ambito];
 
-/************************************************************************
- * Perfiles por ámbito en edición
- ************************************************************************/
-function cargarPerfilesPorAmbito(usuarioObjeto){
-  const ambito = cmbAmbito.value;
-  const perfilesList = dataPerfiles[ambito] || [];
-  const perfilActualId = perfilActualPorAmbito[ambito] || (perfilesList[0] && perfilesList[0].id);
+    const perfilActualId = perfilActualPorAmbito[ambito] || (perfilesList[0] ? perfilesList[0].id : null);
 
-  cmbPerfilActual.innerHTML = "";
-  perfilesList.forEach(p => {
-    const opt = document.createElement("option"); opt.value = p.id; opt.textContent = p.nombre; cmbPerfilActual.appendChild(opt);
-  });
+    // Importante: NO marcar perfiles por intersección de roles.
+    // Solo marcar 1 perfil inicial (el que calce con la especialidad o el perfil por defecto del ámbito).
+    let preCheckedId = perfilActualId;
 
-  listaPerfilesDiv.innerHTML = "";
-  perfilesList.forEach(p => {
-    const row = document.createElement("div"); row.className = "lista-perfiles-item";
-    const chk = document.createElement("input"); chk.type = "checkbox"; chk.value = p.id; chk.id = "chk_"+p.id;
-    if(usuarioObjeto){
-      const interseccion = (p.roles || []).filter(r => (usuarioObjeto.roles||[]).includes(r));
-      if(interseccion.length > 0) chk.checked = true;
-    } else if(p.id === perfilActualId){
-      chk.checked = true;
+    if (usuarioObjeto && perfilesList && perfilesList.length) {
+        const match = perfilesList.find(p =>
+            usuarioObjeto.especialidad &&
+            p.nombre &&
+            p.nombre.toLowerCase().includes(usuarioObjeto.especialidad.toLowerCase())
+        );
+        if (match) preCheckedId = match.id;
     }
-    const lbl = document.createElement("label"); lbl.setAttribute("for",chk.id); lbl.textContent = p.nombre;
-    row.appendChild(chk); row.appendChild(lbl); listaPerfilesDiv.appendChild(row);
-    chk.addEventListener("change", mostrarDetalleRolesYComparacion);
-  });
 
-  if(usuarioObjeto){
-    const match = perfilesList.find(p => usuarioObjeto.especialidad && p.nombre.toLowerCase().includes(usuarioObjeto.especialidad.toLowerCase()));
-    if(match) cmbPerfilActual.value = match.id;
-  } else if(perfilActualId){
-    cmbPerfilActual.value = perfilActualId;
-  }
+    cmbPerfilActual.innerHTML = "";
+    perfilesList.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.nombre;
+        cmbPerfilActual.appendChild(opt);
+    });
 
-  mostrarDetalleRolesYComparacion();
+    listaPerfilesDiv.innerHTML = "";
+    perfilesList.forEach(p => {
+        const row = document.createElement("div");
+        row.className = "lista-perfiles-item";
+
+        const chk = document.createElement("input");
+        chk.type = "checkbox";
+        chk.value = p.id;
+        chk.id = "chk_" + p.id;
+
+        if (preCheckedId && p.id === preCheckedId) chk.checked = true;
+
+        const lbl = document.createElement("label");
+        lbl.setAttribute("for", chk.id);
+        lbl.textContent = p.nombre;
+
+        row.appendChild(chk);
+        row.appendChild(lbl);
+        listaPerfilesDiv.appendChild(row);
+
+        chk.addEventListener("change", mostrarDetalleRolesYComparacion);
+    });
+
+    if (preCheckedId) cmbPerfilActual.value = preCheckedId;
+
+    mostrarDetalleRolesYComparacion();
 }
 
 cmbAmbito.addEventListener("change", () => cargarPerfilesPorAmbito(null));
 
-cmbPerfilActual.addEventListener("change", function(){
-  const newp = this.value;
-  const chk = document.getElementById("chk_"+newp);
-  // Desmarcar todos y marcar el nuevo
-  listaPerfilesDiv.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
-  if(chk){ chk.checked = true; mostrarDetalleRolesYComparacion(); }
+cmbPerfilActual.addEventListener("change", function() {
+    const newp = this.value;
+    const chk = document.getElementById("chk" + newp);
+    listaPerfilesDiv.querySelectorAll("input[type='checkbox']").forEach(c => (c.checked = false));
+    if (chk) chk.checked = true;
+    mostrarDetalleRolesYComparacion();
 });
 
-/************************************************************************
- * Detalle y Comparación de Roles
- ************************************************************************/
-function getRolesMarcados(){
-  const roles = new Set();
-  listaPerfilesDiv.querySelectorAll('input[type="checkbox"]:checked').forEach(chk => {
-    const idPerfil = chk.value;
+function getRolesMarcados() {
+    const roles = new Set();
+    listaPerfilesDiv.querySelectorAll("input[type='checkbox']:checked").forEach(chk => {
+        const idPerfil = chk.value;
+        const ambito = cmbAmbito.value;
+        const perfilesList = dataPerfiles[ambito] || [];
+        const perfilObj = perfilesList.find(p => p.id === idPerfil);
+        if (perfilObj && perfilObj.roles) {
+            perfilObj.roles.forEach(r => roles.add(r));
+        }
+    });
+    return Array.from(roles).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+}
+
+function getPerfilesSeleccionados() {
     const ambito = cmbAmbito.value;
     const perfilesList = dataPerfiles[ambito] || [];
-    const perfilObj = perfilesList.find(p => p.id === idPerfil);
-    if(perfilObj && perfilObj.roles) {
-      perfilObj.roles.forEach(r => roles.add(r));
-    }
-  });
-  return Array.from(roles).sort((a,b)=> parseInt(a,10)-parseInt(b,10));
+    const ids = Array.from(listaPerfilesDiv.querySelectorAll("input[type='checkbox']:checked"))
+        .map(chk => chk.value);
+
+    return ids
+        .map(id => perfilesList.find(p => p.id === id))
+        .filter(Boolean);
 }
 
-function mostrarDetalleRolesYComparacion(){
-  const rolesCombinados = getRolesMarcados();
-  const rolesOriginales = editState.originalRoles;
 
-  // 1. Mostrar Detalle de Roles (Tabla)
-  if(rolesCombinados.length === 0){
-    detalleRolesDiv.innerHTML = "<div>Seleccione al menos un perfil para ver sus roles combinados.</div>";
-  } else {
-    let html = '<table class="roles-table"><thead><tr><th style="width:80px">Código</th><th>Descripción</th></tr></thead><tbody>';
-    rolesCombinados.forEach(c => {
-      const desc = rolesCatalogo[c] || "Descripción no disponible";
-      html += `<tr><td>${c}</td><td>${escapeHtml(desc)}</td></tr>`;
+function mostrarDetalleRolesYComparacion() {
+    const perfilesSeleccionados = getPerfilesSeleccionados();
+    const rolesOriginales = editState.originalRoles || [];
+
+    if (!perfilesSeleccionados.length) {
+        detalleRolesDiv.innerHTML = "<div>Seleccione al menos un perfil para ver sus roles combinados.</div>";
+        compareArea.innerHTML = "";
+        return;
+    }
+
+    const rolesUnicos = new Set();
+    perfilesSeleccionados.forEach(p => (p.roles || []).forEach(r => rolesUnicos.add(r)));
+    const idsOrdenados = Array.from(rolesUnicos).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    let html = `<table class="roles-table"><thead><tr><th>Rol / Funcionalidad</th>`;
+    perfilesSeleccionados.forEach(p => {
+        html += `<th style="text-align:center;">${escapeHtml(p.nombre)}</th>`;
     });
-    html += '</tbody></table>';
+    html += `</tr></thead><tbody>`;
+
+    idsOrdenados.forEach(rid => {
+        const desc = rolesCatalogo[rid] || "Descripción no disponible";
+        html += `<tr><td><strong>${rid}</strong> - ${escapeHtml(desc)}</td>`;
+        perfilesSeleccionados.forEach(p => {
+            const tiene = (p.roles || []).includes(rid);
+            html += `<td style="text-align:center;"><input type="checkbox" ${tiene ? "checked" : ""} disabled></td>`;
+        });
+        html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
     detalleRolesDiv.innerHTML = html;
-  }
 
-  // 2. Mostrar Comparación
-  const rolesNuevos = new Set(rolesCombinados);
-  const rolesViejos = new Set(rolesOriginales);
-  const union = new Set([...rolesNuevos, ...rolesViejos]);
-  const todosLosRoles = Array.from(union).sort((a,b)=> parseInt(a,10)-parseInt(b,10));
+    const rolesNuevos = new Set(idsOrdenados);
+    const rolesViejos = new Set(rolesOriginales);
+    const union = new Set([...rolesNuevos, ...rolesViejos]);
+    const todosLosRoles = Array.from(union).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
 
-  compareArea.innerHTML = "";
-  todosLosRoles.forEach(rol => {
-    const esNuevo = rolesNuevos.has(rol);
-    const eraViejo = rolesViejos.has(rol);
-    let clase = 'unchanged';
-    let estado = 'Sin cambios';
+    compareArea.innerHTML = "";
+    todosLosRoles.forEach(rol => {
+        const esNuevo = rolesNuevos.has(rol);
+        const eraViejo = rolesViejos.has(rol);
 
-    if (esNuevo && !eraViejo) {
-      clase = 'added';
-      estado = 'Rol agregado';
-    } else if (!esNuevo && eraViejo) {
-      clase = 'removed';
-      estado = 'Rol removido';
-    }
+        let clase = "unchanged";
+        let estado = "Sin cambios";
 
-    const desc = rolesCatalogo[rol] || "Descripción no disponible";
-    const div = document.createElement('div');
-    div.className = `compare-item ${clase}`;
-    div.textContent = `${rol}: ${escapeHtml(desc)}`;
-    if (estado !== 'Sin cambios') {
-      const span = document.createElement('span');
-      span.textContent = ` (${estado})`;
-      span.style.fontWeight = 'bold';
-      div.appendChild(span);
-    }
-    compareArea.appendChild(div);
-  });
+        if (esNuevo && !eraViejo) {
+            clase = "added";
+            estado = "Rol agregado";
+        } else if (!esNuevo && eraViejo) {
+            clase = "removed";
+            estado = "Rol removido";
+        }
+
+        const desc = rolesCatalogo[rol] || "Descripción no disponible";
+
+        const div = document.createElement("div");
+        div.className = "compare-item " + clase;
+        div.innerHTML = `<strong>${rol}</strong> - ${escapeHtml(desc)}`;
+
+        if (estado !== "Sin cambios") {
+            const span = document.createElement("span");
+            span.textContent = " " + estado;
+            span.style.fontWeight = "bold";
+            div.appendChild(span);
+        }
+
+        compareArea.appendChild(div);
+    });
 }
 
-// Lógica de Guardar/Restaurar
 btnGuardar.addEventListener("click", () => {
-  const u = usuarios.find(x=>x.id===editState.id_usuario);
-  if(!u) return alert("Error: Usuario de edición no encontrado.");
+    const u = usuarios.find(xx => xx.id === editState.idusuario);
+    if (!u) {
+        alert("Error: Usuario de edición no encontrado.");
+        return;
+    }
+    const rolesNuevos = getRolesMarcados();
+    const perfilElegido = cmbPerfilActual.options[cmbPerfilActual.selectedIndex].textContent;
+    const institutoElegido = cmbInstitutoEdit.value || u.instituto;
 
-  const rolesNuevos = getRolesMarcados();
-  const perfilElegido = cmbPerfilActual.options[cmbPerfilActual.selectedIndex].textContent;
-  const institutoElegido = cmbInstitutoEdit.value;
+    u.roles = rolesNuevos;
+    u.especialidad = perfilElegido;
+    u.instituto = institutoElegido;
 
-  // Actualizar los datos del usuario (Simulación)
-  u.roles = rolesNuevos;
-  u.especialidad = perfilElegido; 
-  u.instituto = institutoElegido; 
-
-  // Sincronizar el estado de edición para la siguiente apertura o restauración
-  editState.originalRoles = rolesNuevos;
-
-  alert(`Cambios guardados para ID: ${u.id}\nPerfil: ${perfilElegido}\nInstituto: ${institutoElegido}\nRoles: ${rolesNuevos.length} roles.`);
-  mostrarVista('mainView');
+    editState.originalRoles = rolesNuevos;
+    alert(`Cambios guardados para ID ${u.id} (${perfilElegido} - ${institutoElegido}) ${rolesNuevos.length} roles.`);
+    mostrarVista("mainView");
 });
 
 btnRestaurar.addEventListener("click", () => {
-  const u = usuarios.find(x=>x.id===editState.id_usuario);
-  if(!u) return alert("Error: Usuario de edición no encontrado.");
-
-  // Restaurar roles originales (de cuando se abrió la vista)
-  u.roles = Array.from(editState.originalRoles);
-
-  alert("Roles y perfil restaurados al estado original al abrir el editor.");
-  // Volver a la vista de búsqueda principal
-  mostrarVista('mainView');
+    const u = usuarios.find(xx => xx.id === editState.idusuario);
+    if (!u) {
+        alert("Error: Usuario de edición no encontrado.");
+        return;
+    }
+    u.roles = Array.from(editState.originalRoles);
+    alert("Roles y perfil restaurados al estado original al abrir el editor.");
+    mostrarVista("mainView");
 });
 
-
-/************************************************************************
- * GESTOR DE ROLES (MANTENEDOR)
- ************************************************************************/
 cmbAmbitoPerfil.addEventListener("change", cargarComboPerfilesGestion);
 
-function cargarComboPerfilesGestion(){
+function cargarComboPerfilesGestion() {
     const ambito = cmbAmbitoPerfil.value;
     const perfilesList = dataPerfiles[ambito] || [];
     cmbPerfilGestion.innerHTML = "";
 
-    const empty = document.createElement("option"); empty.value=""; empty.textContent="Seleccione un perfil para editar o un ámbito para crear";
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "Seleccione un perfil para editar o un ámbito para crear";
     cmbPerfilGestion.appendChild(empty);
 
     perfilesList.forEach(p => {
-        const opt = document.createElement("option"); opt.value = p.id; opt.textContent = p.nombre; cmbPerfilGestion.appendChild(opt);
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.nombre;
+        cmbPerfilGestion.appendChild(opt);
     });
 
-    // Resetear el nombre del perfil y el checklist al cambiar de ámbito
     txtNombrePerfil.value = "";
-    pintarChecklistRoles();
+    pintarChecklistRoles([]);
 }
 
 cmbPerfilGestion.addEventListener("change", () => {
@@ -956,37 +1225,31 @@ cmbPerfilGestion.addEventListener("change", () => {
     const idPerfil = cmbPerfilGestion.value;
     const perfilesList = dataPerfiles[ambito] || [];
     const perfilObj = perfilesList.find(p => p.id === idPerfil);
-
     if (perfilObj) {
         txtNombrePerfil.value = perfilObj.nombre;
         pintarChecklistRoles(perfilObj.roles);
     } else {
         txtNombrePerfil.value = "";
-        pintarChecklistRoles();
+        pintarChecklistRoles([]);
     }
 });
 
-function pintarChecklistRoles(rolesAsignados = []){
+function pintarChecklistRoles(rolesAsignados) {
     rolesChecklist.innerHTML = "";
-    const rolesAsignadosSet = new Set(rolesAsignados);
-
-    const rolesCodigos = Object.keys(rolesCatalogo).sort((a,b) => parseInt(a,10) - parseInt(b,10));
+    const rolesAsignadosSet = new Set(rolesAsignados || []);
+    const rolesCodigos = Object.keys(rolesCatalogo).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
 
     rolesCodigos.forEach(codigo => {
-        const desc = rolesCatalogo[codigo];
+        const desc = rolesCatalogo[codigo] || "";
         const div = document.createElement("div");
         const chk = document.createElement("input");
         chk.type = "checkbox";
         chk.value = codigo;
-        chk.id = `role_chk_${codigo}`;
-        if (rolesAsignadosSet.has(codigo)) {
-            chk.checked = true;
-        }
-
+        chk.id = "rolechk" + codigo;
+        if (rolesAsignadosSet.has(codigo)) chk.checked = true;
         const lbl = document.createElement("label");
         lbl.setAttribute("for", chk.id);
         lbl.textContent = `${codigo} - ${desc}`;
-
         div.appendChild(chk);
         div.appendChild(lbl);
         rolesChecklist.appendChild(div);
@@ -995,74 +1258,520 @@ function pintarChecklistRoles(rolesAsignados = []){
 
 btnGuardarPerfil.addEventListener("click", () => {
     const ambito = cmbAmbitoPerfil.value;
-    const nombre = txtNombrePerfil.value.trim();
+    const nombre = (txtNombrePerfil.value || "").trim();
     const idPerfilActual = cmbPerfilGestion.value;
-    const rolesSeleccionados = Array.from(rolesChecklist.querySelectorAll('input[type="checkbox"]:checked')).map(chk => chk.value);
+    const rolesSeleccionados = Array.from(
+        rolesChecklist.querySelectorAll("input[type='checkbox']:checked")
+    ).map(chk => chk.value);
 
-    if (!nombre) return alert("Debe ingresar un nombre para el perfil.");
-    if (rolesSeleccionados.length === 0) return alert("Debe seleccionar al menos un rol.");
-
-    const nuevoPerfil = {
-        id: nombre.toLowerCase().replace(/\s/g, '_'), 
-        nombre: nombre,
-        roles: rolesSeleccionados
-    };
+    if (!nombre) {
+        alert("Debe ingresar un nombre para el perfil.");
+        return;
+    }
+    if (!rolesSeleccionados.length) {
+        alert("Debe seleccionar al menos un rol.");
+        return;
+    }
 
     if (!dataPerfiles[ambito]) dataPerfiles[ambito] = [];
     const perfilesList = dataPerfiles[ambito];
 
-    let mensaje = "";
+    const nuevoPerfil = {
+        id: nombre.toLowerCase().replace(/\s+/g,""),
+        nombre: nombre,
+        roles: rolesSeleccionados
+    };
 
+    let mensaje = "";
     if (idPerfilActual) {
-        // Editar un perfil existente
         const index = perfilesList.findIndex(p => p.id === idPerfilActual);
-        if (index > -1) {
-            if (perfilesList[index].nombre !== nombre && perfilesList.some(p => p.id === nuevoPerfil.id && p.id !== idPerfilActual)) {
-                return alert("Error: Ya existe un perfil con ese nombre.");
-            }
-            perfilesList[index].nombre = nuevoPerfil.nombre;
-            perfilesList[index].roles = nuevoPerfil.roles;
-            mensaje = `Perfil "${nombre}" actualizado en ${ambito}.`;
-        } else {
-             return alert("Error al encontrar perfil para editar.");
+        if (index === -1) {
+            alert("Error al encontrar perfil para editar.");
+            return;
         }
+        if (perfilesList[index].nombre !== nombre) {
+            if (perfilesList.some(p => p.id === nuevoPerfil.id && p.id !== idPerfilActual)) {
+                alert("Error: Ya existe un perfil con ese nombre.");
+                return;
+            }
+        }
+        perfilesList[index].nombre = nuevoPerfil.nombre;
+        perfilesList[index].roles = nuevoPerfil.roles;
+        mensaje = `Perfil "${nombre}" actualizado en ámbito.`;
     } else {
-        // Crear un nuevo perfil
         if (perfilesList.some(p => p.id === nuevoPerfil.id)) {
-            return alert("Error: Ya existe un perfil con ese nombre.");
+            alert("Error: Ya existe un perfil con ese nombre.");
+            return;
         }
         perfilesList.push(nuevoPerfil);
-        mensaje = `Perfil "${nombre}" creado en ${ambito}.`;
+        mensaje = `Perfil "${nombre}" creado en ámbito.`;
     }
 
     recargarComboPerfilesGlobal();
-    
     alert(mensaje);
-    cargarComboPerfilesGestion(); 
+    cargarComboPerfilesGestion();
 });
 
 btnEliminarPerfil.addEventListener("click", () => {
     const ambito = cmbAmbitoPerfil.value;
     const idPerfil = cmbPerfilGestion.value;
-
-    if (!idPerfil) return alert("Debe seleccionar un perfil para eliminar.");
-
+    if (!idPerfil) {
+        alert("Debe seleccionar un perfil para eliminar.");
+        return;
+    }
     const perfilesList = dataPerfiles[ambito] || [];
     const index = perfilesList.findIndex(p => p.id === idPerfil);
-
-    if (index > -1) {
-        if (confirm(`¿Está seguro que desea eliminar el perfil "${perfilesList[index].nombre}"?`)) {
-            perfilesList.splice(index, 1);
-            
-            recargarComboPerfilesGlobal();
-
-            alert("Perfil eliminado.");
-            cargarComboPerfilesGestion();
-        }
-    } else {
+    if (index === -1) {
         alert("Error al encontrar el perfil para eliminar.");
+        return;
+    }
+    if (confirm(`¿Está seguro que desea eliminar el perfil "${perfilesList[index].nombre}"?`)) {
+        perfilesList.splice(index,1);
+        recargarComboPerfilesGlobal();
+        alert("Perfil eliminado.");
+        cargarComboPerfilesGestion();
     }
 });
+
+let funcionesPorRol = {
+    "100": {
+        rolNombre:"Médico",
+        funciones:[
+            {id:1,nombre:"Teleton.His.Shell.Web.Paciente.Buscar"},
+            {id:6,nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.Index"},
+            {id:10,nombre:"Teleton.His.Shell.Web.Agenda.IndicacionesPaciente"}
+        ]
+    },
+    "101": {
+        rolNombre:"Tratante básico sin indicaciones",
+        funciones:[
+            {id:1,nombre:"Teleton.His.Shell.Web.Paciente.Buscar"},
+            {id:6,nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.Index"},
+            {id:80,nombre:"Teleton.His.Shell.Web.Agenda.Administracion.Vistapanoramica"}
+        ]
+    },
+    "102": {
+        rolNombre:"Tratante indicador con indicaciones",
+        funciones:[
+            {id:1,nombre:"Teleton.His.Shell.Web.Paciente.Buscar"},
+            {id:6,nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.Index"},
+            {id:10,nombre:"Teleton.His.Shell.Web.Agenda.IndicacionesPaciente"}
+        ]
+    }
+};
+
+let backupFuncionesPorRol = JSON.parse(JSON.stringify(funcionesPorRol));
+
+function inicializarFunctionView() {
+    cargarComboRolesFuncion();
+    sincronizarCamposRolDesdeCombo();
+    txtBuscarFuncion.value = "";
+    txtBuscarFuncionCatalogo.value = "";
+    pintarChecklistFunciones();
+    pintarTablaFunciones();
+    pintarCatalogoFunciones();
+}
+
+function cargarComboRolesFuncion() {
+    cmbRolFuncion.innerHTML = "";
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "";
+    cmbRolFuncion.appendChild(empty);
+
+    Object.keys(funcionesPorRol)
+        .sort((a,b)=>parseInt(a,10)-parseInt(b,10))
+        .forEach(rolId => {
+            const opt = document.createElement("option");
+            opt.value = rolId;
+            opt.textContent = `${rolId} - ${funcionesPorRol[rolId].rolNombre}`;
+            cmbRolFuncion.appendChild(opt);
+        });
+    const first = Object.keys(funcionesPorRol)[0];
+    if (first) cmbRolFuncion.value = first;
+}
+
+function getRolSeleccionadoFuncion() {
+    const rolId = cmbRolFuncion.value;
+    if (!rolId || !funcionesPorRol[rolId]) return null;
+    return { rolId, data: funcionesPorRol[rolId] };
+}
+
+function sincronizarCamposRolDesdeCombo() {
+    const info = getRolSeleccionadoFuncion();
+    if (!info) {
+        txtNuevoRolId.value = "";
+        txtNuevoRolNombre.value = "";
+        return;
+    }
+    txtNuevoRolId.value = info.rolId;
+    txtNuevoRolNombre.value = info.data.rolNombre;
+}
+
+function pintarChecklistFunciones() {
+    funcionesChecklist.innerHTML = "";
+    const rolInfo = getRolSeleccionadoFuncion();
+    if (!rolInfo) {
+        funcionesChecklist.innerHTML = `<div>Seleccione un rol o cree uno nuevo.</div>`;
+        return;
+    }
+
+    const filtro = txtBuscarFuncion.value.trim().toLowerCase();
+    const funciones = rolInfo.data.funciones || [];
+
+    funciones.forEach(f => {
+        if (filtro) {
+            const txt = (String(f.id) + " " + f.nombre).toLowerCase();
+            if (!txt.includes(filtro)) return;
+        }
+        const div = document.createElement("div");
+        const chk = document.createElement("input");
+        chk.type = "checkbox";
+        chk.value = f.id;
+        chk.id = `funcchk_${rolInfo.rolId}_${f.id}`;
+        chk.checked = true;
+
+        const lbl = document.createElement("label");
+        lbl.setAttribute("for", chk.id);
+        lbl.textContent = `${f.id} - ${f.nombre}`;
+
+        div.appendChild(chk);
+        div.appendChild(lbl);
+        funcionesChecklist.appendChild(div);
+
+        chk.addEventListener("change", () => {
+            if (!chk.checked) {
+                const arr = rolInfo.data.funciones;
+                const idx = arr.findIndex(x => x.id === f.id);
+                if (idx !== -1) arr.splice(idx,1);
+            }
+            pintarTablaFunciones();
+        });
+    });
+
+    if (!funcionesChecklist.children.length) {
+        funcionesChecklist.innerHTML = `<div>El rol no tiene funciones cargadas aún.</div>`;
+    }
+}
+
+function pintarTablaFunciones() {
+    tblFuncionesRolBody.innerHTML = "";
+    const rolInfo = getRolSeleccionadoFuncion();
+    if (!rolInfo) return;
+
+    (rolInfo.data.funciones || []).forEach(f => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${rolInfo.rolId}</td>
+            <td>${escapeHtml(rolInfo.data.rolNombre)}</td>
+            <td>${f.id}</td>
+            <td>${escapeHtml(f.nombre)}</td>
+        `;
+        tblFuncionesRolBody.appendChild(tr);
+    });
+
+    if (!tblFuncionesRolBody.children.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4">El rol no tiene funciones asociadas.</td>`;
+        tblFuncionesRolBody.appendChild(tr);
+    }
+}
+
+cmbRolFuncion.addEventListener("change", () => {
+    sincronizarCamposRolDesdeCombo();
+    txtBuscarFuncion.value = "";
+    pintarChecklistFunciones();
+    pintarTablaFunciones();
+});
+
+btnBuscarFuncion.addEventListener("click", () => {
+    pintarChecklistFunciones();
+});
+
+btnRefrescarFunciones.addEventListener("click", () => {
+    txtBuscarFuncion.value = "";
+    pintarChecklistFunciones();
+    pintarTablaFunciones();
+});
+
+btnClearFuncion.addEventListener("click", () => {
+    txtBuscarFuncion.value = "";
+    txtBuscarFuncion.focus();
+    pintarChecklistFunciones();
+});
+
+btnNuevoRol.addEventListener("click", () => {
+    txtNuevoRolId.value = "";
+    txtNuevoRolNombre.value = "";
+    cmbRolFuncion.value = "";
+    funcionesChecklist.innerHTML = `<div>Ingrese un RolId y Nombre, luego guarde para crear el rol. Después podrá agregar funciones desde el catálogo.</div>`;
+    tblFuncionesRolBody.innerHTML = `<tr><td colspan="4">Sin datos. Nuevo rol en blanco.</td></tr>`;
+});
+
+btnGuardarFuncionesRol.addEventListener("click", () => {
+    let rolId = (txtNuevoRolId.value || "").trim();
+    let rolNombre = (txtNuevoRolNombre.value || "").trim();
+
+    if (!rolId || !rolNombre) {
+        alert("Debe ingresar RolId y Nombre del rol para guardar.");
+        return;
+    }
+    if (!/^\d+$/.test(rolId)) {
+        alert("RolId debe ser numérico (ej: 390).");
+        return;
+    }
+
+    if (!funcionesPorRol[rolId]) {
+        funcionesPorRol[rolId] = { rolNombre: rolNombre, funciones: [] };
+
+        if (!rolesCatalogo[rolId]) {
+            rolesCatalogo[rolId] = rolNombre;
+        }
+    } else {
+        funcionesPorRol[rolId].rolNombre = rolNombre;
+    }
+
+    backupFuncionesPorRol = JSON.parse(JSON.stringify(funcionesPorRol));
+    cargarComboRolesFuncion();
+    cmbRolFuncion.value = rolId;
+    sincronizarCamposRolDesdeCombo();
+    pintarChecklistFunciones();
+    pintarTablaFunciones();
+
+    alert(`Rol ${rolId} - ${rolNombre} guardado en la maqueta (incluyendo funciones asociadas).`);
+
+    if (profileView.style.display === "block") {
+        pintarChecklistRoles([]);
+    }
+
+});
+
+btnEliminarRol.addEventListener("click", () => {
+    const rolId = (txtNuevoRolId.value || "").trim();
+    if (!rolId) {
+        alert("Debe indicar un RolId para eliminar.");
+        return;
+    }
+    if (!funcionesPorRol[rolId]) {
+        alert("El RolId indicado no existe en la maqueta.");
+        return;
+    }
+    if (!confirm(`¿Eliminar el rol ${rolId} (${funcionesPorRol[rolId].rolNombre}) y todas sus funciones?`)) {
+        return;
+    }
+    delete funcionesPorRol[rolId];
+    backupFuncionesPorRol = JSON.parse(JSON.stringify(funcionesPorRol));
+    txtNuevoRolId.value = "";
+    txtNuevoRolNombre.value = "";
+    cargarComboRolesFuncion();
+    cmbRolFuncion.value = "";
+    funcionesChecklist.innerHTML = `<div>Seleccione un rol existente o cree uno nuevo.</div>`;
+    tblFuncionesRolBody.innerHTML = `<tr><td colspan="4">Sin datos.</td></tr>`;
+    alert("Rol eliminado de la maqueta.");
+});
+
+btnRestaurarFuncionesRol.addEventListener("click", () => {
+    funcionesPorRol = JSON.parse(JSON.stringify(backupFuncionesPorRol));
+    inicializarFunctionView();
+    alert("Funciones y roles restaurados desde origen simulado.");
+});
+
+function pintarCatalogoFunciones() {
+    catalogoFuncionesBody.innerHTML = "";
+    const filtro = (txtBuscarFuncionCatalogo.value || "").trim().toLowerCase();
+
+    const listado = catalogoFuncionesGlobal.filter(f => {
+        if (!filtro) return true;
+        const txt = (String(f.id) + " " + f.nombre).toLowerCase();
+        return txt.includes(filtro);
+    });
+
+    if (!listado.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="3">No hay funciones que coincidan con el filtro.</td>`;
+        catalogoFuncionesBody.appendChild(tr);
+        return;
+    }
+
+    listado.forEach(f => {
+        const tr = document.createElement("tr");
+
+        const tdChk = document.createElement("td");
+        const chk = document.createElement("input");
+        chk.type = "checkbox";
+        chk.value = f.id;
+        chk.id = `catfunc_${f.id}`;
+        tdChk.appendChild(chk);
+
+        const tdId = document.createElement("td");
+        tdId.textContent = f.id;
+
+        const tdNombre = document.createElement("td");
+        tdNombre.className = "func-nombre";
+        tdNombre.title = f.nombre;
+        tdNombre.textContent = f.nombre;
+
+        tr.appendChild(tdChk);
+        tr.appendChild(tdId);
+        tr.appendChild(tdNombre);
+        catalogoFuncionesBody.appendChild(tr);
+    });
+}
+
+btnFiltrarCatalogoFunciones.addEventListener("click", pintarCatalogoFunciones);
+
+btnClearFuncionCatalogo.addEventListener("click", () => {
+    txtBuscarFuncionCatalogo.value = "";
+    txtBuscarFuncionCatalogo.focus();
+    pintarCatalogoFunciones();
+});
+
+txtBuscarFuncionCatalogo.addEventListener("keyup", e => {
+    if (e.key === "Enter") pintarCatalogoFunciones();
+});
+
+btnAgregarFuncionesSeleccionadas.addEventListener("click", () => {
+    const rolIdCampo = (txtNuevoRolId.value || "").trim();
+    const rolNombreCampo = (txtNuevoRolNombre.value || "").trim();
+
+    if (!rolIdCampo || !rolNombreCampo) {
+        alert("Primero debe indicar RolId y Nombre del rol para poder agregar funciones.");
+        return;
+    }
+    if (!/^\d+$/.test(rolIdCampo)) {
+        alert("RolId debe ser numérico (ej: 390).");
+        return;
+    }
+
+    const rolId = rolIdCampo;
+    const rolNombre = rolNombreCampo;
+
+    if (!funcionesPorRol[rolId]) {
+        funcionesPorRol[rolId] = { rolNombre: rolNombre, funciones: [] };
+
+        if (!rolesCatalogo[rolId]) {
+            rolesCatalogo[rolId] = rolNombre;
+        }
+    } else {
+        funcionesPorRol[rolId].rolNombre = rolNombre;
+    }
+
+    const seleccionados = Array.from(
+        catalogoFuncionesBody.querySelectorAll("input[type='checkbox']:checked")
+    ).map(chk => parseInt(chk.value,10));
+
+    if (!seleccionados.length) {
+        alert("Debe seleccionar al menos una función del catálogo.");
+        return;
+    }
+
+    const funcionesRol = funcionesPorRol[rolId].funciones;
+    const existentes = new Set(funcionesRol.map(f => f.id));
+
+    let agregadas = 0;
+    seleccionados.forEach(fid => {
+        if (!existentes.has(fid)) {
+            const funcObj = catalogoFuncionesGlobal.find(f => f.id === fid);
+            if (funcObj) {
+                funcionesRol.push({ id: funcObj.id, nombre: funcObj.nombre });
+                existentes.add(fid);
+                agregadas++;
+            }
+        }
+    });
+
+    if (!agregadas) {
+        alert("Todas las funciones seleccionadas ya estaban asociadas al rol.");
+        return;
+    }
+
+    backupFuncionesPorRol = JSON.parse(JSON.stringify(funcionesPorRol));
+    cargarComboRolesFuncion();
+    cmbRolFuncion.value = rolId;
+    sincronizarCamposRolDesdeCombo();
+    pintarChecklistFunciones();
+    pintarTablaFunciones();
+
+    alert(`Se agregaron ${agregadas} función(es) al rol ${rolId}.`);
+});
+
+init();
+
+
+function determinarAmbitoPorEspecialidad(especialidad) {
+    let defaultAmb = "Educación";
+    const esp = (especialidad || "").toString();
+
+    if (/analista|admin/i.test(esp)) defaultAmb = "Administración";
+    if (/(kinesi|médico|medico|asistente|psicologo|enfermera|fonoaudiologo)/i.test(esp)) defaultAmb = "Asistencial";
+
+    return defaultAmb;
+}
+
+function getPerfilesAsociadosAlUsuario(u, ambito) {
+    const perfiles = dataPerfiles[ambito] || [];
+    const rolesUsuario = (u && u.roles) ? Array.from(u.roles) : [];
+
+    // Perfiles realmente asociados: roles del perfil ⊆ roles del usuario
+    const asociados = perfiles.filter(p => {
+        const r = p.roles || [];
+        if (!r.length) return false;
+        return r.every(x => rolesUsuario.includes(x));
+    });
+
+    // Fallback: si no hay ninguno, usar match por especialidad/nombre.
+    if (asociados.length === 0) {
+        const esp = ((u && u.especialidad) ? u.especialidad : "").toString().toLowerCase();
+        const match = perfiles.find(p => {
+            const n = (p && p.nombre ? p.nombre : "").toString().toLowerCase();
+            return esp && n && (n.includes(esp) || esp.includes(n));
+        });
+        if (match) return [match];
+    }
+
+    return asociados;
+}
+
+function pintarModalRolesComparativo(u) {
+    const cont = document.getElementById("contenidoRoles");
+
+    const ambito = determinarAmbitoPorEspecialidad(u ? u.especialidad : "");
+    const perfilesAsociados = getPerfilesAsociadosAlUsuario(u, ambito);
+
+    // Sin columna Usuario: solo perfiles asociados
+    const union = new Set();
+    perfilesAsociados.forEach(p => (p.roles || []).forEach(r => union.add(r)));
+
+    const ids = Array.from(union).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    if (!ids.length) {
+        cont.innerHTML = "<div>No hay roles asignados.</div>";
+        return;
+    }
+
+    let html = `<table class="roles-table" style="width:100%;"><thead><tr><th>Rol / Funcionalidad</th>`;
+    perfilesAsociados.forEach(p => {
+        html += `<th style="text-align:center;">${escapeHtml(p.nombre)}</th>`;
+    });
+    html += `</tr></thead><tbody>`;
+
+    ids.forEach(rid => {
+        const desc = rolesCatalogo[rid] || "Descripción no disponible";
+
+        html += `<tr>`;
+        html += `<td><strong>${rid}</strong> - ${escapeHtml(desc)}</td>`;
+
+        perfilesAsociados.forEach(p => {
+            const tienePerfil = (p.roles || []).includes(rid);
+            html += `<td style="text-align:center;"><input type="checkbox" ${tienePerfil ? "checked" : ""} disabled></td>`;
+        });
+
+        html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+    cont.innerHTML = html;
+}
 </script>
 </body>
 </html>
