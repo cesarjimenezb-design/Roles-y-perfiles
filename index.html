@@ -217,6 +217,7 @@
                 <a href="javascript:void(0)" onclick="mostrarVista('mainView')">Administración de Permisos</a>
                 <a href="javascript:void(0)" onclick="mostrarVista('profileView')">Mantenedor Gestor de Perfiles</a>
                 <a href="javascript:void(0)" onclick="mostrarVista('functionView')">Mantenedor Funcionalidades (Rol + Función)</a>
+                <a href="javascript:void(0)" onclick="mostrarVista('compareView')">Comparar Perfiles (sin usuario)</a>
             </div>
         </div>
     </div>
@@ -420,7 +421,7 @@
             </div>
             <div>
                 <button class="btn-secondary" onclick="mostrarVista('mainView')">
-                    Volver 
+                    Volver
                 </button>
             </div>
         </div>
@@ -560,12 +561,68 @@
                 Guardar cambios del rol
             </button>
             <button class="btn-secondary" id="btnRestaurarFuncionesRol">
-                Restaurar 
+                Restaurar
             </button>
         </div>
 
         <div class="small-muted">
             Los cambios se aplican solo en esta maqueta; el origen real se mantiene en la planilla o en el sistema productivo.
+        </div>
+    </div>
+</main>
+
+<!-- VISTA 5: Comparar Perfiles (sin usuario) -->
+<main id="compareView" class="page" aria-hidden="true" style="display:none;">
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div class="page-title">Comparar Perfiles (sin usuario)</div>
+                <div class="page-subtitle">Selecciona perfiles de un ámbito y compáralos contra un perfil base</div>
+            </div>
+            <div>
+                <button class="btn-secondary" onclick="mostrarVista('mainView')">Volver</button>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="form-row">
+            <label>Ámbito</label>
+            <select id="cmbAmbitoCompare">
+                <option value="Administración">Administración</option>
+                <option value="Asistencial">Asistencial</option>
+                <option value="Educación">Educación</option>
+                <option value="Informática">Informática</option>
+                <option value="Dirección Instituto">Dirección Instituto</option>
+                <option value="Gerencia">Gerencia</option>
+                <option value="Auditoría">Auditoría</option>
+                <option value="Gestión">Gestión</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label>Base</label>
+            <select id="cmbPerfilBaseCompare"></select>
+            <button class="btn-secondary" id="btnCompareSelectAll" type="button">Seleccionar todos</button>
+            <button class="btn-secondary" id="btnCompareClear" type="button">Limpiar</button>
+        </div>
+
+        <div class="small-muted">
+            Marca uno o más perfiles a la izquierda para ver el detalle de roles y la comparación vs. el perfil base.
+        </div>
+
+        <div class="layout-grid" style="margin-top:10px;">
+            <div>
+                <div class="section-title">Perfiles del ámbito</div>
+                <div id="listaPerfilesCompare" class="lista-perfiles"></div>
+            </div>
+            <div>
+                <div class="section-title">Detalle de roles (seleccionados)</div>
+                <div id="detalleRolesCompare" class="roles-detalle"></div>
+
+                <div style="margin-top:12px;" class="section-title">Comparación vs. perfil base</div>
+                <div id="compareAreaCompare" class="compare-list"></div>
+            </div>
         </div>
     </div>
 </main>
@@ -609,7 +666,40 @@ const usuarios = [
 ];
 
 const rolesCatalogo = {
-    "100": "Médico", "102": "Tratante indicador con indicaciones", "103": "Tratante jefatura", "105": "Recepción avanzado", "107": "Bloqueo avanzado", "108": "Malla operador", "109": "Malla administrador", "112": "Planificador", "114": "Enfermera", "116": "Planificación consulta", "117": "Agenda consulta", "118": "Vista nacional", "121": "Reemplazo profesional", "123": "Hospitalizado acceso", "124": "Hospitalizado prestador", "125": "Hospitalizado registro", "126": "Admisión", "127": "Reprocesar NAT a SGH", "128": "Ingreso Evolución", "129": "Hospitalizado administración", "141": "Donación Autorizador", "142": "Donación Asistente Social", "143": "Donación Asistente Social Jefatura", "144": "Donación Cajero", "145": "Donación Cajero Avanzado", "146": "Donación Solo Consulta", "147": "Usuario Básico SIC", "148": "Tratante Telerehabilitación TETCA", "149": "Administrativo Informes de Paciente", "200": "PowerBI Nacional", "201": "PowerBI Arica", "202": "PowerBI Iquique", "203": "PowerBI Antofagasta", "204": "PowerBI Calama", "205": "PowerBI Copiapó", "206": "PowerBI Coquimbo", "207": "PowerBI Valparaíso", "208": "PowerBI Talca", "209": "PowerBI Concepción", "210": "PowerBI Temuco", "211": "PowerBI Valdivia", "212": "PowerBI Puerto Montt", "213": "PowerBI Coyhaique", "214": "PowerBI Santiago", "215": "Eliminar Documento Repositorio", "216": "WeeFim Consulta", "217": "WeeFim Evaluador", "218": "WeeFim Digitador", "219": "WeeFim Administrador", "220": "Admisión Orientación", "221": "Administrador SIC", "305": "Perfil PC Visualización", "306": "Perfil PC Médico - Fisiatra", "307": "Perfil PC - Kine Terapia", "308": "Perfil PC - Educación", "310": "Administración de Indicaciones Nacional", "311": "Movilización Asistente Social", "312": "Movilización Historial Asignaciones", "320": "Data Paciente - Profesional Asistencial", "321": "Recepción IT Acreditado", "322": "Administrativo Informe de Epicrisis", "323": "Contingencia: registro atrasado", "331": "Exámenes historial y derivación", "341": "LOP Administrador", "342": "LOP Recepción", "343": "LOP Asistencial", "344": "LOP Indicador", "346": "Fotos y Videos", "350": "Farmacia Receta médica", "351": "Farmacia Despacho botiquín", "352": "Farmacia Informes y Parámetros", "353": "Farmacia Solicitud Insumos", "354": "Data Paciente - Asistente Social", "355": "Data Paciente - Crear Persona", "356": "Data Paciente - Editar Persona", "358": "Data Paciente - Crea Paciente", "359": "Data Paciente - Cambio Estado Paciente", "360": "Perfil Social - Asistente Social", "364": "Data Paciente - Administrador", "366": "Data Paciente - Visualización", "367": "Data Paciente - Educación", "368": "Data Paciente Administrativo", "369": "Data Paciente - Terapéuticos", "370": "Data Paciente - Psicología", "371": "Visualización Evolución", "372": "Cirugía SGH", "373": "Comodato SGH", "374": "Data Paciente - S. Transversal", "375": "Perfil PC - Fonoaudiología", "376": "Perfil social - Psicología", "377": "Perfil social - Visualización", "378": "Perfil social - Educación", "382": "Imprimir Evolución"
+    "100": "Médico", "102": "Tratante indicador con indicaciones", "103": "Tratante jefatura", "105": "Recepción avanzado",
+    "107": "Bloqueo avanzado", "108": "Malla operador", "109": "Malla administrador", "112": "Planificador",
+    "114": "Enfermera", "116": "Planificación consulta", "117": "Agenda consulta", "118": "Vista nacional",
+    "121": "Reemplazo profesional", "123": "Hospitalizado acceso", "124": "Hospitalizado prestador",
+    "125": "Hospitalizado registro", "126": "Admisión", "127": "Reprocesar NAT a SGH",
+    "128": "Ingreso Evolución", "129": "Hospitalizado administración", "141": "Donación Autorizador",
+    "142": "Donación Asistente Social", "143": "Donación Asistente Social Jefatura", "144": "Donación Cajero",
+    "145": "Donación Cajero Avanzado", "146": "Donación Solo Consulta", "147": "Usuario Básico SIC",
+    "148": "Tratante Telerehabilitación TETCA", "149": "Administrativo Informes de Paciente",
+    "200": "PowerBI Nacional", "201": "PowerBI Arica", "202": "PowerBI Iquique", "203": "PowerBI Antofagasta",
+    "204": "PowerBI Calama", "205": "PowerBI Copiapó", "206": "PowerBI Coquimbo", "207": "PowerBI Valparaíso",
+    "208": "PowerBI Talca", "209": "PowerBI Concepción", "210": "PowerBI Temuco", "211": "PowerBI Valdivia",
+    "212": "PowerBI Puerto Montt", "213": "PowerBI Coyhaique", "214": "PowerBI Santiago",
+    "215": "Eliminar Documento Repositorio", "216": "WeeFim Consulta", "217": "WeeFim Evaluador",
+    "218": "WeeFim Digitador", "219": "WeeFim Administrador", "220": "Admisión Orientación",
+    "221": "Administrador SIC", "305": "Perfil PC Visualización", "306": "Perfil PC Médico - Fisiatra",
+    "307": "Perfil PC - Kine Terapia", "308": "Perfil PC - Educación", "310": "Administración de Indicaciones Nacional",
+    "311": "Movilización Asistente Social", "312": "Movilización Historial Asignaciones",
+    "320": "Data Paciente - Profesional Asistencial", "321": "Recepción IT Acreditado",
+    "322": "Administrativo Informe de Epicrisis", "323": "Contingencia: registro atrasado",
+    "331": "Exámenes historial y derivación", "341": "LOP Administrador", "342": "LOP Recepción",
+    "343": "LOP Asistencial", "344": "LOP Indicador", "346": "Fotos y Videos", "350": "Farmacia Receta médica",
+    "351": "Farmacia Despacho botiquín", "352": "Farmacia Informes y Parámetros",
+    "353": "Farmacia Solicitud Insumos", "354": "Data Paciente - Asistente Social",
+    "355": "Data Paciente - Crear Persona", "356": "Data Paciente - Editar Persona",
+    "358": "Data Paciente - Crea Paciente", "359": "Data Paciente - Cambio Estado Paciente",
+    "360": "Perfil Social - Asistente Social", "364": "Data Paciente - Administrador",
+    "366": "Data Paciente - Visualización", "367": "Data Paciente - Educación",
+    "368": "Data Paciente Administrativo", "369": "Data Paciente - Terapéuticos",
+    "370": "Data Paciente - Psicología", "371": "Visualización Evolución",
+    "372": "Cirugía SGH", "373": "Comodato SGH", "374": "Data Paciente - S. Transversal",
+    "375": "Perfil PC - Fonoaudiología", "376": "Perfil social - Psicología",
+    "377": "Perfil social - Visualización", "378": "Perfil social - Educación",
+    "382": "Imprimir Evolución"
 };
 
 const dataPerfiles = {
@@ -699,6 +789,7 @@ const mainView = document.getElementById("mainView");
 const editView = document.getElementById("editView");
 const profileView = document.getElementById("profileView");
 const functionView = document.getElementById("functionView");
+const compareView = document.getElementById("compareView");
 
 const txtIdUsuarioedit = document.getElementById("txtIdUsuarioedit");
 const txtUsuarioedit = document.getElementById("txtUsuarioedit");
@@ -739,13 +830,22 @@ const btnFiltrarCatalogoFunciones = document.getElementById("btnFiltrarCatalogoF
 const catalogoFuncionesBody = document.getElementById("catalogoFuncionesBody");
 const btnAgregarFuncionesSeleccionadas = document.getElementById("btnAgregarFuncionesSeleccionadas");
 
+// CompareView
+const cmbAmbitoCompare = document.getElementById("cmbAmbitoCompare");
+const cmbPerfilBaseCompare = document.getElementById("cmbPerfilBaseCompare");
+const listaPerfilesCompareDiv = document.getElementById("listaPerfilesCompare");
+const detalleRolesCompareDiv = document.getElementById("detalleRolesCompare");
+const compareAreaCompare = document.getElementById("compareAreaCompare");
+const btnCompareSelectAll = document.getElementById("btnCompareSelectAll");
+const btnCompareClear = document.getElementById("btnCompareClear");
+
 function escapeHtml(unsafe) {
     if (!unsafe) return "";
     return unsafe
         .replace(/&/g,"&amp;")
         .replace(/</g,"&lt;")
         .replace(/>/g,"&gt;")
-        .replace(/\"/g,"&quot;")
+        .replace(/\\"/g,"&quot;")
         .replace(/'/g,"&#039;");
 }
 
@@ -762,11 +862,13 @@ function mostrarVista(vistaId) {
     editView.style.display = "none";
     profileView.style.display = "none";
     functionView.style.display = "none";
+    compareView.style.display = "none";
 
     mainView.setAttribute("aria-hidden","true");
     editView.setAttribute("aria-hidden","true");
     profileView.setAttribute("aria-hidden","true");
     functionView.setAttribute("aria-hidden","true");
+    compareView.setAttribute("aria-hidden","true");
 
     document.getElementById(vistaId).style.display = "block";
     document.getElementById(vistaId).setAttribute("aria-hidden","false");
@@ -785,6 +887,9 @@ function mostrarVista(vistaId) {
     }
     if (vistaId === "functionView") {
         inicializarFunctionView();
+    }
+    if (vistaId === "compareView") {
+        inicializarCompareView();
     }
 }
 window.mostrarVista = mostrarVista;
@@ -806,7 +911,7 @@ function recargarComboPerfilesGlobal() {
 
     const allPerfiles = new Set(perfilesGlobal);
     Object.keys(dataPerfiles).forEach(ambito => {
-        dataPerfiles[ambito].forEach(p => allPerfiles.add(p.nombre));
+        (dataPerfiles[ambito] || []).forEach(p => allPerfiles.add(p.nombre));
     });
     perfilesGlobal = Array.from(allPerfiles).sort();
 
@@ -842,9 +947,11 @@ txtUsuariomain.addEventListener("input", () => {
     const q = txtUsuariomain.value.toLowerCase().trim();
     listaPredictiva.innerHTML = "";
     if (!q) return;
+
     const sugerencias = usuarios
         .filter(u => (String(u.id) + " " + u.nombre + " " + u.app + " " + u.apm).toLowerCase().includes(q))
         .slice(0,20);
+
     sugerencias.forEach(u => {
         const li = document.createElement("li");
         li.textContent = `${u.nombre} ${u.app} ${u.apm}  (ID:${u.id})`;
@@ -899,8 +1006,10 @@ function filtrarUsuarios() {
         const cadena = String(
             u.id + " " + u.nombre + " " + u.app + " " + u.apm + " " + u.especialidad + " " + u.instituto
         ).toLowerCase();
+
         let coincideTexto = true;
         if (q) coincideTexto = cadena.includes(q);
+
         return coincideInstituto && coincidePerfil && coincideTexto;
     });
 
@@ -915,6 +1024,7 @@ function pintarGrilla(lista) {
         const rolesLabel = (u.roles && u.roles.length)
             ? `<span class="link-roles" data-id="${u.id}">Ver Roles (${u.roles.length})</span>`
             : `<span style="color:red;font-weight:700;">SIN ROLES</span>`;
+
         tr.innerHTML = `
             <td>${u.id}</td>
             <td>${escapeHtml(u.nombre)}</td>
@@ -938,16 +1048,16 @@ function pintarGrilla(lista) {
     });
 
     tbody.querySelectorAll(".link-roles").forEach(link => {
-    link.addEventListener("click", () => {
-        const id = parseInt(link.dataset.id, 10);
-        const u = usuarios.find(xx => xx.id === id);
-        if (!u) return;
-        pintarModalRolesComparativo(u);
-        abrirModal();
+        link.addEventListener("click", () => {
+            const id = parseInt(link.dataset.id, 10);
+            const u = usuarios.find(xx => xx.id === id);
+            if (!u) return;
+            pintarModalRolesComparativo(u);
+            abrirModal();
+        });
     });
-});
 
-const sel = document.querySelector("input[name='chkSel']:checked");
+    const sel = document.querySelector("input[name='chkSel']:checked");
     btnEditar.disabled = !sel;
 }
 
@@ -1007,7 +1117,7 @@ btnVolver.addEventListener("click", () => {
 
 function cargarPerfilesPorAmbito(usuarioObjeto) {
     const ambito = cmbAmbito.value;
-    const perfilesList = dataPerfiles[ambito];
+    const perfilesList = dataPerfiles[ambito] || [];
 
     const perfilActualId = perfilActualPorAmbito[ambito] || (perfilesList[0] ? perfilesList[0].id : null);
 
@@ -1064,7 +1174,7 @@ cmbAmbito.addEventListener("change", () => cargarPerfilesPorAmbito(null));
 
 cmbPerfilActual.addEventListener("change", function() {
     const newp = this.value;
-    const chk = document.getElementById("chk" + newp);
+    const chk = document.getElementById("chk_" + newp);
     listaPerfilesDiv.querySelectorAll("input[type='checkbox']").forEach(c => (c.checked = false));
     if (chk) chk.checked = true;
     mostrarDetalleRolesYComparacion();
@@ -1094,7 +1204,6 @@ function getPerfilesSeleccionados() {
         .map(id => perfilesList.find(p => p.id === id))
         .filter(Boolean);
 }
-
 
 function mostrarDetalleRolesYComparacion() {
     const perfilesSeleccionados = getPerfilesSeleccionados();
@@ -1333,6 +1442,7 @@ btnEliminarPerfil.addEventListener("click", () => {
     }
 });
 
+// ---------- FunctionView (igual que tu base) ----------
 let funcionesPorRol = {
     "100": {
         rolNombre:"Médico",
@@ -1387,6 +1497,7 @@ function cargarComboRolesFuncion() {
             opt.textContent = `${rolId} - ${funcionesPorRol[rolId].rolNombre}`;
             cmbRolFuncion.appendChild(opt);
         });
+
     const first = Object.keys(funcionesPorRol)[0];
     if (first) cmbRolFuncion.value = first;
 }
@@ -1424,6 +1535,7 @@ function pintarChecklistFunciones() {
             const txt = (String(f.id) + " " + f.nombre).toLowerCase();
             if (!txt.includes(filtro)) return;
         }
+
         const div = document.createElement("div");
         const chk = document.createElement("input");
         chk.type = "checkbox";
@@ -1539,11 +1651,6 @@ btnGuardarFuncionesRol.addEventListener("click", () => {
     pintarTablaFunciones();
 
     alert(`Rol ${rolId} - ${rolNombre} guardado en la maqueta (incluyendo funciones asociadas).`);
-
-    if (profileView.style.display === "block") {
-        pintarChecklistRoles([]);
-    }
-
 });
 
 btnEliminarRol.addEventListener("click", () => {
@@ -1695,9 +1802,183 @@ btnAgregarFuncionesSeleccionadas.addEventListener("click", () => {
     alert(`Se agregaron ${agregadas} función(es) al rol ${rolId}.`);
 });
 
-init();
+// ---------- CompareView (nuevo + mejora de botones) ----------
+function inicializarCompareView() {
+    // Por defecto, si vienes desde cualquier lado, inicializa con Educación
+    cmbAmbitoCompare.value = "Educación";
+    cargarCompareViewPorAmbito();
+    mostrarDetalleRolesYComparacionCompare();
+}
 
+function cargarCompareViewPorAmbito() {
+    const ambito = cmbAmbitoCompare.value;
+    const perfilesList = dataPerfiles[ambito] || [];
 
+    // Combo base
+    cmbPerfilBaseCompare.innerHTML = "";
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "Seleccione perfil base";
+    cmbPerfilBaseCompare.appendChild(empty);
+
+    perfilesList.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.nombre;
+        cmbPerfilBaseCompare.appendChild(opt);
+    });
+
+    const baseDefault = perfilActualPorAmbito[ambito] || (perfilesList[0] ? perfilesList[0].id : "");
+    if (baseDefault) cmbPerfilBaseCompare.value = baseDefault;
+
+    // Lista de perfiles (checkboxes) - no pre-selecciono todos, solo 1 por defecto para que no explote visualmente
+    listaPerfilesCompareDiv.innerHTML = "";
+    perfilesList.forEach((p, idx) => {
+        const row = document.createElement("div");
+        row.className = "lista-perfiles-item";
+
+        const chk = document.createElement("input");
+        chk.type = "checkbox";
+        chk.value = p.id;
+        chk.id = "chk_compare_" + p.id;
+
+        // Por defecto: marca el mismo del base (si existe), si no el primero
+        if ((baseDefault && p.id === baseDefault) || (!baseDefault && idx === 0)) chk.checked = true;
+
+        const lbl = document.createElement("label");
+        lbl.setAttribute("for", chk.id);
+        lbl.textContent = p.nombre;
+
+        row.appendChild(chk);
+        row.appendChild(lbl);
+        listaPerfilesCompareDiv.appendChild(row);
+
+        chk.addEventListener("change", mostrarDetalleRolesYComparacionCompare);
+    });
+}
+
+function getPerfilesSeleccionadosCompare() {
+    const ambito = cmbAmbitoCompare.value;
+    const perfilesList = dataPerfiles[ambito] || [];
+    const ids = Array.from(listaPerfilesCompareDiv.querySelectorAll("input[type='checkbox']:checked"))
+        .map(chk => chk.value);
+
+    return ids.map(id => perfilesList.find(p => p.id === id)).filter(Boolean);
+}
+
+function getPerfilBaseCompare() {
+    const ambito = cmbAmbitoCompare.value;
+    const perfilesList = dataPerfiles[ambito] || [];
+    const idBase = cmbPerfilBaseCompare.value;
+    if (!idBase) return null;
+    return perfilesList.find(p => p.id === idBase) || null;
+}
+
+function mostrarDetalleRolesYComparacionCompare() {
+    const perfilesSeleccionados = getPerfilesSeleccionadosCompare();
+    const perfilBase = getPerfilBaseCompare();
+
+    if (!perfilesSeleccionados.length) {
+        detalleRolesCompareDiv.innerHTML = "<div>Seleccione al menos un perfil para ver sus roles combinados.</div>";
+        compareAreaCompare.innerHTML = "";
+        return;
+    }
+
+    // Tabla detalle (matriz)
+    const rolesUnicos = new Set();
+    perfilesSeleccionados.forEach(p => (p.roles || []).forEach(r => rolesUnicos.add(r)));
+    const idsOrdenados = Array.from(rolesUnicos).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    let html = `<table class="roles-table"><thead><tr><th>Rol / Funcionalidad</th>`;
+    perfilesSeleccionados.forEach(p => {
+        html += `<th style="text-align:center;">${escapeHtml(p.nombre)}</th>`;
+    });
+    html += `</tr></thead><tbody>`;
+
+    idsOrdenados.forEach(rid => {
+        const desc = rolesCatalogo[rid] || "Descripción no disponible";
+        html += `<tr><td><strong>${rid}</strong> - ${escapeHtml(desc)}</td>`;
+        perfilesSeleccionados.forEach(p => {
+            const tiene = (p.roles || []).includes(rid);
+            html += `<td style="text-align:center;"><input type="checkbox" ${tiene ? "checked" : ""} disabled></td>`;
+        });
+        html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+    detalleRolesCompareDiv.innerHTML = html;
+
+    // Comparación vs base
+    compareAreaCompare.innerHTML = "";
+
+    if (!perfilBase) {
+        compareAreaCompare.innerHTML = "<div>Seleccione un perfil base para comparar.</div>";
+        return;
+    }
+
+    const rolesSel = new Set(idsOrdenados);
+    const rolesBase = new Set((perfilBase.roles || []));
+
+    const union = new Set([...rolesSel, ...rolesBase]);
+    const todos = Array.from(union).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    todos.forEach(rol => {
+        const enSel = rolesSel.has(rol);
+        const enBase = rolesBase.has(rol);
+
+        let clase = "unchanged";
+        let estado = "Sin cambios";
+
+        // Seleccionados vs base:
+        // - added: está en seleccionados pero no en base
+        // - removed: está en base pero no en seleccionados
+        if (enSel && !enBase) { clase = "added"; estado = "En seleccionados (no está en base)"; }
+        else if (!enSel && enBase) { clase = "removed"; estado = "Está en base (no está en seleccionados)"; }
+
+        const desc = rolesCatalogo[rol] || "Descripción no disponible";
+        const div = document.createElement("div");
+        div.className = "compare-item " + clase;
+        div.innerHTML = `<strong>${rol}</strong> - ${escapeHtml(desc)}`;
+
+        if (estado !== "Sin cambios") {
+            const span = document.createElement("span");
+            span.textContent = " " + estado;
+            span.style.fontWeight = "bold";
+            div.appendChild(span);
+        }
+
+        compareAreaCompare.appendChild(div);
+    });
+}
+
+cmbAmbitoCompare.addEventListener("change", () => {
+    cargarCompareViewPorAmbito();
+    mostrarDetalleRolesYComparacionCompare();
+});
+
+// Importante: al cambiar el base NO se resetean checks, solo recalcula
+cmbPerfilBaseCompare.addEventListener("change", () => {
+    mostrarDetalleRolesYComparacionCompare();
+});
+
+// Botones nuevos
+btnCompareSelectAll.addEventListener("click", () => {
+    listaPerfilesCompareDiv
+        .querySelectorAll("input[type='checkbox']")
+        .forEach(chk => chk.checked = true);
+
+    mostrarDetalleRolesYComparacionCompare();
+});
+
+btnCompareClear.addEventListener("click", () => {
+    listaPerfilesCompareDiv
+        .querySelectorAll("input[type='checkbox']")
+        .forEach(chk => chk.checked = false);
+
+    mostrarDetalleRolesYComparacionCompare();
+});
+
+// ---------- Modal roles (tu versión sin columna usuario) ----------
 function determinarAmbitoPorEspecialidad(especialidad) {
     let defaultAmb = "Educación";
     const esp = (especialidad || "").toString();
@@ -1772,6 +2053,8 @@ function pintarModalRolesComparativo(u) {
     html += `</tbody></table>`;
     cont.innerHTML = html;
 }
+
+init();
 </script>
 </body>
 </html>
