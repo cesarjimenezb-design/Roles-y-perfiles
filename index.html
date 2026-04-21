@@ -381,6 +381,21 @@
                 <option value="Auditoría">Auditoría</option>
                 <option value="Gestión">Gestión</option>
             </select>
+            <button class="btn-secondary" id="btnMostrarNuevoAmbito" type="button" title="Crear nuevo ámbito">+ Nuevo ámbito</button>
+        </div>
+
+        <!-- Panel inline: Crear nuevo ámbito -->
+        <div id="panelNuevoAmbito" style="display:none; margin-bottom:12px; padding:12px; border:1px dashed var(--rojo-teleton); background:#fff9f9; border-radius:3px;">
+            <div style="font-weight:700; margin-bottom:8px; color:var(--rojo-teleton); font-size:13px;">Crear nuevo ámbito</div>
+            <div class="form-row" style="margin-bottom:8px;">
+                <label style="width:70px;">Nombre</label>
+                <input type="text" id="txtNuevoAmbito" placeholder="Ej: Rehabilitación" style="min-width:220px;" />
+            </div>
+            <div class="form-row" style="gap:8px;">
+                <label style="width:70px;"></label>
+                <button class="btn-primary" id="btnConfirmarNuevoAmbito" type="button">Crear ámbito</button>
+                <button class="btn-secondary" id="btnCancelarNuevoAmbito" type="button">Cancelar</button>
+            </div>
         </div>
 
         <div class="form-row">
@@ -1419,6 +1434,72 @@ btnGuardarPerfil.addEventListener("click", () => {
     recargarComboPerfilesGlobal();
     alert(mensaje);
     cargarComboPerfilesGestion();
+});
+
+// ---------- Nuevo Ámbito ----------
+const panelNuevoAmbito    = document.getElementById("panelNuevoAmbito");
+const txtNuevoAmbito      = document.getElementById("txtNuevoAmbito");
+const btnMostrarNuevoAmbito   = document.getElementById("btnMostrarNuevoAmbito");
+const btnConfirmarNuevoAmbito = document.getElementById("btnConfirmarNuevoAmbito");
+const btnCancelarNuevoAmbito  = document.getElementById("btnCancelarNuevoAmbito");
+
+btnMostrarNuevoAmbito.addEventListener("click", () => {
+    panelNuevoAmbito.style.display = "block";
+    txtNuevoAmbito.value = "";
+    txtNuevoAmbito.focus();
+});
+
+btnCancelarNuevoAmbito.addEventListener("click", () => {
+    panelNuevoAmbito.style.display = "none";
+    txtNuevoAmbito.value = "";
+});
+
+btnConfirmarNuevoAmbito.addEventListener("click", () => {
+    const nuevoNombre = (txtNuevoAmbito.value || "").trim();
+    if (!nuevoNombre) {
+        alert("Debe ingresar un nombre para el nuevo ámbito.");
+        txtNuevoAmbito.focus();
+        return;
+    }
+
+    // Verificar que no exista ya
+    const opcionesExistentes = Array.from(cmbAmbitoPerfil.options).map(o => o.value.toLowerCase());
+    if (opcionesExistentes.includes(nuevoNombre.toLowerCase())) {
+        alert(`El ámbito "${nuevoNombre}" ya existe.`);
+        txtNuevoAmbito.focus();
+        return;
+    }
+
+    // Agregar a dataPerfiles
+    dataPerfiles[nuevoNombre] = [];
+
+    // Función helper para agregar opción a un select si no existe
+    function agregarOpcionAmbito(selectEl, valor) {
+        const ya = Array.from(selectEl.options).some(o => o.value === valor);
+        if (!ya) {
+            const opt = document.createElement("option");
+            opt.value = valor;
+            opt.textContent = valor;
+            selectEl.appendChild(opt);
+        }
+    }
+
+    // Agregar a todos los selects de ámbito
+    agregarOpcionAmbito(cmbAmbitoPerfil, nuevoNombre);
+    agregarOpcionAmbito(cmbAmbito, nuevoNombre);
+    agregarOpcionAmbito(cmbAmbitoCompare, nuevoNombre);
+
+    // También a perfilActualPorAmbito
+    perfilActualPorAmbito[nuevoNombre] = null;
+
+    // Seleccionar el nuevo ámbito en el gestor y recargar
+    cmbAmbitoPerfil.value = nuevoNombre;
+    cargarComboPerfilesGestion();
+
+    panelNuevoAmbito.style.display = "none";
+    txtNuevoAmbito.value = "";
+
+    alert(`Ámbito "${nuevoNombre}" creado correctamente. Ahora puede agregar perfiles a este ámbito.`);
 });
 
 btnEliminarPerfil.addEventListener("click", () => {
