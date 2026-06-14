@@ -51,7 +51,7 @@
             font-size:14px; color:#333; font-weight:600;
             cursor:pointer; height:50px; display:flex; align-items:center;
         }
-        .menu-dropdown:hover .dropdown-content { display:block; }
+        .menu-dropdown.open .dropdown-content { display:block; }
         .menu-label {
             padding-right:15px; position:relative; display:flex; align-items:center;
         }
@@ -218,6 +218,7 @@
                 <a href="javascript:void(0)" onclick="mostrarVista('profileView')">Mantenedor Gestor de Perfiles</a>
                 <a href="javascript:void(0)" onclick="mostrarVista('functionView')">Mantenedor Funcionalidades (Rol + Función)</a>
                 <a href="javascript:void(0)" onclick="mostrarVista('compareView')">Comparar Perfiles (sin usuario)</a>
+                <a href="javascript:void(0)" onclick="mostrarVista('honorariosView')">Mantenedor Trabajadores a Honorarios</a>
             </div>
         </div>
     </div>
@@ -381,21 +382,6 @@
                 <option value="Auditoría">Auditoría</option>
                 <option value="Gestión">Gestión</option>
             </select>
-            <button class="btn-secondary" id="btnMostrarNuevoAmbito" type="button" title="Crear nuevo ámbito">+ Nuevo ámbito</button>
-        </div>
-
-        <!-- Panel inline: Crear nuevo ámbito -->
-        <div id="panelNuevoAmbito" style="display:none; margin-bottom:12px; padding:12px; border:1px dashed var(--rojo-teleton); background:#fff9f9; border-radius:3px;">
-            <div style="font-weight:700; margin-bottom:8px; color:var(--rojo-teleton); font-size:13px;">Crear nuevo ámbito</div>
-            <div class="form-row" style="margin-bottom:8px;">
-                <label style="width:70px;">Nombre</label>
-                <input type="text" id="txtNuevoAmbito" placeholder="Ej: Rehabilitación" style="min-width:220px;" />
-            </div>
-            <div class="form-row" style="gap:8px;">
-                <label style="width:70px;"></label>
-                <button class="btn-primary" id="btnConfirmarNuevoAmbito" type="button">Crear ámbito</button>
-                <button class="btn-secondary" id="btnCancelarNuevoAmbito" type="button">Cancelar</button>
-            </div>
         </div>
 
         <div class="form-row">
@@ -642,6 +628,128 @@
     </div>
 </main>
 
+<!-- VISTA 6: Mantenedor Trabajadores a Honorarios -->
+<main id="honorariosView" class="page" aria-hidden="true" style="display:none;">
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div class="page-title">Mantenedor Trabajadores a Honorarios</div>
+                <div class="page-subtitle">Gestión manual de trabajadores a honorarios (no sincronizados con BUK/ERP)</div>
+            </div>
+            <div>
+                <button class="btn-secondary" onclick="mostrarVista('mainView')">Volver</button>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="section-title">Agregar / Editar Honorario</div>
+        <div class="form-row">
+            <label>RUT</label>
+            <input type="text" id="txtHonRut" placeholder="Ej: 12.345.678-9" style="width:180px;" />
+        </div>
+        <div class="form-row">
+            <label>Nombre</label>
+            <input type="text" id="txtHonNombre" placeholder="Nombre(s)" />
+        </div>
+        <div class="form-row">
+            <label>Apellido P.</label>
+            <input type="text" id="txtHonApP" placeholder="Apellido paterno" />
+        </div>
+        <div class="form-row">
+            <label>Apellido M.</label>
+            <input type="text" id="txtHonApM" placeholder="Apellido materno" />
+        </div>
+        <div class="form-row">
+            <label>Instituto</label>
+            <select id="cmbHonInstituto"></select>
+        </div>
+        <div class="form-row">
+            <label>Especialidad</label>
+            <input type="text" id="txtHonEspecialidad" placeholder="Ej: Kinesiólogo, Psicólogo..." />
+        </div>
+        <div class="form-row">
+            <label>Vigencia</label>
+            <input type="date" id="txtHonDesde" title="Desde" style="min-width:auto; width:150px;" />
+            <span style="font-size:12px; color:#777;">hasta</span>
+            <input type="date" id="txtHonHasta" title="Hasta" style="min-width:auto; width:150px;" />
+        </div>
+        <div class="form-row" style="gap:8px;">
+            <label></label>
+            <button class="btn-primary" id="btnHonGuardar">Guardar</button>
+            <button class="btn-secondary" id="btnHonLimpiar">Limpiar</button>
+            <button class="btn-secondary" id="btnHonEliminar" disabled>Eliminar seleccionado</button>
+        </div>
+
+        <div id="honMsgOk" style="display:none; margin-top:6px; color:#136a17; font-size:13px; font-weight:600;"></div>
+        <div id="honMsgErr" style="display:none; margin-top:6px; color:#8b1a1a; font-size:13px; font-weight:600;"></div>
+
+        <hr />
+
+        <div class="section-title">Asignación de Roles</div>
+        <div class="small-muted">Selecciona el ámbito y perfil(es) que aplican al honorario. Los roles se asignarán en base a los perfiles marcados.</div>
+
+        <div class="form-row" style="margin-top:10px;">
+            <label>Ámbito</label>
+            <select id="cmbHonAmbito">
+                <option value="Administración">Administración</option>
+                <option value="Asistencial">Asistencial</option>
+                <option value="Educación" selected>Educación</option>
+                <option value="Informática">Informática</option>
+                <option value="Dirección Instituto">Dirección Instituto</option>
+                <option value="Gerencia">Gerencia</option>
+                <option value="Auditoría">Auditoría</option>
+                <option value="Gestión">Gestión</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>Perfil</label>
+            <select id="cmbHonPerfil"></select>
+        </div>
+
+        <div class="layout-grid" style="margin-top:10px;">
+            <div>
+                <div class="section-title">Perfiles del ámbito</div>
+                <div id="honListaPerfiles" class="lista-perfiles"></div>
+            </div>
+            <div>
+                <div class="section-title">Roles que se asignarán</div>
+                <div id="honDetalleRoles" class="roles-detalle">
+                    <div style="color:#999;">Seleccione al menos un perfil para ver los roles.</div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="section-title">Listado de Honorarios registrados</div>
+        <div style="overflow-x:auto;">
+            <table id="tblHonorarios" aria-label="Tabla honorarios">
+                <thead>
+                    <tr>
+                        <th style="width:40px;">Sel.</th>
+                        <th>RUT</th>
+                        <th>Nombre</th>
+                        <th>Apellido P.</th>
+                        <th>Apellido M.</th>
+                        <th>Instituto</th>
+                        <th>Especialidad</th>
+                        <th>Perfil asignado</th>
+                        <th>Roles</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tblHonorariosCuerpo"></tbody>
+            </table>
+        </div>
+        <div class="small-muted">
+            Los datos se almacenan localmente en esta sesión. Selecciona una fila para editar o eliminar el registro.
+        </div>
+    </div>
+</main>
+
 <!-- MODAL ROLES -->
 <div id="modalRoles" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.4); justify-content:center; align-items:center; z-index:80;">
     <div style="width:520px;background:#fff;border:1px solid #ccc;padding:18px;border-radius:4px; max-height:80vh; overflow:auto;">
@@ -878,12 +986,14 @@ function mostrarVista(vistaId) {
     profileView.style.display = "none";
     functionView.style.display = "none";
     compareView.style.display = "none";
+    document.getElementById("honorariosView").style.display = "none";
 
     mainView.setAttribute("aria-hidden","true");
     editView.setAttribute("aria-hidden","true");
     profileView.setAttribute("aria-hidden","true");
     functionView.setAttribute("aria-hidden","true");
     compareView.setAttribute("aria-hidden","true");
+    document.getElementById("honorariosView").setAttribute("aria-hidden","true");
 
     document.getElementById(vistaId).style.display = "block";
     document.getElementById(vistaId).setAttribute("aria-hidden","false");
@@ -905,6 +1015,10 @@ function mostrarVista(vistaId) {
     }
     if (vistaId === "compareView") {
         inicializarCompareView();
+    }
+    if (vistaId === "honorariosView") {
+        honCargarPerfilesPorAmbito();
+        honRenderTabla();
     }
 }
 window.mostrarVista = mostrarVista;
@@ -940,6 +1054,7 @@ function recargarComboPerfilesGlobal() {
 
 function init() {
     recargarComboPerfilesGlobal();
+    initHonorarios();
 
     const emptyI = document.createElement("option");
     emptyI.value = "";
@@ -1434,72 +1549,6 @@ btnGuardarPerfil.addEventListener("click", () => {
     recargarComboPerfilesGlobal();
     alert(mensaje);
     cargarComboPerfilesGestion();
-});
-
-// ---------- Nuevo Ámbito ----------
-const panelNuevoAmbito    = document.getElementById("panelNuevoAmbito");
-const txtNuevoAmbito      = document.getElementById("txtNuevoAmbito");
-const btnMostrarNuevoAmbito   = document.getElementById("btnMostrarNuevoAmbito");
-const btnConfirmarNuevoAmbito = document.getElementById("btnConfirmarNuevoAmbito");
-const btnCancelarNuevoAmbito  = document.getElementById("btnCancelarNuevoAmbito");
-
-btnMostrarNuevoAmbito.addEventListener("click", () => {
-    panelNuevoAmbito.style.display = "block";
-    txtNuevoAmbito.value = "";
-    txtNuevoAmbito.focus();
-});
-
-btnCancelarNuevoAmbito.addEventListener("click", () => {
-    panelNuevoAmbito.style.display = "none";
-    txtNuevoAmbito.value = "";
-});
-
-btnConfirmarNuevoAmbito.addEventListener("click", () => {
-    const nuevoNombre = (txtNuevoAmbito.value || "").trim();
-    if (!nuevoNombre) {
-        alert("Debe ingresar un nombre para el nuevo ámbito.");
-        txtNuevoAmbito.focus();
-        return;
-    }
-
-    // Verificar que no exista ya
-    const opcionesExistentes = Array.from(cmbAmbitoPerfil.options).map(o => o.value.toLowerCase());
-    if (opcionesExistentes.includes(nuevoNombre.toLowerCase())) {
-        alert(`El ámbito "${nuevoNombre}" ya existe.`);
-        txtNuevoAmbito.focus();
-        return;
-    }
-
-    // Agregar a dataPerfiles
-    dataPerfiles[nuevoNombre] = [];
-
-    // Función helper para agregar opción a un select si no existe
-    function agregarOpcionAmbito(selectEl, valor) {
-        const ya = Array.from(selectEl.options).some(o => o.value === valor);
-        if (!ya) {
-            const opt = document.createElement("option");
-            opt.value = valor;
-            opt.textContent = valor;
-            selectEl.appendChild(opt);
-        }
-    }
-
-    // Agregar a todos los selects de ámbito
-    agregarOpcionAmbito(cmbAmbitoPerfil, nuevoNombre);
-    agregarOpcionAmbito(cmbAmbito, nuevoNombre);
-    agregarOpcionAmbito(cmbAmbitoCompare, nuevoNombre);
-
-    // También a perfilActualPorAmbito
-    perfilActualPorAmbito[nuevoNombre] = null;
-
-    // Seleccionar el nuevo ámbito en el gestor y recargar
-    cmbAmbitoPerfil.value = nuevoNombre;
-    cargarComboPerfilesGestion();
-
-    panelNuevoAmbito.style.display = "none";
-    txtNuevoAmbito.value = "";
-
-    alert(`Ámbito "${nuevoNombre}" creado correctamente. Ahora puede agregar perfiles a este ámbito.`);
 });
 
 btnEliminarPerfil.addEventListener("click", () => {
@@ -2135,7 +2184,376 @@ function pintarModalRolesComparativo(u) {
     cont.innerHTML = html;
 }
 
+// ===================== MANTENEDOR HONORARIOS =====================
+let honorarios = [];
+let honSelIdx = null;
+
+function initHonorarios() {
+    // Poblar combo de institutos
+    const cmbHonInst = document.getElementById("cmbHonInstituto");
+    institutosGlobal.forEach(inst => {
+        const opt = document.createElement("option");
+        opt.value = inst;
+        opt.textContent = inst;
+        cmbHonInst.appendChild(opt);
+    });
+
+    document.getElementById("btnHonGuardar").addEventListener("click", honGuardar);
+    document.getElementById("btnHonLimpiar").addEventListener("click", honLimpiar);
+    document.getElementById("btnHonEliminar").addEventListener("click", honEliminar);
+
+    // Ámbito → recarga perfiles
+    document.getElementById("cmbHonAmbito").addEventListener("change", () => honCargarPerfilesPorAmbito());
+
+    // Perfil combo → sincroniza checkbox
+    document.getElementById("cmbHonPerfil").addEventListener("change", function() {
+        const newId = this.value;
+        const lista = document.getElementById("honListaPerfiles");
+        lista.querySelectorAll("input[type='checkbox']").forEach(c => (c.checked = false));
+        const chk = lista.querySelector(`input[value="${newId}"]`);
+        if (chk) chk.checked = true;
+        honMostrarDetalleRoles();
+    });
+}
+
+/* ---- Carga checklist de perfiles del ámbito seleccionado ---- */
+function honCargarPerfilesPorAmbito(preCheckedId) {
+    const ambito = document.getElementById("cmbHonAmbito").value;
+    const perfilesList = dataPerfiles[ambito] || [];
+    const cmbHonPerfil = document.getElementById("cmbHonPerfil");
+    const lista = document.getElementById("honListaPerfiles");
+
+    // Combo perfil
+    cmbHonPerfil.innerHTML = "";
+    perfilesList.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.nombre;
+        cmbHonPerfil.appendChild(opt);
+    });
+
+    // Checklist
+    lista.innerHTML = "";
+    perfilesList.forEach(p => {
+        const row = document.createElement("div");
+        row.className = "lista-perfiles-item";
+
+        const chk = document.createElement("input");
+        chk.type = "checkbox";
+        chk.value = p.id;
+        chk.id = "honChk_" + p.id;
+        if (preCheckedId && p.id === preCheckedId) {
+            chk.checked = true;
+            cmbHonPerfil.value = p.id;
+        }
+
+        const lbl = document.createElement("label");
+        lbl.setAttribute("for", chk.id);
+        lbl.textContent = p.nombre;
+
+        row.appendChild(chk);
+        row.appendChild(lbl);
+        lista.appendChild(row);
+
+        chk.addEventListener("change", () => {
+            // Sincroniza combo al último marcado
+            const marcados = lista.querySelectorAll("input:checked");
+            if (marcados.length) cmbHonPerfil.value = marcados[marcados.length - 1].value;
+            honMostrarDetalleRoles();
+        });
+    });
+
+    honMostrarDetalleRoles();
+}
+
+/* ---- Calcula y pinta roles de los perfiles marcados ---- */
+function honGetRolesMarcados() {
+    const ambito = document.getElementById("cmbHonAmbito").value;
+    const perfilesList = dataPerfiles[ambito] || [];
+    const roles = new Set();
+    document.getElementById("honListaPerfiles")
+        .querySelectorAll("input[type='checkbox']:checked")
+        .forEach(chk => {
+            const p = perfilesList.find(x => x.id === chk.value);
+            if (p && p.roles) p.roles.forEach(r => roles.add(r));
+        });
+    return Array.from(roles).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+}
+
+function honGetPerfilesSeleccionados() {
+    const ambito = document.getElementById("cmbHonAmbito").value;
+    const perfilesList = dataPerfiles[ambito] || [];
+    return Array.from(
+        document.getElementById("honListaPerfiles").querySelectorAll("input:checked")
+    ).map(chk => perfilesList.find(p => p.id === chk.value)).filter(Boolean);
+}
+
+function honMostrarDetalleRoles() {
+    const perfiles = honGetPerfilesSeleccionados();
+    const div = document.getElementById("honDetalleRoles");
+
+    if (!perfiles.length) {
+        div.innerHTML = "<div style='color:#999;'>Seleccione al menos un perfil para ver los roles.</div>";
+        return;
+    }
+
+    const rolesUnicos = new Set();
+    perfiles.forEach(p => (p.roles || []).forEach(r => rolesUnicos.add(r)));
+    const idsOrdenados = Array.from(rolesUnicos).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    let html = `<table class="roles-table"><thead><tr><th>Rol / Funcionalidad</th>`;
+    perfiles.forEach(p => { html += `<th style="text-align:center;">${escapeHtml(p.nombre)}</th>`; });
+    html += `</tr></thead><tbody>`;
+
+    idsOrdenados.forEach(rid => {
+        const desc = rolesCatalogo[rid] || "Descripción no disponible";
+        html += `<tr><td><strong>${rid}</strong> - ${escapeHtml(desc)}</td>`;
+        perfiles.forEach(p => {
+            const tiene = (p.roles || []).includes(rid);
+            html += `<td style="text-align:center;"><input type="checkbox" ${tiene ? "checked" : ""} disabled></td>`;
+        });
+        html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+    div.innerHTML = html;
+}
+
+/* ---- Estado vigencia ---- */
+function honEstado(hasta) {
+    if (!hasta) return "Activo";
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    return new Date(hasta + "T00:00:00") >= hoy ? "Activo" : "Vencido";
+}
+
+/* ---- Render tabla listado ---- */
+function honRenderTabla() {
+    const tbody = document.getElementById("tblHonorariosCuerpo");
+    tbody.innerHTML = "";
+    if (!honorarios.length) {
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:#999;">Sin registros.</td></tr>`;
+        return;
+    }
+    honorarios.forEach((h, idx) => {
+        const estado = honEstado(h.hasta);
+        const rolesLabel = h.roles && h.roles.length
+            ? `<span style="color:#0066cc;">${h.roles.length} roles</span>`
+            : `<span style="color:red;font-weight:700;">SIN ROLES</span>`;
+        const perfilLabel = escapeHtml(h.perfilNombre || "-");
+
+        const tr = document.createElement("tr");
+        tr.style.cursor = "pointer";
+        if (idx === honSelIdx) tr.style.background = "#fff3cd";
+        tr.innerHTML = `
+            <td style="text-align:center;"><input type="radio" name="honSel" ${idx === honSelIdx ? "checked" : ""}></td>
+            <td>${escapeHtml(h.rut)}</td>
+            <td>${escapeHtml(h.nombre)}</td>
+            <td>${escapeHtml(h.apP)}</td>
+            <td>${escapeHtml(h.apM)}</td>
+            <td>${escapeHtml(h.instituto)}</td>
+            <td>${escapeHtml(h.especialidad)}</td>
+            <td>${perfilLabel}</td>
+            <td>${rolesLabel}</td>
+            <td>${h.desde || "-"}</td>
+            <td>${h.hasta || "-"}</td>
+            <td style="color:${estado === 'Activo' ? '#136a17' : '#8b1a1a'};font-weight:600;">${estado}</td>
+        `;
+        tr.addEventListener("click", () => {
+            honSelIdx = idx;
+            honCargarFormulario(idx);
+            honRenderTabla();
+        });
+        tbody.appendChild(tr);
+    });
+}
+
+/* ---- Carga formulario desde un registro existente ---- */
+function honCargarFormulario(idx) {
+    const h = honorarios[idx];
+    document.getElementById("txtHonRut").value        = h.rut;
+    document.getElementById("txtHonNombre").value     = h.nombre;
+    document.getElementById("txtHonApP").value        = h.apP;
+    document.getElementById("txtHonApM").value        = h.apM;
+    document.getElementById("cmbHonInstituto").value  = h.instituto;
+    document.getElementById("txtHonEspecialidad").value = h.especialidad;
+    document.getElementById("txtHonDesde").value      = h.desde;
+    document.getElementById("txtHonHasta").value      = h.hasta;
+
+    // Restaurar ámbito + perfiles marcados
+    const cmbHonAmbito = document.getElementById("cmbHonAmbito");
+    if (h.ambito) cmbHonAmbito.value = h.ambito;
+    // preCheckedId es solo el primero del array; los demás se marcan tras cargar checklist
+    honCargarPerfilesPorAmbito(null);
+    // Marcar todos los perfiles guardados
+    if (h.perfilesIds && h.perfilesIds.length) {
+        const lista = document.getElementById("honListaPerfiles");
+        lista.querySelectorAll("input[type='checkbox']").forEach(chk => {
+            chk.checked = h.perfilesIds.includes(chk.value);
+        });
+        const cmbHonPerfil = document.getElementById("cmbHonPerfil");
+        cmbHonPerfil.value = h.perfilesIds[h.perfilesIds.length - 1];
+        honMostrarDetalleRoles();
+    }
+
+    document.getElementById("btnHonEliminar").disabled = false;
+    honMsgLimpiar();
+}
+
+/* ---- Leer formulario ---- */
+function honLeerFormulario() {
+    const ambito = document.getElementById("cmbHonAmbito").value;
+    const perfilesSeleccionados = honGetPerfilesSeleccionados();
+    const rolesCalculados = honGetRolesMarcados();
+    const perfilNombre = perfilesSeleccionados.map(p => p.nombre).join(" + ") || "-";
+
+    return {
+        rut:          document.getElementById("txtHonRut").value.trim(),
+        nombre:       document.getElementById("txtHonNombre").value.trim(),
+        apP:          document.getElementById("txtHonApP").value.trim(),
+        apM:          document.getElementById("txtHonApM").value.trim(),
+        instituto:    document.getElementById("cmbHonInstituto").value,
+        especialidad: document.getElementById("txtHonEspecialidad").value.trim(),
+        desde:        document.getElementById("txtHonDesde").value,
+        hasta:        document.getElementById("txtHonHasta").value,
+        ambito,
+        perfilesIds:  perfilesSeleccionados.map(p => p.id),
+        perfilNombre,
+        roles:        rolesCalculados,
+    };
+}
+
+/* ---- Guardar ---- */
+function honGuardar() {
+    honMsgLimpiar();
+    const d = honLeerFormulario();
+    if (!d.rut || !d.nombre || !d.apP) {
+        honMsgErr("RUT, Nombre y Apellido Paterno son obligatorios.");
+        return;
+    }
+    if (!d.roles.length) {
+        honMsgErr("Debe seleccionar al menos un perfil con roles antes de guardar.");
+        return;
+    }
+    if (honSelIdx !== null) {
+        const rutAnterior = honorarios[honSelIdx].rut;
+        const idAnterior  = honorarios[honSelIdx]._usuarioId;
+        honorarios[honSelIdx] = d;
+        d._usuarioId = honSyncUsuario(d, idAnterior);
+        honMsgOk(`Registro actualizado. ${d.roles.length} roles asignados.`);
+    } else {
+        const dup = honorarios.findIndex(x => x.rut === d.rut);
+        if (dup !== -1) { honMsgErr("Ya existe un honorario con ese RUT."); return; }
+        d._usuarioId = honSyncUsuario(d, null);
+        honorarios.push(d);
+        honMsgOk(`Honorario agregado correctamente. ${d.roles.length} roles asignados.`);
+    }
+    honLimpiar();
+    honRenderTabla();
+}
+
+/* ---- Eliminar ---- */
+function honEliminar() {
+    if (honSelIdx === null) return;
+    if (!confirm("¿Eliminar este registro de honorario?")) return;
+    const rut = honorarios[honSelIdx].rut;
+    honorarios.splice(honSelIdx, 1);
+    honRemoveUsuario(rut);
+    honLimpiar();
+    honRenderTabla();
+    honMsgOk("Registro eliminado.");
+}
+
+/* ---- Limpiar formulario ---- */
+function honLimpiar() {
+    honSelIdx = null;
+    ["txtHonRut","txtHonNombre","txtHonApP","txtHonApM","txtHonEspecialidad"].forEach(id => {
+        document.getElementById(id).value = "";
+    });
+    document.getElementById("txtHonDesde").value = "";
+    document.getElementById("txtHonHasta").value = "";
+    document.getElementById("cmbHonInstituto").selectedIndex = 0;
+    document.getElementById("cmbHonAmbito").value = "Educación";
+    document.getElementById("btnHonEliminar").disabled = true;
+    honCargarPerfilesPorAmbito();
+    honMsgLimpiar();
+}
+
+/* ---- Mensajes ---- */
+function honMsgOk(msg) {
+    const el = document.getElementById("honMsgOk");
+    el.textContent = "✔ " + msg; el.style.display = "block";
+    setTimeout(() => { el.style.display = "none"; }, 3500);
+}
+function honMsgErr(msg) {
+    const el = document.getElementById("honMsgErr");
+    el.textContent = "✖ " + msg; el.style.display = "block";
+    setTimeout(() => { el.style.display = "none"; }, 4500);
+}
+function honMsgLimpiar() {
+    document.getElementById("honMsgOk").style.display = "none";
+    document.getElementById("honMsgErr").style.display = "none";
+}
+// ===============================================================
+
+// ===================== MENÚ TOGGLE =====================
+(function() {
+    const menuDropdown = document.querySelector(".menu-dropdown");
+    const menuLabel    = menuDropdown.querySelector(".menu-label");
+
+    menuLabel.addEventListener("click", (e) => {
+        e.stopPropagation();
+        menuDropdown.classList.toggle("open");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!menuDropdown.contains(e.target)) {
+            menuDropdown.classList.remove("open");
+        }
+    });
+
+    menuDropdown.querySelectorAll(".dropdown-content a").forEach(a => {
+        a.addEventListener("click", () => {
+            menuDropdown.classList.remove("open");
+        });
+    });
+})();
+// =======================================================
+
+// ===== SYNC HONORARIO <-> USUARIOS =====
+let _honNextId = 9000;
+
+function honSyncUsuario(d, idExistente) {
+    const obj = {
+        id:           idExistente || (_honNextId++),
+        nombre:       d.nombre,
+        app:          d.apP,
+        apm:          d.apM,
+        especialidad: d.perfilNombre || d.especialidad,
+        instituto:    d.instituto,
+        roles:        Array.from(d.roles),
+        _honorario:   true,
+        _rut:         d.rut,
+    };
+
+    const idx = usuarios.findIndex(u => u._rut === d.rut);
+    if (idx !== -1) {
+        const prevId = usuarios[idx].id;
+        usuarios[idx] = { ...obj, id: prevId };
+        return prevId;
+    } else {
+        usuarios.push(obj);
+        return obj.id;
+    }
+}
+
+function honRemoveUsuario(rut) {
+    const idx = usuarios.findIndex(u => u._rut === rut);
+    if (idx !== -1) usuarios.splice(idx, 1);
+}
+// =======================================
+
 init();
+
 </script>
 </body>
 </html>
