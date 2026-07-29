@@ -197,6 +197,28 @@
             max-width:0;
         }
 
+        /* ---- Selector de perfil de sesión ---- */
+        .perfil-sesion-wrapper {
+            display:flex; align-items:center; gap:8px;
+            font-size:12px; color:#555;
+            border-left:1px solid var(--gris-borde);
+            padding-left:14px; margin-left:6px;
+        }
+        .perfil-sesion-wrapper label { font-weight:600; white-space:nowrap; }
+        .perfil-sesion-select {
+            padding:4px 8px; border:1px solid var(--gris-borde);
+            border-radius:3px; font-size:12px; min-width:110px;
+            background:#fff; cursor:pointer;
+        }
+        .perfil-sesion-select:focus { outline:none; border-color:var(--rojo-teleton); }
+        .badge-perfil {
+            display:inline-block; padding:2px 8px; border-radius:20px;
+            font-size:11px; font-weight:700; white-space:nowrap;
+        }
+        .badge-admin  { background:#F3313F; color:#fff; }
+        .badge-soporte{ background:#e0e0e0; color:#333; }
+        .badge-rrhh   { background:#2E7D32; color:#fff; }
+
         @media (max-width:820px) {
             .input-clear-wrapper input { width:100%; }
             .listaPredictiva { width:100%; }
@@ -214,15 +236,21 @@
         <div class="menu-dropdown">
             <div class="menu-label">Menú</div>
             <div class="dropdown-content">
-                <a href="javascript:void(0)" onclick="mostrarVista('mainView')">Administración de Permisos</a>
-                <a href="javascript:void(0)" onclick="mostrarVista('profileView')">Mantenedor Gestor de Perfiles</a>
-                <a href="javascript:void(0)" onclick="mostrarVista('functionView')">Mantenedor Funcionalidades (Rol + Función)</a>
-                <a href="javascript:void(0)" onclick="mostrarVista('compareView')">Comparar Perfiles (sin usuario)</a>
-                <a href="javascript:void(0)" onclick="mostrarVista('honorariosView')">Mantenedor Trabajadores a Honorarios</a>
+                <!-- Las opciones se construyen dinámicamente según el perfil de sesión -->
             </div>
         </div>
     </div>
     <div class="topbar-right">
+        <!-- Selector de perfil de sesión -->
+        <div class="perfil-sesion-wrapper">
+            <label for="selPerfilSesion">Perfil:</label>
+            <select id="selPerfilSesion" class="perfil-sesion-select" onchange="aplicarPerfilSesion(this.value)">
+                <option value="admin">Administrador</option>
+                <option value="soporte">Soporte</option>
+                <option value="rrhh">RRHH</option>
+            </select>
+            <span id="badgePerfilSesion" class="badge-perfil badge-admin">ADMIN</span>
+        </div>
         <div class="user-pill">CJ</div>
         <div class="user-subtext">
             Cesar Jimenez<br />
@@ -296,40 +324,60 @@
 
         <hr />
 
-        <div class="section-title">Datos del usuario</div>
-        <div class="form-row">
-            <label>ID Usuario</label>
-            <input type="text" id="txtIdUsuarioedit" readonly style="width:120px;" />
-        </div>
-        <div class="form-row">
-            <label>Nombre Usuario</label>
-            <input type="text" id="txtUsuarioedit" readonly />
-        </div>
-        <div class="form-row">
-            <label>Instituto</label>
-            <select id="cmbInstitutoEdit"></select>
-        </div>
-        <div class="form-row">
-            <label>Ámbito</label>
-            <select id="cmbAmbito">
-                <option value="Administración">Administración</option>
-                <option value="Asistencial">Asistencial</option>
-                <option value="Educación" selected>Educación</option>
-                <option value="Informática">Informática</option>
-                <option value="Dirección Instituto">Dirección Instituto</option>
-                <option value="Gerencia">Gerencia</option>
-                <option value="Auditoría">Auditoría</option>
-                <option value="Gestión">Gestión</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <label>Nombre Perfil</label>
-            <select id="cmbPerfilActual"></select>
-        </div>
-        <div class="form-row" style="gap:8px;">
-            <label></label>
-            <button class="btn-primary" id="btnGuardar">Guardar cambios</button>
-            <button class="btn-secondary" id="btnRestaurar">Restaurar original</button>
+        <div style="display:grid; grid-template-columns: 1fr 320px; gap:20px; align-items:start;">
+          <div>
+            <div class="section-title">Datos del usuario</div>
+            <div class="form-row">
+                <label>ID Usuario</label>
+                <input type="text" id="txtIdUsuarioedit" readonly style="width:120px;" />
+            </div>
+            <div class="form-row">
+                <label>Nombre Usuario</label>
+                <input type="text" id="txtUsuarioedit" readonly />
+            </div>
+            <div class="form-row">
+                <label>Instituto</label>
+                <select id="cmbInstitutoEdit"></select>
+            </div>
+            <div class="form-row">
+                <label>Ámbito</label>
+                <select id="cmbAmbito">
+                    <option value="Administración">Administración</option>
+                    <option value="Asistencial">Asistencial</option>
+                    <option value="Educación" selected>Educación</option>
+                    <option value="Informática">Informática</option>
+                    <option value="Dirección Instituto">Dirección Instituto</option>
+                    <option value="Gerencia">Gerencia</option>
+                    <option value="Auditoría">Auditoría</option>
+                    <option value="Gestión">Gestión</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Nombre Perfil</label>
+                <select id="cmbPerfilActual"></select>
+            </div>
+            <div class="form-row" style="gap:8px;">
+                <label></label>
+                <button class="btn-primary" id="btnGuardar">Guardar cambios</button>
+                <button class="btn-secondary" id="btnRestaurar">Restaurar original</button>
+            </div>
+          </div>
+
+          <!-- Panel lateral: Contraseña -->
+          <div style="border:1px solid #e2e2e2; border-radius:4px; padding:14px; background:#fafafa;">
+            <div class="section-title" style="margin-top:0;">Contraseña</div>
+            <div class="small-muted" style="margin-bottom:12px;">
+              Gestión de credenciales del usuario seleccionado (uso Soporte Técnico / RRHH).
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <button type="button" class="btn-primary" id="btnCrearPass" onclick="abrirModalPass('crear', document.getElementById('txtUsuarioedit').value)">Crear contraseña</button>
+              <button type="button" class="btn-secondary" id="btnResetPass" onclick="abrirModalPass('reset', document.getElementById('txtUsuarioedit').value)">Resetear contraseña</button>
+            </div>
+            <div class="small-muted" style="margin-top:12px; font-size:11px;">
+              <strong>Crear:</strong> genera credenciales iniciales para un usuario nuevo.<br/>
+              <strong>Resetear:</strong> asigna una nueva contraseña sin requerir la actual.
+            </div>
+          </div>
         </div>
 
         <hr />
@@ -674,7 +722,42 @@
             <span style="font-size:12px; color:#777;">hasta</span>
             <input type="date" id="txtHonHasta" title="Hasta" style="min-width:auto; width:150px;" />
         </div>
+
+        <div class="section-title" style="margin-top:14px;">Datos de contacto</div>
+        <div class="form-row">
+            <label>Teléfono Oficina</label>
+            <span style="font-size:12px;color:#555;">+56</span>
+            <input type="text" id="txtHonTelOficina" placeholder="Ej: 226772000 (9 dígitos)" maxlength="9" style="width:180px;" />
+        </div>
+        <div class="form-row">
+            <label>Celular</label>
+            <span style="font-size:12px;color:#555;">+56</span>
+            <input type="text" id="txtHonCelular" placeholder="Ej: 953261801 (9 dígitos)" maxlength="9" style="width:180px;" />
+        </div>
+        <div class="form-row">
+            <label>Nombre y Apellidos Jefe directo</label>
+            <input type="text" id="txtHonJefe" placeholder="Nombre completo del jefe directo" />
+        </div>
+
+        
+
+        
+        <div class="form-row">
+            <label>Fecha solicitud</label>
+            <input type="date" id="txtHonFechaSolicitud" style="min-width:auto; width:170px;" />
+        </div>
+
+        <div class="section-title" style="margin-top:14px;">Contraseña</div>
+        <div class="small-muted" style="margin-bottom:8px;">
+            Crear o resetear contraseña para el honorario ingresado (RUT como identificador). No se solicita la contraseña actual.
+        </div>
         <div class="form-row" style="gap:8px;">
+            <label></label>
+            <button type="button" class="btn-primary" onclick="abrirModalPass('crear', document.getElementById('txtHonRut').value)">Crear contraseña</button>
+            <button type="button" class="btn-secondary" onclick="abrirModalPass('reset', document.getElementById('txtHonRut').value)">Resetear contraseña</button>
+        </div>
+
+        <div class="form-row" style="gap:8px; margin-top:14px;">
             <label></label>
             <button class="btn-primary" id="btnHonGuardar">Guardar</button>
             <button class="btn-secondary" id="btnHonLimpiar">Limpiar</button>
@@ -761,8 +844,68 @@
     </div>
 </div>
 
+<!-- MODAL CONTRASEÑA (Crear / Resetear) -->
+<div id="modalPass" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.4); justify-content:center; align-items:center; z-index:90;">
+    <div style="width:420px;background:#fff;border:1px solid #ccc;padding:18px;border-radius:4px;">
+        <h3 id="modalPassTitulo" style="margin-top:0;font-size:15px;color:#333;">Crear contraseña</h3>
+        <div class="small-muted" id="modalPassSub" style="margin-bottom:12px;">Usuario: <span id="modalPassUser">-</span></div>
+
+        <div class="form-row">
+            <label>Nueva contraseña</label>
+            <input type="password" id="txtPassNueva" />
+        </div>
+        <div class="form-row">
+            <label>Confirmar</label>
+            <input type="password" id="txtPassConfirm" />
+        </div>
+        <div class="small-muted" style="font-size:11px; margin:6px 0 12px;">
+            Mínimo 8 caracteres. Debe incluir letras y números. No se solicita la contraseña actual: acción destinada a Soporte Técnico / RRHH.
+        </div>
+        <div id="modalPassMsg" style="font-size:12px; color:#b00; min-height:16px; margin-bottom:8px;"></div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button onclick="cerrarModalPass()" class="btn-secondary">Cancelar</button>
+            <button onclick="confirmarPass()" class="btn-primary" id="btnConfirmarPass">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function(){
+    let modoPass = "crear";
+    window.abrirModalPass = function(modo, usuario){
+        modoPass = modo;
+        const user = (usuario || "").trim();
+        if(!user){
+            alert("Seleccione primero un usuario.");
+            return;
+        }
+        document.getElementById("modalPassUser").textContent = user;
+        document.getElementById("modalPassTitulo").textContent = modo === "crear" ? "Crear contraseña" : "Resetear contraseña";
+        document.getElementById("txtPassNueva").value = "";
+        document.getElementById("txtPassConfirm").value = "";
+        document.getElementById("modalPassMsg").textContent = "";
+        document.getElementById("modalPass").style.display = "flex";
+    };
+    window.cerrarModalPass = function(){
+        document.getElementById("modalPass").style.display = "none";
+    };
+    window.confirmarPass = function(){
+        const msg = document.getElementById("modalPassMsg");
+        const nueva = document.getElementById("txtPassNueva").value;
+        const conf  = document.getElementById("txtPassConfirm").value;
+        if(nueva.length < 8){ msg.textContent = "La contraseña debe tener al menos 8 caracteres."; return; }
+        if(!/[A-Za-z]/.test(nueva) || !/\d/.test(nueva)){ msg.textContent = "Debe incluir letras y números."; return; }
+        if(nueva !== conf){ msg.textContent = "La confirmación no coincide."; return; }
+        alert((modoPass === "crear" ? "Contraseña creada" : "Contraseña reseteada") + " correctamente para " + document.getElementById("modalPassUser").textContent);
+        cerrarModalPass();
+    };
+})();
+</script>
+
 <script>
 const institutosGlobal = [
+
+
     "SANTIAGO","ARICA","IQUIQUE","ANTOFAGASTA","CALAMA","COPIAPÓ","COQUIMBO",
     "VALPARAÍSO","TALCA","CONCEPCIÓN","TEMUCO","VALDIVIA","PUERTO MONTT","COYHAIQUE"
 ];
@@ -980,7 +1123,78 @@ function cerrarModal() {
 }
 window.cerrarModal = cerrarModal;
 
+/* =====================================================
+   CONTROL DE PERFIL DE SESIÓN
+   - admin   : accede a todas las vistas (excepto Honorarios)
+   - soporte : solo mainView (Adm. Permisos)
+   - rrhh    : solo Mantenedor Trabajadores a Honorarios
+   ===================================================== */
+let perfilSesionActual = "admin";
+
+// Vistas permitidas por perfil
+const VISTAS_PERFIL = {
+    admin:   ["mainView","editView","profileView","functionView","compareView"],
+    soporte: ["mainView","editView"],
+    rrhh:    ["honorariosView"]
+};
+
+// Ítems del menú: { vistaId, etiqueta }
+const MENU_ITEMS = [
+    { vista:"mainView",       label:"Administración de Permisos" },
+    { vista:"profileView",    label:"Mantenedor Gestor de Perfiles" },
+    { vista:"functionView",   label:"Mantenedor Funcionalidades (Rol + Función)" },
+    { vista:"compareView",    label:"Comparar Perfiles (sin usuario)" },
+    { vista:"honorariosView", label:"Mantenedor Trabajadores a Honorarios" },
+];
+
+function aplicarPerfilSesion(perfil) {
+    perfilSesionActual = perfil;
+
+    // Badge
+    const badge = document.getElementById("badgePerfilSesion");
+    if (perfil === "admin") {
+        badge.textContent = "ADMIN";
+        badge.className   = "badge-perfil badge-admin";
+    } else if (perfil === "rrhh") {
+        badge.textContent = "RRHH";
+        badge.className   = "badge-perfil badge-rrhh";
+    } else {
+        badge.textContent = "SOPORTE";
+        badge.className   = "badge-perfil badge-soporte";
+    }
+
+    // Reconstruir menú según perfil
+    const dropdownContent = document.querySelector(".dropdown-content");
+    dropdownContent.innerHTML = "";
+    const permitidas = VISTAS_PERFIL[perfil] || VISTAS_PERFIL.admin;
+    MENU_ITEMS.forEach(item => {
+        if (permitidas.includes(item.vista)) {
+            const a = document.createElement("a");
+            a.href = "javascript:void(0)";
+            a.textContent = item.label;
+            a.addEventListener("click", () => mostrarVista(item.vista));
+            dropdownContent.appendChild(a);
+        }
+    });
+
+    // Si la vista actual ya no está permitida, redirigir a mainView
+    const vistaActiva = [...document.querySelectorAll("main.page")]
+        .find(m => m.style.display === "block");
+    const vistaActivaId = vistaActiva ? vistaActiva.id : "mainView";
+    if (!permitidas.includes(vistaActivaId)) {
+        mostrarVista(permitidas[0] || "mainView");
+    }
+}
+window.aplicarPerfilSesion = aplicarPerfilSesion;
+
 function mostrarVista(vistaId) {
+    // Bloquear si el perfil actual no tiene acceso
+    const permitidas = VISTAS_PERFIL[perfilSesionActual] || VISTAS_PERFIL.admin;
+    if (!permitidas.includes(vistaId)) {
+        alert("No tienes permisos para acceder a esa sección.");
+        return;
+    }
+
     mainView.style.display = "none";
     editView.style.display = "none";
     profileView.style.display = "none";
@@ -1067,6 +1281,7 @@ function init() {
         cmbInstituto.appendChild(o);
     });
 
+    aplicarPerfilSesion("admin"); // construye el menú y setea badge inicial
     mostrarVista("mainView");
     cmbPerfil.value = USUARIOSINROLES;
     filtrarUsuarios();
