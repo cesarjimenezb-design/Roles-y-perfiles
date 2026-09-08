@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>Sistema de Permisos - Administración</title>
+    <title>Sistema de Permisos - Administración | Solicitud Creación de Cuenta</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         :root {
@@ -61,7 +61,7 @@
         .dropdown-content {
             display:none; position:absolute; background-color:#fff;
             min-width:240px; box-shadow:0 8px 16px rgba(0,0,0,0.2);
-            z-index:1; top:49px; left:0; border:1px solid var(--gris-borde);
+            z-index:100; top:49px; left:0; border:1px solid var(--gris-borde);
         }
         .dropdown-content a {
             color:#333; padding:10px 16px; text-decoration:none;
@@ -82,6 +82,9 @@
             padding:18px 24px 30px;
             max-width:1200px; margin:0 auto; width:100%;
         }
+        /* Una sola vista visible a la vez. Evita que una bandeja quede pegada a otro módulo. */
+        main.page[aria-hidden="true"] { display:none !important; }
+        main.page[aria-hidden="false"] { display:block !important; }
         .page-title { font-size:16px; font-weight:600; margin-bottom:8px; }
         .page-subtitle { font-size:13px; color:#777; margin-bottom:10px; }
 
@@ -118,6 +121,18 @@
         .btn-secondary:hover { background:#ffe6ea; }
 
         table { border-collapse:collapse; width:100%; background:#fff; }
+        #tblSolicitudesCuenta, #tblTicketsSoporte { table-layout:fixed; min-width:1100px; }
+        #tblSolicitudesCuenta th, #tblSolicitudesCuenta td, #tblTicketsSoporte th, #tblTicketsSoporte td { vertical-align:top; word-break:break-word; }
+        #tblSolicitudesCuenta th:nth-child(1), #tblTicketsSoporte th:nth-child(1) { width:90px; }
+        #tblSolicitudesCuenta th:nth-child(2), #tblTicketsSoporte th:nth-child(2) { width:90px; }
+        #tblSolicitudesCuenta th:nth-child(3), #tblTicketsSoporte th:nth-child(3) { width:110px; }
+        #tblSolicitudesCuenta th:nth-child(4), #tblTicketsSoporte th:nth-child(4) { width:105px; }
+        #tblSolicitudesCuenta th:nth-child(5), #tblTicketsSoporte th:nth-child(5) { width:170px; }
+        #tblSolicitudesCuenta th:nth-child(6), #tblTicketsSoporte th:nth-child(6) { width:130px; }
+        #tblSolicitudesCuenta th:nth-child(7), #tblTicketsSoporte th:nth-child(7) { width:230px; }
+        #tblSolicitudesCuenta th:nth-child(8), #tblTicketsSoporte th:nth-child(8) { width:125px; }
+        #tblSolicitudesCuenta th:nth-child(9), #tblTicketsSoporte th:nth-child(9) { width:105px; }
+        #tblSolicitudesCuenta th:nth-child(10), #tblTicketsSoporte th:nth-child(10) { width:125px; }
         th, td {
             border:1px solid var(--gris-borde);
             padding:6px 8px; font-size:12px; vertical-align:top;
@@ -126,6 +141,40 @@
         tr:nth-child(even) td { background:#fafafa; }
 
         .col-check { width:40px; text-align:center; }
+
+        /* Alineación de columnas de las bandejas: conserva el diseño y evita que los datos
+           se desplacen visualmente entre encabezado y contenido. */
+        #tblSolicitudesCuenta, #tblTicketsSoporte, #tblUsuarios, #tblHonorarios, #tblReporteria {
+            table-layout: fixed;
+        }
+        #tblSolicitudesCuenta th, #tblSolicitudesCuenta td,
+        #tblTicketsSoporte th, #tblTicketsSoporte td,
+        #tblUsuarios th, #tblUsuarios td,
+        #tblHonorarios th, #tblHonorarios td,
+        #tblReporteria th, #tblReporteria td {
+            box-sizing: border-box;
+            word-break: normal;
+            overflow-wrap: anywhere;
+        }
+        #tblSolicitudesCuenta th:nth-child(1) {width:85px}
+        #tblSolicitudesCuenta th:nth-child(2) {width:95px}
+        #tblSolicitudesCuenta th:nth-child(3) {width:115px}
+        #tblSolicitudesCuenta th:nth-child(4) {width:105px}
+        #tblSolicitudesCuenta th:nth-child(5) {width:175px}
+        #tblSolicitudesCuenta th:nth-child(6) {width:125px}
+        #tblSolicitudesCuenta th:nth-child(7) {width:220px}
+        #tblSolicitudesCuenta th:nth-child(8) {width:105px}
+        #tblSolicitudesCuenta th:nth-child(9) {width:105px}
+        #tblTicketsSoporte th:nth-child(1) {width:85px}
+        #tblTicketsSoporte th:nth-child(2) {width:95px}
+        #tblTicketsSoporte th:nth-child(3) {width:105px}
+        #tblTicketsSoporte th:nth-child(4) {width:105px}
+        #tblTicketsSoporte th:nth-child(5) {width:175px}
+        #tblTicketsSoporte th:nth-child(6) {width:125px}
+        #tblTicketsSoporte th:nth-child(7) {width:260px}
+        #tblTicketsSoporte th:nth-child(8) {width:140px}
+        #tblTicketsSoporte th:nth-child(9) {width:105px}
+        #tblTicketsSoporte th:nth-child(10) {width:110px}
         .link-roles { color:#0066cc; text-decoration:underline; cursor:pointer; }
 
         .listaPredictiva {
@@ -219,21 +268,16 @@
         .badge-soporte{ background:#e0e0e0; color:#333; }
         .badge-rrhh   { background:#2E7D32; color:#fff; }
 
-        @media (max-width:820px) {
-            .input-clear-wrapper input { width:100%; }
-            .listaPredictiva { width:100%; }
-            .layout-grid { grid-template-columns:1fr; }
-        }
     </style>
 </head>
 <body>
 <header class="topbar">
     <div class="topbar-left">
-        <div class="logo" onclick="mostrarVista('mainView')">
+        <div class="logo" onclick="mostrarVista(perfilSesionActual === 'rrhh' ? 'honorariosView' : (perfilSesionActual === 'soporte' ? 'supportView' : 'mainView'))">
             <span class="logo-icon">T</span>
             <span>Teletón</span>
         </div>
-        <div class="menu-dropdown">
+        <div class="menu-dropdown" id="mainMenuDropdown" onclick="toggleMenuDropdown(event)">
             <div class="menu-label">Menú</div>
             <div class="dropdown-content">
                 <!-- Las opciones se construyen dinámicamente según el perfil de sesión -->
@@ -260,8 +304,25 @@
 </header>
 
 <!-- VISTA 1: Administración de Permisos -->
-<main id="mainView" class="page" style="display:block;">
-    <div class="page-title">Administración de Permisos</div>
+<main id="mainView" class="page" aria-hidden="true" style="display:none;">
+    <div class="page-title">Bandeja de Creación de Usuarios y Perfiles</div>
+    <div class="page-subtitle">Gestión de solicitudes de creación de cuentas y perfiles recibidas desde RRHH</div>
+
+    <section class="card" id="solicitudesContainer" style="display:block; position:relative;">
+        <div class="section-title">Solicitudes de creación de cuenta</div>
+        <div class="small-muted" style="margin-bottom:10px;">Las solicitudes ingresadas desde RRHH quedan disponibles aquí para revisión y gestión. La selección de cuentas se refleja automáticamente en la solicitud del usuario.</div>
+        <div style="overflow-x:auto;">
+            <table id="tblSolicitudesCuenta" aria-label="Bandeja de solicitudes de creación de cuenta">
+                <thead>
+                    <tr>
+                        <th>Solicitud</th><th>Fecha</th><th>Tipo de trabajador</th><th>RUT</th><th>Nombre</th><th>Instituto</th><th>Cuentas solicitadas</th><th>Estado</th><th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tblSolicitudesCuentaBody"></tbody>
+            </table>
+        </div>
+    </section>
+
     <section class="card" style="position:relative;">
         <div class="form-row">
             <label>Instituto</label>
@@ -281,7 +342,7 @@
                 <ul id="listaPredictiva" class="listaPredictiva"></ul>
             </div>
         </div>
-        <div>
+        <div style="display:flex; gap:8px; align-items:center;">
             <button class="btn-primary" id="btnBuscar">Buscar</button>
             <button class="btn-secondary" id="btnEditar" disabled>Editar</button>
         </div>
@@ -307,6 +368,23 @@
             Tip: haz click en <strong>Ver Roles</strong> para verlos en un modal. Usa la X para limpiar la búsqueda.
         </div>
     </section>
+</main>
+
+<!-- VISTA SOPORTE: Bandeja de tickets de creación de cuentas -->
+<main id="supportView" class="page" aria-hidden="true" style="display:none;">
+    <div class="card">
+        <div class="page-title">Bandeja de Soporte - Creación de Cuentas</div>
+        <div class="page-subtitle">Gestión de la solicitud completa de creación de cuentas</div>
+        <div class="small-muted" style="margin-bottom:12px;">Cada usuario mantiene <strong>una sola solicitud</strong>. Los tickets asociados a las cuentas seleccionadas por RRHH se conservan dentro de esa solicitud, pero no se gestionan como filas independientes. La selección original es de solo lectura y no puede ser modificada por Soporte.</div>
+        <div style="overflow-x:auto;">
+            <table id="tblTicketsSoporte" aria-label="Bandeja de solicitudes de soporte">
+                <thead><tr>
+                    <th>Solicitud</th><th>Fecha</th><th>Tipo</th><th>RUT</th><th>Usuario</th><th>Instituto</th><th>Tickets seleccionados</th><th>Técnico de soporte</th><th>Estado</th><th>Acción</th>
+                </tr></thead>
+                <tbody id="tblTicketsSoporteBody"></tbody>
+            </table>
+        </div>
+    </div>
 </main>
 
 <!-- VISTA 2: Editar Roles de Usuario -->
@@ -377,27 +455,56 @@
               <strong>Crear:</strong> genera credenciales iniciales para un usuario nuevo.<br/>
               <strong>Resetear:</strong> asigna una nueva contraseña sin requerir la actual.
             </div>
+
+            <!-- Sección de gestión de cuentas solicitadas -->
+            <div id="panelAprovisionamiento" style="margin-top:20px; padding-top:14px; border-top:1px solid #ddd; display:none;">
+              <div class="section-title" style="margin-top:0; color:#d2202f;">⚠ Solicitud de cuentas y accesos</div>
+              <div class="small-muted" style="margin-bottom:12px;">
+                Opciones solicitadas por RRHH. Las casillas se cargan automáticamente según lo seleccionado en la solicitud de creación de cuenta.
+              </div>
+              <div id="cuentasSolicitadasAdmin" style="display:flex; flex-direction:column; gap:8px;"></div>
+              <div class="form-row" style="margin-top:12px;">
+                <label>Técnico de soporte</label>
+                <input type="text" id="txtTecnicoSoporte" placeholder="Sin asignar" readonly style="background:#f5f5f5;" />
+              </div>
+              <div class="form-row">
+                <label>Estado solicitud</label>
+                <input type="text" id="txtEstadoSolicitudSoporte" readonly style="background:#f5f5f5; font-weight:700;" />
+              </div>
+              <button type="button" class="btn-primary" id="btnConfirmarAprovisionamiento" style="margin-top:12px; width:100%;">Enviar a Bandeja de Soporte</button>
+            </div>
           </div>
         </div>
 
-        <hr />
-
-        <div class="section-title">Roles / Perfiles</div>
-        <div class="small-muted">
-            Marca uno o más perfiles a la izquierda para ver sus roles y comparar con los roles actuales del usuario.
-        </div>
-
-        <div class="layout-grid" style="margin-top:10px;">
-            <div>
-                <div class="section-title">Perfiles del ámbito</div>
-                <div id="listaPerfiles" class="lista-perfiles"></div>
+        <div id="panelRolesGestion" style="display:none; margin-top:20px;">
+            <hr />
+            <div class="section-title">Agregar roles y perfiles</div>
+            <div class="small-muted">
+                Desde Gestionar puede agregar o revisar los roles y perfiles asociados al usuario.
             </div>
-            <div>
-                <div class="section-title">Detalle de roles (seleccionados)</div>
-                <div id="detalleRoles" class="roles-detalle"></div>
+            <div style="margin-top:10px;">
+                <button type="button" class="btn-primary" id="btnMostrarRolesGestion">Agregar roles y perfiles</button>
+            </div>
 
-                <div style="margin-top:12px;" class="section-title">Comparación con roles actuales</div>
-                <div id="compareArea" class="compare-list"></div>
+            <div id="contenidoRolesGestion" style="display:none; margin-top:12px;">
+                <div class="section-title">Roles / Perfiles</div>
+                <div class="small-muted">
+                    Marca uno o más perfiles a la izquierda para ver sus roles y comparar con los roles actuales del usuario.
+                </div>
+
+                <div class="layout-grid" style="margin-top:10px;">
+                    <div>
+                        <div class="section-title">Perfiles del ámbito</div>
+                        <div id="listaPerfiles" class="lista-perfiles"></div>
+                    </div>
+                    <div>
+                        <div class="section-title">Detalle de roles (seleccionados)</div>
+                        <div id="detalleRoles" class="roles-detalle"></div>
+
+                        <div style="margin-top:12px;" class="section-title">Comparación con roles actuales</div>
+                        <div id="compareArea" class="compare-list"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -676,13 +783,65 @@
     </div>
 </main>
 
-<!-- VISTA 6: Mantenedor Trabajadores a Honorarios -->
+<!-- VISTA 5.5: Reportería -->
+<main id="reportView" class="page" aria-hidden="true" style="display:none;">
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div class="page-title">Reportería - Creación de Cuentas y Usuarios</div>
+                <div class="page-subtitle">Detalle de movimientos, fechas y técnicos responsables</div>
+            </div>
+            <div>
+                <button class="btn-secondary" onclick="mostrarVista('mainView')">Volver</button>
+            </div>
+        </div>
+        <hr />
+        <div class="small-muted" style="margin-bottom:12px;">
+            Reporte detallado de usuarios creados en el sistema con información de fechas, institutos y técnicos responsables.
+        </div>
+        <div class="card" style="margin-bottom:14px; padding:12px; background:#fafafa;">
+            <div class="section-title">Filtros de búsqueda</div>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+                <div class="form-row" style="margin-bottom:0; gap:6px;"><label style="width:auto;">Instituto</label><select id="cmbReporteInstituto" style="min-width:180px;"></select></div>
+                <div class="form-row" style="margin-bottom:0; gap:6px;"><label style="width:auto;">Desde</label><input type="date" id="txtReporteDesde" style="min-width:auto; width:145px;" /></div>
+                <div class="form-row" style="margin-bottom:0; gap:6px;"><label style="width:auto;">Hasta</label><input type="date" id="txtReporteHasta" style="min-width:auto; width:145px;" /></div>
+                <div class="form-row" style="margin-bottom:0; gap:6px;"><label style="width:auto;">Técnico</label><select id="cmbReporteTecnico" style="min-width:180px;"></select></div>
+                <div class="form-row" style="margin-bottom:0; gap:6px;"><label style="width:auto;">Estado</label><select id="cmbReporteEstado" style="min-width:150px;"><option value="">Todos</option><option value="Pendiente">Pendiente</option><option value="En proceso">En proceso</option><option value="Gestionada">Gestionada</option><option value="Activo">Activo</option></select></div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="btn-primary" id="btnBuscarReporte" type="button">Buscar</button>
+                    <button class="btn-secondary" id="btnLimpiarReporte" type="button">Limpiar</button>
+                    <button class="btn-secondary" id="btnExportarReporte" type="button">Exportar</button>
+                </div>
+            </div>
+        </div>
+        <div style="overflow-x:auto;">
+            <table id="tblReporteria" aria-label="Reporte de creación de cuentas">
+                <thead>
+                    <tr>
+                        <th style="width:90px;">ID</th>
+                        <th style="width:160px;">Nombre</th>
+                        <th style="width:100px;">RUT</th>
+                        <th style="width:130px;">Instituto</th>
+                        <th style="width:145px;">Fecha Creación</th>
+                        <th style="width:145px;">Fecha Alta</th>
+                        <th style="width:130px;">Perfil / Cargo</th>
+                        <th style="width:130px;">Técnico</th>
+                        <th style="width:100px;">Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tblReporteriaBody"></tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- VISTA 6: Solicitud de creación de cuenta -->
 <main id="honorariosView" class="page" aria-hidden="true" style="display:none;">
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-                <div class="page-title">Mantenedor Trabajadores a Honorarios</div>
-                <div class="page-subtitle">Gestión manual de trabajadores a honorarios (no sincronizados con BUK/ERP)</div>
+                <div class="page-title">Solicitud creación de cuenta</div>
+                <div class="page-subtitle">Solicitud de creación de cuentas y accesos para nuevos trabajadores</div>
             </div>
             <div>
                 <button class="btn-secondary" onclick="mostrarVista('mainView')">Volver</button>
@@ -691,7 +850,8 @@
 
         <hr />
 
-        <div class="section-title">Agregar / Editar Honorario</div>
+        <div id="rrhhIndividualPanel">
+        <div class="section-title">Datos del trabajador</div>
         <div class="form-row">
             <label>RUT</label>
             <input type="text" id="txtHonRut" placeholder="Ej: 12.345.678-9" style="width:180px;" />
@@ -713,14 +873,17 @@
             <select id="cmbHonInstituto"></select>
         </div>
         <div class="form-row">
-            <label>Especialidad</label>
+            <label>Perfil </label>
             <input type="text" id="txtHonEspecialidad" placeholder="Ej: Kinesiólogo, Psicólogo..." />
         </div>
-        <div class="form-row">
-            <label>Vigencia</label>
-            <input type="date" id="txtHonDesde" title="Desde" style="min-width:auto; width:150px;" />
-            <span style="font-size:12px; color:#777;">hasta</span>
-            <input type="date" id="txtHonHasta" title="Hasta" style="min-width:auto; width:150px;" />
+        <div id="panelVigenciaHonorario" style="display:none;">
+            <div class="section-title" style="margin-top:14px;">Datos de honorarios</div>
+            <div class="form-row">
+                <label>Vigencia</label>
+                <input type="date" id="txtHonDesde" title="Desde" style="min-width:auto; width:150px;" />
+                <span style="font-size:12px; color:#777;">hasta</span>
+                <input type="date" id="txtHonHasta" title="Hasta" style="min-width:auto; width:150px;" />
+            </div>
         </div>
 
         <div class="section-title" style="margin-top:14px;">Datos de contacto</div>
@@ -739,17 +902,51 @@
             <input type="text" id="txtHonJefe" placeholder="Nombre completo del jefe directo" />
         </div>
 
-        
-
-        
+        <div class="section-title" style="margin-top:14px; background:#eef; padding:4px 8px; border:1px solid #ccd;">CUENTAS SOLICITADAS</div>
+        <div class="form-row">
+            <label>Red / Computador</label>
+            <select id="cmbHonCtaRed"><option>&lt; Seleccionar &gt;</option><option>Sí</option><option>No</option></select>
+        </div>
+        <div class="form-row">
+            <label>Correo electrónico</label>
+            <select id="cmbHonCtaCorreo"><option>&lt; Seleccionar &gt;</option><option>Sí</option><option>No</option></select>
+        </div>
+        <div class="form-row">
+            <label>Solicitud SIC</label>
+            <select id="cmbHonCtaSIC"><option>&lt; Seleccionar &gt;</option><option>Sí</option><option>No</option></select>
+        </div>
+        <div class="form-row">
+            <label>Intranet</label>
+            <select id="cmbHonCtaIntranet"><option>&lt; Seleccionar &gt;</option><option>Sí</option><option>No</option></select>
+        </div>
+        <div class="form-row">
+            <label>Fin700</label>
+            <select id="cmbHonCtaFin"><option>&lt; Seleccionar &gt;</option><option>Sí</option><option>No</option></select>
+        </div>
+        <div class="form-row">
+            <label>VPN</label>
+            <select id="cmbHonCtaWF"><option>&lt; Seleccionar &gt;</option><option>Sí</option><option>No</option></select>
+        </div>
+        <div class="form-row">
+            <label>Escritorio Remoto</label>
+            <select id="cmbHonCtaER"><option>&lt; Seleccionar &gt;</option><option>Sí</option><option>No</option></select>
+        </div>
         <div class="form-row">
             <label>Fecha solicitud</label>
             <input type="date" id="txtHonFechaSolicitud" style="min-width:auto; width:170px;" />
         </div>
 
+        <div class="form-row" style="margin-top:14px;">
+            <label>¿Es a honorarios?</label>
+            <select id="cmbHonTipoTrabajador" style="min-width:240px;">
+                <option value="No">No</option>
+                <option value="Sí">Sí</option>
+            </select>
+        </div>
+
         <div class="section-title" style="margin-top:14px;">Contraseña</div>
         <div class="small-muted" style="margin-bottom:8px;">
-            Crear o resetear contraseña para el honorario ingresado (RUT como identificador). No se solicita la contraseña actual.
+            Crear o resetear contraseña para el trabajador ingresado (RUT como identificador). No se solicita la contraseña actual.
         </div>
         <div class="form-row" style="gap:8px;">
             <label></label>
@@ -761,12 +958,13 @@
             <label></label>
             <button class="btn-primary" id="btnHonGuardar">Guardar</button>
             <button class="btn-secondary" id="btnHonLimpiar">Limpiar</button>
-            <button class="btn-secondary" id="btnHonEliminar" disabled>Eliminar seleccionado</button>
+            <button class="btn-secondary" id="btnHonEliminar" disabled style="display:none;">Eliminar seleccionado</button>
         </div>
 
         <div id="honMsgOk" style="display:none; margin-top:6px; color:#136a17; font-size:13px; font-weight:600;"></div>
         <div id="honMsgErr" style="display:none; margin-top:6px; color:#8b1a1a; font-size:13px; font-weight:600;"></div>
 
+        <div id="seccionRolesRRHH" style="display:none;">
         <hr />
 
         <div class="section-title">Asignación de Roles</div>
@@ -803,6 +1001,8 @@
             </div>
         </div>
 
+        </div>
+
         <hr />
 
         <div class="section-title">Listado de Honorarios registrados</div>
@@ -829,6 +1029,7 @@
         </div>
         <div class="small-muted">
             Los datos se almacenan localmente en esta sesión. Selecciona una fila para editar o eliminar el registro.
+        </div>
         </div>
     </div>
 </main>
@@ -870,6 +1071,19 @@
 </div>
 
 <script>
+function toggleMenuDropdown(e) {
+    e.stopPropagation();
+    const drop = document.getElementById("mainMenuDropdown");
+    if(drop) drop.classList.toggle("open");
+}
+
+document.addEventListener("click", function(e) {
+    const drop = document.getElementById("mainMenuDropdown");
+    if (drop && !drop.contains(e.target)) {
+        drop.classList.remove("open");
+    }
+});
+
 (function(){
     let modoPass = "crear";
     window.abrirModalPass = function(modo, usuario){
@@ -904,8 +1118,6 @@
 
 <script>
 const institutosGlobal = [
-
-
     "SANTIAGO","ARICA","IQUIQUE","ANTOFAGASTA","CALAMA","COPIAPÓ","COQUIMBO",
     "VALPARAÍSO","TALCA","CONCEPCIÓN","TEMUCO","VALDIVIA","PUERTO MONTT","COYHAIQUE"
 ];
@@ -917,19 +1129,21 @@ let perfilesGlobal = [
 
 const USUARIOSINROLES = "USUARIOSINROLES";
 
-const usuarios = [
-    { id:1, nombre:"cesar", app:"jimenez", apm:"barrera", especialidad:"Analista de Sistemas", instituto:"SANTIAGO", roles:["105","108","112","147","200","214","305","355","356","358","368"] },
-    { id:2, nombre:"cecilia", app:"garcia", apm:"mendez", especialidad:"Educadora", instituto:"ARICA", roles:["102","105","308","320","367","378"] },
-    { id:3, nombre:"carlos", app:"perez", apm:"donoso", especialidad:"Médico", instituto:"SANTIAGO", roles:["100","102","105","123","124","320","344","350","372","373","377"] },
-    { id:4, nombre:"pedro", app:"caro", apm:"urbina", especialidad:"Kinesiólogo", instituto:"CONCEPCIÓN", roles:["102","105","107","108","117","148","307","320","369","372","373","377"] },
-    { id:11, nombre:"juana", app:"tapia", apm:"rojas", especialidad:"Psicólogo", instituto:"VALPARAÍSO", roles:[] },
-    { id:12, nombre:"rodrigo", app:"sanchez", apm:"mora", especialidad:"Administrativo recepcion", instituto:"TALCA", roles:[] },
-    { id:13, nombre:"angelica", app:"campos", apm:"diaz", especialidad:"Enfermera", instituto:"COQUIMBO", roles:[] },
-    { id:14, nombre:"patricio", app:"lopez", apm:"nunez", especialidad:"Fonoaudiólogo", instituto:"ANTOFAGASTA", roles:[] },
-    { id:15, nombre:"sofia", app:"araya", apm:"bravo", especialidad:"Educadora", instituto:"ARICA", roles:[] },
-    { id:16, nombre:"gabriel", app:"vega", apm:"solis", especialidad:"Médico", instituto:"VALDIVIA", roles:["100","320"] },
-    { id:17, nombre:"fernanda", app:"castro", apm:"marin", especialidad:"Asistente Social", instituto:"PUERTO MONTT", roles:["354","360","377"] }
+// Bandeja de solicitudes provenientes de RRHH
+let solicitudesCuenta = [];
+let _nextSolicitudCuenta = 1001;
+
+const CUENTAS_SOLICITUD = [
+    { id:"red", label:"Red / Computador", adminLabel:"Acceso a Red / Computador" },
+    { id:"correo", label:"Correo electrónico", adminLabel:"Correo electrónico" },
+    { id:"sic", label:"Solicitud SIC", adminLabel:"Solicitud SIC" },
+    { id:"intranet", label:"Intranet", adminLabel:"Intranet" },
+    { id:"fin700", label:"Fin700", adminLabel:"Fin700" },
+    { id:"vpn", label:"VPN", adminLabel:"VPN" },
+    { id:"escritorio", label:"Escritorio Remoto", adminLabel:"Escritorio Remoto" }
 ];
+
+const usuarios = [];
 
 const rolesCatalogo = {
     "100": "Médico", "102": "Tratante indicador con indicaciones", "103": "Tratante jefatura", "105": "Recepción avanzado",
@@ -1000,7 +1214,7 @@ const perfilActualPorAmbito = {
     "Gestión":null
 };
 
-// Catálogo global de funciones (muestra basada en funcion.xlsx)
+// Catálogo global de funciones
 const catalogoFuncionesGlobal = [
     { id:1, nombre:"Teleton.His.Shell.Web.Paciente.Buscar" },
     { id:6, nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.Index" },
@@ -1050,12 +1264,16 @@ const btnClearMain = document.getElementById("btnClearMain");
 const btnEditar = document.getElementById("btnEditar");
 const btnBuscar = document.getElementById("btnBuscar");
 const usuariosContainer = document.getElementById("usuariosContainer");
+const tblSolicitudesCuentaBody = document.getElementById("tblSolicitudesCuentaBody");
 
 const mainView = document.getElementById("mainView");
 const editView = document.getElementById("editView");
 const profileView = document.getElementById("profileView");
 const functionView = document.getElementById("functionView");
 const compareView = document.getElementById("compareView");
+const supportView = document.getElementById("supportView");
+const reportView = document.getElementById("reportView");
+const tblTicketsSoporteBody = document.getElementById("tblTicketsSoporteBody");
 
 const txtIdUsuarioedit = document.getElementById("txtIdUsuarioedit");
 const txtUsuarioedit = document.getElementById("txtUsuarioedit");
@@ -1111,7 +1329,7 @@ function escapeHtml(unsafe) {
         .replace(/&/g,"&amp;")
         .replace(/</g,"&lt;")
         .replace(/>/g,"&gt;")
-        .replace(/\\"/g,"&quot;")
+        .replace(/"/g,"&quot;")
         .replace(/'/g,"&#039;");
 }
 
@@ -1125,32 +1343,35 @@ window.cerrarModal = cerrarModal;
 
 /* =====================================================
    CONTROL DE PERFIL DE SESIÓN
-   - admin   : accede a todas las vistas (excepto Honorarios)
-   - soporte : solo mainView (Adm. Permisos)
-   - rrhh    : solo Mantenedor Trabajadores a Honorarios
    ===================================================== */
 let perfilSesionActual = "admin";
 
 // Vistas permitidas por perfil
 const VISTAS_PERFIL = {
-    admin:   ["mainView","editView","profileView","functionView","compareView"],
-    soporte: ["mainView","editView"],
+    admin:   ["mainView","editView","supportView","profileView","functionView","compareView","reportView"],
+    soporte: ["supportView","mainView","editView","reportView"],
     rrhh:    ["honorariosView"]
 };
 
-// Ítems del menú: { vistaId, etiqueta }
+// Ítems del menú: { vista, label }
 const MENU_ITEMS = [
-    { vista:"mainView",       label:"Administración de Permisos" },
+    { vista:"mainView",       label:"Bandeja de Creación de Usuarios y Perfiles" },
+    { vista:"supportView",   label:"Bandeja de Soporte - Creación de Cuentas" },
     { vista:"profileView",    label:"Mantenedor Gestor de Perfiles" },
     { vista:"functionView",   label:"Mantenedor Funcionalidades (Rol + Función)" },
     { vista:"compareView",    label:"Comparar Perfiles (sin usuario)" },
-    { vista:"honorariosView", label:"Mantenedor Trabajadores a Honorarios" },
+    { vista:"reportView",     label:"Reportería" },
+    { vista:"honorariosView", label:"Solicitud creación de cuenta" }
 ];
 
 function aplicarPerfilSesion(perfil) {
     perfilSesionActual = perfil;
 
-    // Badge
+    document.querySelectorAll("main.page").forEach(v => {
+        v.style.display = "none";
+        v.setAttribute("aria-hidden", "true");
+    });
+
     const badge = document.getElementById("badgePerfilSesion");
     if (perfil === "admin") {
         badge.textContent = "ADMIN";
@@ -1163,7 +1384,11 @@ function aplicarPerfilSesion(perfil) {
         badge.className   = "badge-perfil badge-soporte";
     }
 
-    // Reconstruir menú según perfil
+    if (perfil === "rrhh") {
+        const inbox = document.getElementById("mainView");
+        if (inbox) { inbox.style.display = "none"; inbox.setAttribute("aria-hidden", "true"); }
+    }
+
     const dropdownContent = document.querySelector(".dropdown-content");
     dropdownContent.innerHTML = "";
     const permitidas = VISTAS_PERFIL[perfil] || VISTAS_PERFIL.admin;
@@ -1177,43 +1402,34 @@ function aplicarPerfilSesion(perfil) {
         }
     });
 
-    // Si la vista actual ya no está permitida, redirigir a mainView
     const vistaActiva = [...document.querySelectorAll("main.page")]
         .find(m => m.style.display === "block");
     const vistaActivaId = vistaActiva ? vistaActiva.id : "mainView";
     if (!permitidas.includes(vistaActivaId)) {
-        mostrarVista(permitidas[0] || "mainView");
+        mostrarVista(permitidas[0] || "honorariosView");
     }
 }
 window.aplicarPerfilSesion = aplicarPerfilSesion;
 
 function mostrarVista(vistaId) {
-    // Bloquear si el perfil actual no tiene acceso
     const permitidas = VISTAS_PERFIL[perfilSesionActual] || VISTAS_PERFIL.admin;
     if (!permitidas.includes(vistaId)) {
-        alert("No tienes permisos para acceder a esa sección.");
         return;
     }
 
-    mainView.style.display = "none";
-    editView.style.display = "none";
-    profileView.style.display = "none";
-    functionView.style.display = "none";
-    compareView.style.display = "none";
-    document.getElementById("honorariosView").style.display = "none";
+    document.querySelectorAll("main.page").forEach(v => {
+        v.style.display = "none";
+        v.setAttribute("aria-hidden", "true");
+    });
 
-    mainView.setAttribute("aria-hidden","true");
-    editView.setAttribute("aria-hidden","true");
-    profileView.setAttribute("aria-hidden","true");
-    functionView.setAttribute("aria-hidden","true");
-    compareView.setAttribute("aria-hidden","true");
-    document.getElementById("honorariosView").setAttribute("aria-hidden","true");
-
-    document.getElementById(vistaId).style.display = "block";
-    document.getElementById(vistaId).setAttribute("aria-hidden","false");
+    const target = document.getElementById(vistaId);
+    if(target) {
+        target.style.display = "block";
+        target.setAttribute("aria-hidden","false");
+    }
     window.scrollTo({top:0,behavior:"smooth"});
 
-    btnEditar.disabled = (vistaId !== "mainView") || !document.querySelector("input[name='chkSel']:checked");
+    if (btnEditar) btnEditar.disabled = (vistaId !== "mainView") || !document.querySelector("input[name='chkSel']:checked");
 
     if (vistaId === "profileView") {
         txtNombrePerfil.value = "";
@@ -1233,6 +1449,9 @@ function mostrarVista(vistaId) {
     if (vistaId === "honorariosView") {
         honCargarPerfilesPorAmbito();
         honRenderTabla();
+    }
+    if (vistaId === "reportView") {
+        renderReporteria();
     }
 }
 window.mostrarVista = mostrarVista;
@@ -1266,9 +1485,21 @@ function recargarComboPerfilesGlobal() {
     });
 }
 
+function inicializarControlesReporteria() {
+    const btnBuscar=document.getElementById("btnBuscarReporte"), btnLimpiar=document.getElementById("btnLimpiarReporte"), btnExportar=document.getElementById("btnExportarReporte");
+    if(btnBuscar)btnBuscar.addEventListener("click",renderReporteria);
+    if(btnLimpiar)btnLimpiar.addEventListener("click",limpiarFiltrosReporteria);
+    if(btnExportar)btnExportar.addEventListener("click",exportarReporteriaCSV);
+    ["cmbReporteInstituto","txtReporteDesde","txtReporteHasta","cmbReporteTecnico","cmbReporteEstado"].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener("change",renderReporteria);});
+}
 function init() {
+    inicializarControlesReporteria();
     recargarComboPerfilesGlobal();
     initHonorarios();
+    establecerCuentasPorDefectoRRHH();
+    actualizarTipoTrabajadorRRHH();
+    const fechaSolicitudRRHH = document.getElementById("txtHonFechaSolicitud");
+    if (fechaSolicitudRRHH && !fechaSolicitudRRHH.value) fechaSolicitudRRHH.value = new Date().toISOString().slice(0,10);
 
     const emptyI = document.createElement("option");
     emptyI.value = "";
@@ -1281,9 +1512,13 @@ function init() {
         cmbInstituto.appendChild(o);
     });
 
-    aplicarPerfilSesion("admin"); // construye el menú y setea badge inicial
+    aplicarPerfilSesion("admin"); 
+    renderSolicitudesCuenta();
+    renderReporteria();
     mostrarVista("mainView");
-    cmbPerfil.value = USUARIOSINROLES;
+    cmbInstituto.value = "";
+    cmbPerfil.value = "";
+    txtUsuariomain.value = "";
     filtrarUsuarios();
     btnEditar.disabled = true;
 }
@@ -1319,6 +1554,181 @@ btnClearMain.addEventListener("click", () => {
     filtrarUsuarios();
 });
 
+function cuentasSolicitadasLabels(solicitud) {
+    return CUENTAS_SOLICITUD
+        .filter(c => solicitud.cuentas && solicitud.cuentas[c.id] === "Sí")
+        .map(c => c.label);
+}
+
+function renderSolicitudesCuenta() {
+    if (!tblSolicitudesCuentaBody) return;
+    tblSolicitudesCuentaBody.innerHTML = "";
+    if (!solicitudesCuenta.length) {
+        tblSolicitudesCuentaBody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#999;">No hay solicitudes de creación de cuenta.</td></tr>`;
+        return;
+    }
+    solicitudesCuenta.forEach(sol => {
+        const cuentas = cuentasSolicitadasLabels(sol);
+        const tr = document.createElement("tr");
+        const estadoColor = sol.estado === "Pendiente" ? "#8a5a00" : (sol.estado === "En proceso" ? "#0066cc" : "#136a17");
+        tr.innerHTML = `
+            <td><strong>SOL-${sol.id}</strong></td>
+            <td>${escapeHtml(sol.fecha || "-")}</td>
+            <td>${escapeHtml(sol.tipoTrabajador || "Dependiente")}</td>
+            <td>${escapeHtml(sol.rut || "-")}</td>
+            <td>${escapeHtml(sol.nombreCompleto || "-")}</td>
+            <td>${escapeHtml(sol.instituto || "-")}</td>
+            <td>${cuentas.length ? escapeHtml(cuentas.join(", ")) : "<span style='color:#999;'>Ninguna</span>"}</td>
+            <td style="color:${estadoColor};font-weight:700;">${escapeHtml(sol.estado || "Pendiente")}</td>
+            <td><button type="button" class="btn-secondary btnGestionarSolicitud" data-usuario="${sol.usuarioId}">Gestionar</button></td>
+        `;
+        tblSolicitudesCuentaBody.appendChild(tr);
+    });
+    tblSolicitudesCuentaBody.querySelectorAll(".btnGestionarSolicitud").forEach(btn => {
+        btn.addEventListener("click", () => abrirEditorConUsuario(parseInt(btn.dataset.usuario,10)));
+    });
+}
+
+function getSolicitudCuentaPorUsuario(usuarioId) {
+    return solicitudesCuenta.find(s => s.usuarioId === usuarioId) || null;
+}
+function estadoTicketColor(estado) {
+    if (estado === "Pendiente") return "#8a5a00";
+    if (estado === "En proceso") return "#0066cc";
+    return "#136a17";
+}
+
+function getTicketsSolicitud(sol) {
+    return CUENTAS_SOLICITUD
+        .filter(c => sol.cuentas && sol.cuentas[c.id] === "Sí")
+        .map(c => ({ id:c.id, label:c.label, ticket:`TCK-${String(sol.id).padStart(4,"0")}-${c.id.toUpperCase()}` }));
+}
+
+function renderTicketsSoporte() {
+    if (!tblTicketsSoporteBody) return;
+    tblTicketsSoporteBody.innerHTML = "";
+    const solicitudes = solicitudesCuenta.filter(sol => sol.cuentas && Object.values(sol.cuentas).some(v => v === "Sí"));
+    if (!solicitudes.length) {
+        tblTicketsSoporteBody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#999;">No hay solicitudes en la bandeja de soporte.</td></tr>`;
+        return;
+    }
+    solicitudes.forEach(sol => {
+        const tickets = getTicketsSolicitud(sol);
+        const ticketHtml = tickets.map(t => `<span style="display:inline-block; margin:2px 4px 2px 0; padding:3px 7px; border:1px solid #d8d8d8; border-radius:12px; background:#fafafa; font-size:11px;" title="${escapeHtml(t.label)}">${escapeHtml(t.ticket)}</span>`).join("");
+        const estado = sol.estado || "Pendiente";
+        const estadoColor = estadoTicketColor(estado);
+        const accion = estado === "Gestionada" ? "Ver solicitud" : (estado === "En proceso" ? "Continuar gestión" : "Gestionar solicitud");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td><strong>SOL-${sol.id}</strong></td>
+            <td>${escapeHtml(sol.fecha || "-")}</td>
+            <td>${escapeHtml(sol.tipoTrabajador || "Dependiente")}</td>
+            <td>${escapeHtml(sol.rut || "-")}</td>
+            <td>${escapeHtml(sol.nombreCompleto || "-")}</td>
+            <td>${escapeHtml(sol.instituto || "-")}</td>
+            <td>${ticketHtml || "<span style='color:#999;'>Ninguno</span>"}</td>
+            <td>${escapeHtml(sol.tecnicoSoporte || "Sin asignar")}</td>
+            <td style="color:${estadoColor};font-weight:700;">${escapeHtml(estado)}</td>
+            <td><button type="button" class="btn-secondary btnGestionarSoporteSolicitud" data-usuario="${sol.usuarioId}">${accion}</button></td>
+        `;
+        tblTicketsSoporteBody.appendChild(tr);
+    });
+    tblTicketsSoporteBody.querySelectorAll(".btnGestionarSoporteSolicitud").forEach(btn => {
+        btn.addEventListener("click", () => gestionarSolicitudSoporte(parseInt(btn.dataset.usuario,10)));
+    });
+}
+
+function gestionarSolicitudSoporte(usuarioId) {
+    const sol = getSolicitudCuentaPorUsuario(usuarioId);
+    if (!sol) return;
+    const u = usuarios.find(x => x.id === usuarioId);
+    if (!u) return;
+
+    const estadoActual = sol.estado || "Pendiente";
+    if (estadoActual === "Gestionada") {
+        abrirEditorConUsuario(usuarioId);
+        return;
+    }
+
+    let tecnico = sol.tecnicoSoporte || "";
+    if (!tecnico) {
+        tecnico = prompt("Profesional / Técnico de soporte que realizará la creación de cuentas:", "");
+        if (tecnico === null) return;
+        tecnico = tecnico.trim();
+        if (!tecnico) { alert("Debe indicar el profesional o técnico de soporte."); return; }
+        sol.tecnicoSoporte = tecnico;
+    }
+
+    if (sol.estado === "Pendiente") {
+        sol.estado = "En proceso";
+        sol.fechaInicioGestion = sol.fechaInicioGestion || new Date().toLocaleString('es-CL');
+        renderSolicitudesCuenta();
+        renderTicketsSoporte();
+        renderReporteria();
+        abrirEditorConUsuario(usuarioId);
+        return;
+    }
+
+    const finalizar = confirm("¿Terminó la creación de TODAS las cuentas solicitadas para este usuario?\n\nAceptar = Gestionado\nCancelar = Mantener En proceso");
+    if (finalizar) {
+        sol.estado = "Gestionada";
+        sol.fechaGestion = new Date().toLocaleString('es-CL');
+        const hon = honorarios.find(h => h._solicitudId === sol.id);
+        if (hon) hon.estadoRegistro = "Activo";
+        honRenderTabla();
+    }
+    renderSolicitudesCuenta();
+    renderTicketsSoporte();
+    renderReporteria();
+    abrirEditorConUsuario(usuarioId);
+}
+
+function obtenerRegistrosReporteria() {
+    return usuarios.map(usuario => {
+        const solicitud = solicitudesCuenta.find(s => s.usuarioId === usuario.id);
+        const nombreCompleto = `${usuario.nombre || ""} ${usuario.app || ""} ${usuario.apm || ""}`.trim();
+        const estadoFinal = solicitud ? solicitud.estado : (usuario._estadoPermiso || "Activo");
+        return { usuario, solicitud, nombreCompleto, estadoFinal, tecnico: solicitud?.tecnicoSoporte || "Sin asignar" };
+    });
+}
+function fechaISOReporte(valor) {
+    if (!valor) return "";
+    const texto=String(valor).trim(), m=texto.match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+    if(m) return `${m[3]}-${String(m[2]).padStart(2,"0")}-${String(m[1]).padStart(2,"0")}`;
+    const iso=texto.match(/(\d{4})-(\d{2})-(\d{2})/); return iso ? iso[0] : "";
+}
+function inicializarFiltrosReporteria() {
+    const cmbI=document.getElementById("cmbReporteInstituto"), cmbT=document.getElementById("cmbReporteTecnico"); if(!cmbI||!cmbT)return;
+    const vi=cmbI.value, vt=cmbT.value;
+    cmbI.innerHTML='<option value="">Todos</option>';
+    institutosGlobal.forEach(i=>{const o=document.createElement("option");o.value=i;o.textContent=i;cmbI.appendChild(o);});
+    const tecnicos=[...new Set(obtenerRegistrosReporteria().map(r=>r.tecnico).filter(t=>t&&t!=="Sin asignar"))].sort((a,b)=>a.localeCompare(b,"es"));
+    cmbT.innerHTML='<option value="">Todos</option>';
+    tecnicos.forEach(t=>{const o=document.createElement("option");o.value=t;o.textContent=t;cmbT.appendChild(o);});
+    if([...cmbI.options].some(o=>o.value===vi))cmbI.value=vi;
+    if([...cmbT.options].some(o=>o.value===vt))cmbT.value=vt;
+}
+function obtenerRegistrosReporteriaFiltrados() {
+    const instituto=document.getElementById("cmbReporteInstituto")?.value||"", desde=document.getElementById("txtReporteDesde")?.value||"", hasta=document.getElementById("txtReporteHasta")?.value||"", tecnico=document.getElementById("cmbReporteTecnico")?.value||"", estado=document.getElementById("cmbReporteEstado")?.value||"";
+    return obtenerRegistrosReporteria().filter(r=>{const f=fechaISOReporte(r.usuario._fechaCreacion);return (!instituto||r.usuario.instituto===instituto)&&(!tecnico||r.tecnico===tecnico)&&(!estado||r.estadoFinal===estado)&&(!desde||(f&&f>=desde))&&(!hasta||(f&&f<=hasta));});
+}
+function renderReporteria() {
+    const tblBody=document.getElementById("tblReporteriaBody"); if(!tblBody)return; tblBody.innerHTML=""; inicializarFiltrosReporteria();
+    if(!usuarios.length){tblBody.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999;">No hay cuentas ni usuarios registrados.</td></tr>';return;}
+    const registros=obtenerRegistrosReporteriaFiltrados();
+    if(!registros.length){tblBody.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999;">No existen registros que coincidan con los filtros seleccionados.</td></tr>';return;}
+    registros.forEach(r=>{const tr=document.createElement("tr");tr.innerHTML=`<td><strong>${r.usuario.id}</strong></td><td>${escapeHtml(r.nombreCompleto)}</td><td>${escapeHtml(r.usuario._rut||"-")}</td><td>${escapeHtml(r.usuario.instituto||"-")}</td><td>${escapeHtml(r.usuario._fechaCreacion||"-")}</td><td>${escapeHtml(r.solicitud?.fechaGestion||"-")}</td><td>${escapeHtml(r.usuario.especialidad||"-")}</td><td>${escapeHtml(r.tecnico)}</td><td><strong style="color:${r.estadoFinal==='Gestionada'||r.estadoFinal==='Activo'?'#136a17':'#0066cc'};">${escapeHtml(r.estadoFinal)}</strong></td>`;tblBody.appendChild(tr);});
+}
+function limpiarFiltrosReporteria(){["cmbReporteInstituto","txtReporteDesde","txtReporteHasta","cmbReporteTecnico","cmbReporteEstado"].forEach(id=>{const e=document.getElementById(id);if(e)e.value="";});renderReporteria();}
+function escaparCSV(v){return `"${String(v??"").replace(/"/g,'""')}"`;}
+function exportarReporteriaCSV(){
+    const registros=obtenerRegistrosReporteriaFiltrados(); if(!registros.length){alert("No hay registros para exportar con los filtros seleccionados.");return;}
+    const encabezados=["ID","Nombre","RUT","Instituto","Fecha Creación","Fecha Alta","Perfil / Cargo","Técnico","Estado"];
+    const filas=registros.map(r=>[r.usuario.id,r.nombreCompleto,r.usuario._rut||"-",r.usuario.instituto||"-",r.usuario._fechaCreacion||"-",r.solicitud?.fechaGestion||"-",r.usuario.especialidad||"-",r.tecnico,r.estadoFinal]);
+    const csv="\uFEFF"+[encabezados,...filas].map(f=>f.map(escaparCSV).join(";")).join("\r\n"), blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}), url=URL.createObjectURL(blob), a=document.createElement("a");
+    a.href=url;a.download="Reporte_Creacion_Cuentas_"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
 function filtrarUsuarios() {
     const instituto = cmbInstituto.value;
     const perfil = cmbPerfil.value;
@@ -1330,13 +1740,6 @@ function filtrarUsuarios() {
 
     const tieneCriterioBusqueda = !!q;
     const tieneCriterioFiltro = !!instituto || !!perfil;
-
-    if (!tieneCriterioFiltro && !tieneCriterioBusqueda) {
-        usuariosContainer.style.display = "none";
-        tbody.innerHTML = "";
-        btnEditar.disabled = true;
-        return;
-    }
 
     const lista = usuarios.filter(u => {
         const coincideInstituto = !instituto || u.instituto === instituto;
@@ -1359,6 +1762,9 @@ function filtrarUsuarios() {
     });
 
     usuariosContainer.style.display = lista.length ? "block" : "none";
+    if (lista.length === 0 && (tieneCriterioBusqueda || tieneCriterioFiltro)) {
+        btnEditar.disabled = true;
+    }
     pintarGrilla(lista);
 }
 
@@ -1370,8 +1776,19 @@ function pintarGrilla(lista) {
             ? `<span class="link-roles" data-id="${u.id}">Ver Roles (${u.roles.length})</span>`
             : `<span style="color:red;font-weight:700;">SIN ROLES</span>`;
 
+        const solicitudUsuario = getSolicitudCuentaPorUsuario(u.id) || u._solicitudCuenta;
+        const solicitudGestionada = solicitudUsuario && solicitudUsuario.estado === "Gestionada";
+        const usuarioPendiente = u._estadoPermiso === "pendiente" && !solicitudGestionada;
+        const estiloPendiente = usuarioPendiente
+            ? "background-color:#fff3cd; border-left:4px solid #ffc107;"
+            : "";
+        const iconoPendiente = usuarioPendiente
+            ? "<span style='color:#ff6b6b; font-weight:bold; margin-right:6px;'>⚠</span>"
+            : "";
+
+        tr.style.cssText = estiloPendiente;
         tr.innerHTML = `
-            <td>${u.id}</td>
+            <td>${iconoPendiente}${u.id}</td>
             <td>${escapeHtml(u.nombre)}</td>
             <td>${escapeHtml(u.app)}</td>
             <td>${escapeHtml(u.apm)}</td>
@@ -1410,6 +1827,20 @@ cmbInstituto.addEventListener("change", filtrarUsuarios);
 cmbPerfil.addEventListener("change", filtrarUsuarios);
 btnBuscar.addEventListener("click", filtrarUsuarios);
 
+document.getElementById("btnConfirmarAprovisionamiento")?.addEventListener("click", () => {
+    const u = usuarios.find(x => x.id === editState.idusuario);
+    if (!u) return;
+
+    const solObj = getSolicitudCuentaPorUsuario(u.id);
+    if (!solObj) return;
+    solObj.estado = solObj.estado || "Pendiente";
+    renderSolicitudesCuenta();
+    renderTicketsSoporte();
+    renderReporteria();
+    alert("✓ La solicitud completa quedó disponible en la Bandeja de Soporte.");
+    mostrarVista("supportView");
+});
+
 btnEditar.addEventListener("click", () => {
     const sel = document.querySelector("input[name='chkSel']:checked");
     if (!sel) {
@@ -1432,7 +1863,7 @@ function abrirEditorConUsuario(idusuario) {
     stateFiltro.texto = txtUsuariomain.value;
 
     editState.idusuario = u.id;
-    editState.originalRoles = Array.from(u.roles);
+    editState.originalRoles = Array.from(u.roles || []);
     editState.perfilesMarcados = [];
 
     txtIdUsuarioedit.value = u.id;
@@ -1453,11 +1884,50 @@ function abrirEditorConUsuario(idusuario) {
 
     cmbAmbito.value = defaultAmb;
     cargarPerfilesPorAmbito(u);
+    
+    const panelAprov = document.getElementById("panelAprovisionamiento");
+    const contCuentas = document.getElementById("cuentasSolicitadasAdmin");
+    const solicitudCuenta = getSolicitudCuentaPorUsuario(u.id) || u._solicitudCuenta;
+    const panelRolesGestion = document.getElementById("panelRolesGestion");
+    const contenidoRolesGestion = document.getElementById("contenidoRolesGestion");
+    if (panelRolesGestion) panelRolesGestion.style.display = solicitudCuenta ? "block" : "none";
+    if (contenidoRolesGestion) contenidoRolesGestion.style.display = "none";
+    if (panelAprov && contCuentas) {
+        panelAprov.style.display = solicitudCuenta ? "block" : "none";
+        contCuentas.innerHTML = "";
+        if (solicitudCuenta) {
+            CUENTAS_SOLICITUD.forEach(c => {
+                const solicitado = solicitudCuenta.cuentas && solicitudCuenta.cuentas[c.id] === "Sí";
+                const label = document.createElement("label");
+                label.style.cssText = "display:flex; align-items:center; font-weight:500; cursor:not-allowed; gap:6px;";
+                const ticket = `TCK-${String(solicitudCuenta.id || "----").padStart(4,"0")}-${c.id.toUpperCase()}`;
+                label.innerHTML = `<input type="checkbox" id="chkCuenta_${c.id}" ${solicitado ? "checked" : ""} disabled> ${escapeHtml(c.adminLabel)} <span style="margin-left:auto; font-size:11px; color:#777;">${solicitado ? escapeHtml(ticket) : ""}</span>`;
+                contCuentas.appendChild(label);
+            });
+        }
+        const txtTec = document.getElementById("txtTecnicoSoporte");
+        const txtEst = document.getElementById("txtEstadoSolicitudSoporte");
+        const btnAprov = document.getElementById("btnConfirmarAprovisionamiento");
+        if (txtTec) txtTec.value = solicitudCuenta ? (solicitudCuenta.tecnicoSoporte || "Sin asignar") : "";
+        if (txtEst) txtEst.value = solicitudCuenta ? (solicitudCuenta.estado || "Pendiente") : "";
+        if (btnAprov) btnAprov.textContent = solicitudCuenta ? ((solicitudCuenta.estado || "Pendiente") === "Gestionada" ? "Solicitud gestionada" : ((solicitudCuenta.estado || "Pendiente") === "En proceso" ? "Continuar gestión en Soporte" : "Enviar a Bandeja de Soporte")) : "Enviar a Bandeja de Soporte";
+        if (btnAprov) btnAprov.disabled = !!solicitudCuenta && solicitudCuenta.estado === "Gestionada";
+    }
+    
     mostrarVista("editView");
 }
 
+document.getElementById("btnMostrarRolesGestion")?.addEventListener("click", () => {
+    const contenido = document.getElementById("contenidoRolesGestion");
+    const btn = document.getElementById("btnMostrarRolesGestion");
+    if (!contenido) return;
+    const visible = contenido.style.display !== "none";
+    contenido.style.display = visible ? "none" : "block";
+    if (btn) btn.textContent = visible ? "Agregar roles y perfiles" : "Ocultar roles y perfiles";
+});
+
 btnVolver.addEventListener("click", () => {
-    mostrarVista("mainView");
+    mostrarVista(perfilSesionActual === "soporte" ? "supportView" : "mainView");
 });
 
 function cargarPerfilesPorAmbito(usuarioObjeto) {
@@ -1466,8 +1936,6 @@ function cargarPerfilesPorAmbito(usuarioObjeto) {
 
     const perfilActualId = perfilActualPorAmbito[ambito] || (perfilesList[0] ? perfilesList[0].id : null);
 
-    // Importante: NO marcar perfiles por intersección de roles.
-    // Solo marcar 1 perfil inicial (el que calce con la especialidad o el perfil por defecto del ámbito).
     let preCheckedId = perfilActualId;
 
     if (usuarioObjeto && perfilesList && perfilesList.length) {
@@ -1539,171 +2007,146 @@ function getRolesMarcados() {
     return Array.from(roles).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
 }
 
-function getPerfilesSeleccionados() {
-    const ambito = cmbAmbito.value;
-    const perfilesList = dataPerfiles[ambito] || [];
-    const ids = Array.from(listaPerfilesDiv.querySelectorAll("input[type='checkbox']:checked"))
-        .map(chk => chk.value);
-
-    return ids
-        .map(id => perfilesList.find(p => p.id === id))
-        .filter(Boolean);
-}
-
 function mostrarDetalleRolesYComparacion() {
-    const perfilesSeleccionados = getPerfilesSeleccionados();
-    const rolesOriginales = editState.originalRoles || [];
+    const rolesMarcados = getRolesMarcados();
 
-    if (!perfilesSeleccionados.length) {
-        detalleRolesDiv.innerHTML = "<div>Seleccione al menos un perfil para ver sus roles combinados.</div>";
-        compareArea.innerHTML = "";
-        return;
+    if (!rolesMarcados.length) {
+        detalleRolesDiv.innerHTML = "<div style='color:#999;'>No hay perfiles seleccionados.</div>";
+    } else {
+        let html = "<table class='roles-table'><thead><tr><th>RolId</th><th>Nombre Rol</th></tr></thead><tbody>";
+        rolesMarcados.forEach(r => {
+            html += `<tr><td><strong>${r}</strong></td><td>${escapeHtml(rolesCatalogo[r] || "Rol " + r)}</td></tr>`;
+        });
+        html += "</tbody></table>";
+        detalleRolesDiv.innerHTML = html;
     }
 
-    const rolesUnicos = new Set();
-    perfilesSeleccionados.forEach(p => (p.roles || []).forEach(r => rolesUnicos.add(r)));
-    const idsOrdenados = Array.from(rolesUnicos).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+    const orig = new Set(editState.originalRoles);
+    const marc = new Set(rolesMarcados);
 
-    let html = `<table class="roles-table"><thead><tr><th>Rol / Funcionalidad</th>`;
-    perfilesSeleccionados.forEach(p => {
-        html += `<th style="text-align:center;">${escapeHtml(p.nombre)}</th>`;
-    });
-    html += `</tr></thead><tbody>`;
+    const agregados = rolesMarcados.filter(r => !orig.has(r));
+    const quitados = editState.originalRoles.filter(r => !marc.has(r));
+    const mantenidos = rolesMarcados.filter(r => orig.has(r));
 
-    idsOrdenados.forEach(rid => {
-        const desc = rolesCatalogo[rid] || "Descripción no disponible";
-        html += `<tr><td><strong>${rid}</strong> - ${escapeHtml(desc)}</td>`;
-        perfilesSeleccionados.forEach(p => {
-            const tiene = (p.roles || []).includes(rid);
-            html += `<td style="text-align:center;"><input type="checkbox" ${tiene ? "checked" : ""} disabled></td>`;
+    let compHtml = "";
+    if (agregados.length) {
+        agregados.forEach(r => {
+            compHtml += `<div class="compare-item added">+ Se agregaría: <strong>${r}</strong> - ${escapeHtml(rolesCatalogo[r] || "")}</div>`;
         });
-        html += `</tr>`;
-    });
+    }
+    if (quitados.length) {
+        quitados.forEach(r => {
+            compHtml += `<div class="compare-item removed">- Se quitaría: <strong>${r}</strong> - ${escapeHtml(rolesCatalogo[r] || "")}</div>`;
+        });
+    }
+    if (mantenidos.length) {
+        mantenidos.forEach(r => {
+            compHtml += `<div class="compare-item unchanged">= Se mantiene: <strong>${r}</strong> - ${escapeHtml(rolesCatalogo[r] || "")}</div>`;
+        });
+    }
 
-    html += `</tbody></table>`;
-    detalleRolesDiv.innerHTML = html;
-
-    const rolesNuevos = new Set(idsOrdenados);
-    const rolesViejos = new Set(rolesOriginales);
-    const union = new Set([...rolesNuevos, ...rolesViejos]);
-    const todosLosRoles = Array.from(union).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-
-    compareArea.innerHTML = "";
-    todosLosRoles.forEach(rol => {
-        const esNuevo = rolesNuevos.has(rol);
-        const eraViejo = rolesViejos.has(rol);
-
-        let clase = "unchanged";
-        let estado = "Sin cambios";
-
-        if (esNuevo && !eraViejo) {
-            clase = "added";
-            estado = "Rol agregado";
-        } else if (!esNuevo && eraViejo) {
-            clase = "removed";
-            estado = "Rol removido";
-        }
-
-        const desc = rolesCatalogo[rol] || "Descripción no disponible";
-
-        const div = document.createElement("div");
-        div.className = "compare-item " + clase;
-        div.innerHTML = `<strong>${rol}</strong> - ${escapeHtml(desc)}`;
-
-        if (estado !== "Sin cambios") {
-            const span = document.createElement("span");
-            span.textContent = " " + estado;
-            span.style.fontWeight = "bold";
-            div.appendChild(span);
-        }
-
-        compareArea.appendChild(div);
-    });
+    if (!compHtml) compHtml = "<div style='color:#999;'>Sin cambios con respecto a los roles originales del usuario.</div>";
+    compareArea.innerHTML = compHtml;
 }
 
 btnGuardar.addEventListener("click", () => {
     const u = usuarios.find(xx => xx.id === editState.idusuario);
-    if (!u) {
-        alert("Error: Usuario de edición no encontrado.");
-        return;
+    if (!u) return;
+
+    u.instituto = cmbInstitutoEdit.value;
+    const perfilSelId = cmbPerfilActual.value;
+    const ambito = cmbAmbito.value;
+    const pObj = (dataPerfiles[ambito] || []).find(p => p.id === perfilSelId);
+    if (pObj) {
+        u.especialidad = pObj.nombre;
     }
-    const rolesNuevos = getRolesMarcados();
-    const perfilElegido = cmbPerfilActual.options[cmbPerfilActual.selectedIndex].textContent;
-    const institutoElegido = cmbInstitutoEdit.value || u.instituto;
 
-    u.roles = rolesNuevos;
-    u.especialidad = perfilElegido;
-    u.instituto = institutoElegido;
+    u.roles = getRolesMarcados();
 
-    editState.originalRoles = rolesNuevos;
-    alert(`Cambios guardados para ID ${u.id} (${perfilElegido} - ${institutoElegido}) ${rolesNuevos.length} roles.`);
+    alert("✓ Cambios guardados para " + u.nombre + " " + u.app);
+    recargarComboPerfilesGlobal();
+    renderReporteria();
     mostrarVista("mainView");
 });
 
 btnRestaurar.addEventListener("click", () => {
     const u = usuarios.find(xx => xx.id === editState.idusuario);
-    if (!u) {
-        alert("Error: Usuario de edición no encontrado.");
+    if (!u) return;
+    u.roles = Array.from(editState.originalRoles);
+    cargarPerfilesPorAmbito(u);
+});
+
+function pintarModalRolesComparativo(usuario) {
+    const cont = document.getElementById("contenidoRoles");
+    if (!usuario.roles || !usuario.roles.length) {
+        cont.innerHTML = "<p>El usuario no tiene roles asignados.</p>";
         return;
     }
-    u.roles = Array.from(editState.originalRoles);
-    alert("Roles y perfil restaurados al estado original al abrir el editor.");
-    mostrarVista("mainView");
-});
-
-cmbAmbitoPerfil.addEventListener("change", cargarComboPerfilesGestion);
-
-function cargarComboPerfilesGestion() {
-    const ambito = cmbAmbitoPerfil.value;
-    const perfilesList = dataPerfiles[ambito] || [];
-    cmbPerfilGestion.innerHTML = "";
-
-    const empty = document.createElement("option");
-    empty.value = "";
-    empty.textContent = "Seleccione un perfil para editar o un ámbito para crear";
-    cmbPerfilGestion.appendChild(empty);
-
-    perfilesList.forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = p.nombre;
-        cmbPerfilGestion.appendChild(opt);
+    let html = `<strong>Usuario:</strong> ${escapeHtml(usuario.nombre)} ${escapeHtml(usuario.app)} (${escapeHtml(usuario.especialidad)})<br/><br/>`;
+    html += "<table class='roles-table'><thead><tr><th>RolId</th><th>Nombre Rol</th></tr></thead><tbody>";
+    usuario.roles.forEach(r => {
+        html += `<tr><td><strong>${r}</strong></td><td>${escapeHtml(rolesCatalogo[r] || "Rol " + r)}</td></tr>`;
     });
-
-    txtNombrePerfil.value = "";
-    pintarChecklistRoles([]);
+    html += "</tbody></table>";
+    cont.innerHTML = html;
 }
 
+function cargarComboPerfilesGestion() {
+    const amb = cmbAmbitoPerfil.value;
+    const perfs = dataPerfiles[amb] || [];
+    cmbPerfilGestion.innerHTML = "";
+    const optNew = document.createElement("option");
+    optNew.value = "";
+    optNew.textContent = "< Nuevo Perfil >";
+    cmbPerfilGestion.appendChild(optNew);
+
+    perfs.forEach(p => {
+        const o = document.createElement("option");
+        o.value = p.id;
+        o.textContent = p.nombre;
+        cmbPerfilGestion.appendChild(o);
+    });
+}
+
+cmbAmbitoPerfil.addEventListener("change", () => {
+    cargarComboPerfilesGestion();
+    txtNombrePerfil.value = "";
+    pintarChecklistRoles([]);
+});
+
 cmbPerfilGestion.addEventListener("change", () => {
-    const ambito = cmbAmbitoPerfil.value;
-    const idPerfil = cmbPerfilGestion.value;
-    const perfilesList = dataPerfiles[ambito] || [];
-    const perfilObj = perfilesList.find(p => p.id === idPerfil);
-    if (perfilObj) {
-        txtNombrePerfil.value = perfilObj.nombre;
-        pintarChecklistRoles(perfilObj.roles);
-    } else {
+    const amb = cmbAmbitoPerfil.value;
+    const idP = cmbPerfilGestion.value;
+    if (!idP) {
         txtNombrePerfil.value = "";
         pintarChecklistRoles([]);
+        return;
+    }
+    const p = (dataPerfiles[amb] || []).find(x => x.id === idP);
+    if (p) {
+        txtNombrePerfil.value = p.nombre;
+        pintarChecklistRoles(p.roles || []);
     }
 });
 
-function pintarChecklistRoles(rolesAsignados) {
+function pintarChecklistRoles(rolesSeleccionados) {
     rolesChecklist.innerHTML = "";
-    const rolesAsignadosSet = new Set(rolesAsignados || []);
-    const rolesCodigos = Object.keys(rolesCatalogo).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+    const setS = new Set(rolesSeleccionados);
+    const keys = Object.keys(rolesCatalogo).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
 
-    rolesCodigos.forEach(codigo => {
-        const desc = rolesCatalogo[codigo] || "";
+    keys.forEach(k => {
         const div = document.createElement("div");
+        div.style.cssText = "display:flex;align-items:center;gap:6px;";
         const chk = document.createElement("input");
         chk.type = "checkbox";
-        chk.value = codigo;
-        chk.id = "rolechk" + codigo;
-        if (rolesAsignadosSet.has(codigo)) chk.checked = true;
+        chk.value = k;
+        chk.id = "chkProf_" + k;
+        if (setS.has(k)) chk.checked = true;
+
         const lbl = document.createElement("label");
         lbl.setAttribute("for", chk.id);
-        lbl.textContent = `${codigo} - ${desc}`;
+        lbl.textContent = `${k} - ${rolesCatalogo[k]}`;
+
         div.appendChild(chk);
         div.appendChild(lbl);
         rolesChecklist.appendChild(div);
@@ -1711,484 +2154,238 @@ function pintarChecklistRoles(rolesAsignados) {
 }
 
 btnGuardarPerfil.addEventListener("click", () => {
-    const ambito = cmbAmbitoPerfil.value;
-    const nombre = (txtNombrePerfil.value || "").trim();
-    const idPerfilActual = cmbPerfilGestion.value;
-    const rolesSeleccionados = Array.from(
-        rolesChecklist.querySelectorAll("input[type='checkbox']:checked")
-    ).map(chk => chk.value);
+    const amb = cmbAmbitoPerfil.value;
+    const nom = txtNombrePerfil.value.trim();
+    if (!nom) { alert("Ingrese nombre del perfil."); return; }
 
-    if (!nombre) {
-        alert("Debe ingresar un nombre para el perfil.");
-        return;
-    }
-    if (!rolesSeleccionados.length) {
-        alert("Debe seleccionar al menos un rol.");
-        return;
-    }
+    const selRoles = [];
+    rolesChecklist.querySelectorAll("input[type='checkbox']:checked").forEach(c => selRoles.push(c.value));
 
-    if (!dataPerfiles[ambito]) dataPerfiles[ambito] = [];
-    const perfilesList = dataPerfiles[ambito];
+    let perfs = dataPerfiles[amb] || [];
+    const idP = cmbPerfilGestion.value;
 
-    const nuevoPerfil = {
-        id: nombre.toLowerCase().replace(/\s+/g,""),
-        nombre: nombre,
-        roles: rolesSeleccionados
-    };
-
-    let mensaje = "";
-    if (idPerfilActual) {
-        const index = perfilesList.findIndex(p => p.id === idPerfilActual);
-        if (index === -1) {
-            alert("Error al encontrar perfil para editar.");
-            return;
+    if (idP) {
+        const p = perfs.find(x => x.id === idP);
+        if (p) {
+            p.nombre = nom;
+            p.roles = selRoles;
         }
-        if (perfilesList[index].nombre !== nombre) {
-            if (perfilesList.some(p => p.id === nuevoPerfil.id && p.id !== idPerfilActual)) {
-                alert("Error: Ya existe un perfil con ese nombre.");
-                return;
-            }
-        }
-        perfilesList[index].nombre = nuevoPerfil.nombre;
-        perfilesList[index].roles = nuevoPerfil.roles;
-        mensaje = `Perfil "${nombre}" actualizado en ámbito.`;
     } else {
-        if (perfilesList.some(p => p.id === nuevoPerfil.id)) {
-            alert("Error: Ya existe un perfil con ese nombre.");
-            return;
-        }
-        perfilesList.push(nuevoPerfil);
-        mensaje = `Perfil "${nombre}" creado en ámbito.`;
+        const newId = nom.toLowerCase().replace(/\s+/g,"");
+        perfs.push({ id: newId, nombre: nom, roles: selRoles });
+        dataPerfiles[amb] = perfs;
     }
 
+    alert("✓ Perfil guardado correctamente.");
     recargarComboPerfilesGlobal();
-    alert(mensaje);
     cargarComboPerfilesGestion();
 });
 
 btnEliminarPerfil.addEventListener("click", () => {
-    const ambito = cmbAmbitoPerfil.value;
-    const idPerfil = cmbPerfilGestion.value;
-    if (!idPerfil) {
-        alert("Debe seleccionar un perfil para eliminar.");
-        return;
-    }
-    const perfilesList = dataPerfiles[ambito] || [];
-    const index = perfilesList.findIndex(p => p.id === idPerfil);
-    if (index === -1) {
-        alert("Error al encontrar el perfil para eliminar.");
-        return;
-    }
-    if (confirm(`¿Está seguro que desea eliminar el perfil "${perfilesList[index].nombre}"?`)) {
-        perfilesList.splice(index,1);
-        recargarComboPerfilesGlobal();
-        alert("Perfil eliminado.");
-        cargarComboPerfilesGestion();
-    }
+    const amb = cmbAmbitoPerfil.value;
+    const idP = cmbPerfilGestion.value;
+    if (!idP) { alert("Seleccione un perfil a eliminar."); return; }
+    if (!confirm("¿Eliminar este perfil?")) return;
+
+    dataPerfiles[amb] = (dataPerfiles[amb] || []).filter(x => x.id !== idP);
+    alert("Perfil eliminado.");
+    recargarComboPerfilesGlobal();
+    cargarComboPerfilesGestion();
+    txtNombrePerfil.value = "";
+    pintarChecklistRoles([]);
 });
 
-// ---------- FunctionView (igual que tu base) ----------
-let funcionesPorRol = {
-    "100": {
-        rolNombre:"Médico",
-        funciones:[
-            {id:1,nombre:"Teleton.His.Shell.Web.Paciente.Buscar"},
-            {id:6,nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.Index"},
-            {id:10,nombre:"Teleton.His.Shell.Web.Agenda.IndicacionesPaciente"}
-        ]
-    },
-    "101": {
-        rolNombre:"Tratante básico sin indicaciones",
-        funciones:[
-            {id:1,nombre:"Teleton.His.Shell.Web.Paciente.Buscar"},
-            {id:6,nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.Index"},
-            {id:80,nombre:"Teleton.His.Shell.Web.Agenda.Administracion.Vistapanoramica"}
-        ]
-    },
-    "102": {
-        rolNombre:"Tratante indicador con indicaciones",
-        funciones:[
-            {id:1,nombre:"Teleton.His.Shell.Web.Paciente.Buscar"},
-            {id:6,nombre:"Teleton.His.Shell.Web.Agenda.EscritorioProfesional.Index"},
-            {id:10,nombre:"Teleton.His.Shell.Web.Agenda.IndicacionesPaciente"}
-        ]
-    }
-};
-
-let backupFuncionesPorRol = JSON.parse(JSON.stringify(funcionesPorRol));
+// VISTA 4: MANTEENEDOR FUNCIONALIDADES
+let funcionesRolState = { rolId: null, funciones: [] };
 
 function inicializarFunctionView() {
-    cargarComboRolesFuncion();
-    sincronizarCamposRolDesdeCombo();
-    txtBuscarFuncion.value = "";
-    txtBuscarFuncionCatalogo.value = "";
-    pintarChecklistFunciones();
-    pintarTablaFunciones();
-    pintarCatalogoFunciones();
-}
-
-function cargarComboRolesFuncion() {
     cmbRolFuncion.innerHTML = "";
-    const empty = document.createElement("option");
-    empty.value = "";
-    empty.textContent = "";
-    cmbRolFuncion.appendChild(empty);
-
-    Object.keys(funcionesPorRol)
-        .sort((a,b)=>parseInt(a,10)-parseInt(b,10))
-        .forEach(rolId => {
-            const opt = document.createElement("option");
-            opt.value = rolId;
-            opt.textContent = `${rolId} - ${funcionesPorRol[rolId].rolNombre}`;
-            cmbRolFuncion.appendChild(opt);
-        });
-
-    const first = Object.keys(funcionesPorRol)[0];
-    if (first) cmbRolFuncion.value = first;
-}
-
-function getRolSeleccionadoFuncion() {
-    const rolId = cmbRolFuncion.value;
-    if (!rolId || !funcionesPorRol[rolId]) return null;
-    return { rolId, data: funcionesPorRol[rolId] };
-}
-
-function sincronizarCamposRolDesdeCombo() {
-    const info = getRolSeleccionadoFuncion();
-    if (!info) {
-        txtNuevoRolId.value = "";
-        txtNuevoRolNombre.value = "";
-        return;
+    const keys = Object.keys(rolesCatalogo).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+    keys.forEach(k => {
+        const o = document.createElement("option");
+        o.value = k;
+        o.textContent = `${k} - ${rolesCatalogo[k]}`;
+        cmbRolFuncion.appendChild(o);
+    });
+    if (keys.length) {
+        cmbRolFuncion.value = keys[0];
+        cargarFuncionesDelRol(keys[0]);
     }
-    txtNuevoRolId.value = info.rolId;
-    txtNuevoRolNombre.value = info.data.rolNombre;
+    cargarCatalogoFunciones();
 }
 
-function pintarChecklistFunciones() {
+cmbRolFuncion.addEventListener("change", () => cargarFuncionesDelRol(cmbRolFuncion.value));
+
+function cargarFuncionesDelRol(rolId) {
+    funcionesRolState.rolId = rolId;
+    txtNuevoRolId.value = rolId;
+    txtNuevoRolNombre.value = rolesCatalogo[rolId] || "";
+
+    const muestra = catalogoFuncionesGlobal.slice(0, 10);
+    funcionesRolState.funciones = muestra.map(f => f.id);
+
+    pintarChecklistFuncionesRol();
+    pintarTablaFuncionesRol();
+}
+
+function pintarChecklistFuncionesRol() {
     funcionesChecklist.innerHTML = "";
-    const rolInfo = getRolSeleccionadoFuncion();
-    if (!rolInfo) {
-        funcionesChecklist.innerHTML = `<div>Seleccione un rol o cree uno nuevo.</div>`;
-        return;
-    }
+    const q = txtBuscarFuncion.value.toLowerCase().trim();
+    const setF = new Set(funcionesRolState.funciones);
 
-    const filtro = txtBuscarFuncion.value.trim().toLowerCase();
-    const funciones = rolInfo.data.funciones || [];
-
-    funciones.forEach(f => {
-        if (filtro) {
-            const txt = (String(f.id) + " " + f.nombre).toLowerCase();
-            if (!txt.includes(filtro)) return;
-        }
+    catalogoFuncionesGlobal.forEach(f => {
+        if (q && !String(f.id).includes(q) && !f.nombre.toLowerCase().includes(q)) return;
 
         const div = document.createElement("div");
+        div.style.cssText = "display:flex;align-items:center;gap:6px;";
         const chk = document.createElement("input");
         chk.type = "checkbox";
         chk.value = f.id;
-        chk.id = `funcchk_${rolInfo.rolId}_${f.id}`;
-        chk.checked = true;
+        chk.id = "chkFunc_" + f.id;
+        if (setF.has(f.id)) chk.checked = true;
 
         const lbl = document.createElement("label");
         lbl.setAttribute("for", chk.id);
         lbl.textContent = `${f.id} - ${f.nombre}`;
 
+        chk.addEventListener("change", () => {
+            if (chk.checked) {
+                if (!funcionesRolState.funciones.includes(f.id)) funcionesRolState.funciones.push(f.id);
+            } else {
+                funcionesRolState.funciones = funcionesRolState.funciones.filter(x => x !== f.id);
+            }
+            pintarTablaFuncionesRol();
+        });
+
         div.appendChild(chk);
         div.appendChild(lbl);
         funcionesChecklist.appendChild(div);
-
-        chk.addEventListener("change", () => {
-            if (!chk.checked) {
-                const arr = rolInfo.data.funciones;
-                const idx = arr.findIndex(x => x.id === f.id);
-                if (idx !== -1) arr.splice(idx,1);
-            }
-            pintarTablaFunciones();
-        });
     });
-
-    if (!funcionesChecklist.children.length) {
-        funcionesChecklist.innerHTML = `<div>El rol no tiene funciones cargadas aún.</div>`;
-    }
 }
 
-function pintarTablaFunciones() {
+function pintarTablaFuncionesRol() {
     tblFuncionesRolBody.innerHTML = "";
-    const rolInfo = getRolSeleccionadoFuncion();
-    if (!rolInfo) return;
+    const rolId = funcionesRolState.rolId;
+    const rolNombre = rolesCatalogo[rolId] || "";
 
-    (rolInfo.data.funciones || []).forEach(f => {
+    funcionesRolState.funciones.forEach(fId => {
+        const fObj = catalogoFuncionesGlobal.find(x => x.id === fId);
         const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${rolInfo.rolId}</td>
-            <td>${escapeHtml(rolInfo.data.rolNombre)}</td>
-            <td>${f.id}</td>
-            <td>${escapeHtml(f.nombre)}</td>
-        `;
+        tr.innerHTML = `<td>${rolId}</td><td>${escapeHtml(rolNombre)}</td><td>${fId}</td><td>${escapeHtml(fObj ? fObj.nombre : "Función " + fId)}</td>`;
         tblFuncionesRolBody.appendChild(tr);
     });
-
-    if (!tblFuncionesRolBody.children.length) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="4">El rol no tiene funciones asociadas.</td>`;
-        tblFuncionesRolBody.appendChild(tr);
-    }
 }
 
-cmbRolFuncion.addEventListener("change", () => {
-    sincronizarCamposRolDesdeCombo();
-    txtBuscarFuncion.value = "";
-    pintarChecklistFunciones();
-    pintarTablaFunciones();
-});
-
-btnBuscarFuncion.addEventListener("click", () => {
-    pintarChecklistFunciones();
-});
-
+btnBuscarFuncion.addEventListener("click", pintarChecklistFuncionesRol);
 btnRefrescarFunciones.addEventListener("click", () => {
     txtBuscarFuncion.value = "";
-    pintarChecklistFunciones();
-    pintarTablaFunciones();
+    pintarChecklistFuncionesRol();
 });
-
 btnClearFuncion.addEventListener("click", () => {
     txtBuscarFuncion.value = "";
-    txtBuscarFuncion.focus();
-    pintarChecklistFunciones();
+    pintarChecklistFuncionesRol();
 });
 
-btnNuevoRol.addEventListener("click", () => {
-    txtNuevoRolId.value = "";
-    txtNuevoRolNombre.value = "";
-    cmbRolFuncion.value = "";
-    funcionesChecklist.innerHTML = `<div>Ingrese un RolId y Nombre, luego guarde para crear el rol. Después podrá agregar funciones desde el catálogo.</div>`;
-    tblFuncionesRolBody.innerHTML = `<tr><td colspan="4">Sin datos. Nuevo rol en blanco.</td></tr>`;
-});
-
-btnGuardarFuncionesRol.addEventListener("click", () => {
-    let rolId = (txtNuevoRolId.value || "").trim();
-    let rolNombre = (txtNuevoRolNombre.value || "").trim();
-
-    if (!rolId || !rolNombre) {
-        alert("Debe ingresar RolId y Nombre del rol para guardar.");
-        return;
-    }
-    if (!/^\d+$/.test(rolId)) {
-        alert("RolId debe ser numérico (ej: 390).");
-        return;
-    }
-
-    if (!funcionesPorRol[rolId]) {
-        funcionesPorRol[rolId] = { rolNombre: rolNombre, funciones: [] };
-
-        if (!rolesCatalogo[rolId]) {
-            rolesCatalogo[rolId] = rolNombre;
-        }
-    } else {
-        funcionesPorRol[rolId].rolNombre = rolNombre;
-    }
-
-    backupFuncionesPorRol = JSON.parse(JSON.stringify(funcionesPorRol));
-    cargarComboRolesFuncion();
-    cmbRolFuncion.value = rolId;
-    sincronizarCamposRolDesdeCombo();
-    pintarChecklistFunciones();
-    pintarTablaFunciones();
-
-    alert(`Rol ${rolId} - ${rolNombre} guardado en la maqueta (incluyendo funciones asociadas).`);
-});
-
-btnEliminarRol.addEventListener("click", () => {
-    const rolId = (txtNuevoRolId.value || "").trim();
-    if (!rolId) {
-        alert("Debe indicar un RolId para eliminar.");
-        return;
-    }
-    if (!funcionesPorRol[rolId]) {
-        alert("El RolId indicado no existe en la maqueta.");
-        return;
-    }
-    if (!confirm(`¿Eliminar el rol ${rolId} (${funcionesPorRol[rolId].rolNombre}) y todas sus funciones?`)) {
-        return;
-    }
-    delete funcionesPorRol[rolId];
-    backupFuncionesPorRol = JSON.parse(JSON.stringify(funcionesPorRol));
-    txtNuevoRolId.value = "";
-    txtNuevoRolNombre.value = "";
-    cargarComboRolesFuncion();
-    cmbRolFuncion.value = "";
-    funcionesChecklist.innerHTML = `<div>Seleccione un rol existente o cree uno nuevo.</div>`;
-    tblFuncionesRolBody.innerHTML = `<tr><td colspan="4">Sin datos.</td></tr>`;
-    alert("Rol eliminado de la maqueta.");
-});
-
-btnRestaurarFuncionesRol.addEventListener("click", () => {
-    funcionesPorRol = JSON.parse(JSON.stringify(backupFuncionesPorRol));
-    inicializarFunctionView();
-    alert("Funciones y roles restaurados desde origen simulado.");
-});
-
-function pintarCatalogoFunciones() {
+function cargarCatalogoFunciones() {
     catalogoFuncionesBody.innerHTML = "";
-    const filtro = (txtBuscarFuncionCatalogo.value || "").trim().toLowerCase();
+    const q = txtBuscarFuncionCatalogo.value.toLowerCase().trim();
 
-    const listado = catalogoFuncionesGlobal.filter(f => {
-        if (!filtro) return true;
-        const txt = (String(f.id) + " " + f.nombre).toLowerCase();
-        return txt.includes(filtro);
-    });
+    catalogoFuncionesGlobal.forEach(f => {
+        if (q && !String(f.id).includes(q) && !f.nombre.toLowerCase().includes(q)) return;
 
-    if (!listado.length) {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="3">No hay funciones que coincidan con el filtro.</td>`;
-        catalogoFuncionesBody.appendChild(tr);
-        return;
-    }
-
-    listado.forEach(f => {
-        const tr = document.createElement("tr");
-
-        const tdChk = document.createElement("td");
-        const chk = document.createElement("input");
-        chk.type = "checkbox";
-        chk.value = f.id;
-        chk.id = `catfunc_${f.id}`;
-        tdChk.appendChild(chk);
-
-        const tdId = document.createElement("td");
-        tdId.textContent = f.id;
-
-        const tdNombre = document.createElement("td");
-        tdNombre.className = "func-nombre";
-        tdNombre.title = f.nombre;
-        tdNombre.textContent = f.nombre;
-
-        tr.appendChild(tdChk);
-        tr.appendChild(tdId);
-        tr.appendChild(tdNombre);
+        tr.innerHTML = `
+            <td><input type="checkbox" class="chkCatFunc" value="${f.id}"></td>
+            <td><strong>${f.id}</strong></td>
+            <td class="func-nombre" title="${escapeHtml(f.nombre)}">${escapeHtml(f.nombre)}</td>
+        `;
         catalogoFuncionesBody.appendChild(tr);
     });
 }
 
-btnFiltrarCatalogoFunciones.addEventListener("click", pintarCatalogoFunciones);
-
+btnFiltrarCatalogoFunciones.addEventListener("click", cargarCatalogoFunciones);
 btnClearFuncionCatalogo.addEventListener("click", () => {
     txtBuscarFuncionCatalogo.value = "";
-    txtBuscarFuncionCatalogo.focus();
-    pintarCatalogoFunciones();
-});
-
-txtBuscarFuncionCatalogo.addEventListener("keyup", e => {
-    if (e.key === "Enter") pintarCatalogoFunciones();
+    cargarCatalogoFunciones();
 });
 
 btnAgregarFuncionesSeleccionadas.addEventListener("click", () => {
-    const rolIdCampo = (txtNuevoRolId.value || "").trim();
-    const rolNombreCampo = (txtNuevoRolNombre.value || "").trim();
-
-    if (!rolIdCampo || !rolNombreCampo) {
-        alert("Primero debe indicar RolId y Nombre del rol para poder agregar funciones.");
-        return;
-    }
-    if (!/^\d+$/.test(rolIdCampo)) {
-        alert("RolId debe ser numérico (ej: 390).");
-        return;
-    }
-
-    const rolId = rolIdCampo;
-    const rolNombre = rolNombreCampo;
-
-    if (!funcionesPorRol[rolId]) {
-        funcionesPorRol[rolId] = { rolNombre: rolNombre, funciones: [] };
-
-        if (!rolesCatalogo[rolId]) {
-            rolesCatalogo[rolId] = rolNombre;
-        }
-    } else {
-        funcionesPorRol[rolId].rolNombre = rolNombre;
-    }
-
-    const seleccionados = Array.from(
-        catalogoFuncionesBody.querySelectorAll("input[type='checkbox']:checked")
-    ).map(chk => parseInt(chk.value,10));
-
-    if (!seleccionados.length) {
-        alert("Debe seleccionar al menos una función del catálogo.");
-        return;
-    }
-
-    const funcionesRol = funcionesPorRol[rolId].funciones;
-    const existentes = new Set(funcionesRol.map(f => f.id));
-
     let agregadas = 0;
-    seleccionados.forEach(fid => {
-        if (!existentes.has(fid)) {
-            const funcObj = catalogoFuncionesGlobal.find(f => f.id === fid);
-            if (funcObj) {
-                funcionesRol.push({ id: funcObj.id, nombre: funcObj.nombre });
-                existentes.add(fid);
-                agregadas++;
-            }
+    catalogoFuncionesBody.querySelectorAll(".chkCatFunc:checked").forEach(chk => {
+        const idF = parseInt(chk.value, 10);
+        if (!funcionesRolState.funciones.includes(idF)) {
+            funcionesRolState.funciones.push(idF);
+            agregadas++;
         }
     });
-
-    if (!agregadas) {
-        alert("Todas las funciones seleccionadas ya estaban asociadas al rol.");
-        return;
+    if (agregadas > 0) {
+        alert(`Se agregaron ${agregadas} funciones al rol.`);
+        pintarChecklistFuncionesRol();
+        pintarTablaFuncionesRol();
+    } else {
+        alert("No se seleccionaron funciones nuevas.");
     }
-
-    backupFuncionesPorRol = JSON.parse(JSON.stringify(funcionesPorRol));
-    cargarComboRolesFuncion();
-    cmbRolFuncion.value = rolId;
-    sincronizarCamposRolDesdeCombo();
-    pintarChecklistFunciones();
-    pintarTablaFunciones();
-
-    alert(`Se agregaron ${agregadas} función(es) al rol ${rolId}.`);
 });
 
-// ---------- CompareView (nuevo + mejora de botones) ----------
+btnGuardarFuncionesRol.addEventListener("click", () => {
+    alert("✓ Cambios guardados para el rol " + funcionesRolState.rolId);
+});
+
+btnRestaurarFuncionesRol.addEventListener("click", () => {
+    cargarFuncionesDelRol(funcionesRolState.rolId);
+});
+
+btnNuevoRol.addEventListener("click", () => {
+    const idR = txtNuevoRolId.value.trim();
+    const nomR = txtNuevoRolNombre.value.trim();
+    if (!idR || !nomR) { alert("Complete ID y Nombre del nuevo rol."); return; }
+
+    rolesCatalogo[idR] = nomR;
+    alert("✓ Rol creado.");
+    inicializarFunctionView();
+    cmbRolFuncion.value = idR;
+    cargarFuncionesDelRol(idR);
+});
+
+btnEliminarRol.addEventListener("click", () => {
+    const idR = cmbRolFuncion.value;
+    if (!idR) return;
+    if (!confirm("¿Eliminar este rol?")) return;
+
+    delete rolesCatalogo[idR];
+    alert("Rol eliminado.");
+    inicializarFunctionView();
+});
+
+// VISTA 5: COMPARAR PERFILES (SIN USUARIO)
 function inicializarCompareView() {
-    // Por defecto, si vienes desde cualquier lado, inicializa con Educación
-    cmbAmbitoCompare.value = "Educación";
-    cargarCompareViewPorAmbito();
-    mostrarDetalleRolesYComparacionCompare();
+    cmbAmbitoCompare.value = "Administración";
+    cargarCompareView();
 }
 
-function cargarCompareViewPorAmbito() {
-    const ambito = cmbAmbitoCompare.value;
-    const perfilesList = dataPerfiles[ambito] || [];
+cmbAmbitoCompare.addEventListener("change", cargarCompareView);
 
-    // Combo base
+function cargarCompareView() {
+    const amb = cmbAmbitoCompare.value;
+    const perfs = dataPerfiles[amb] || [];
+
     cmbPerfilBaseCompare.innerHTML = "";
-    const empty = document.createElement("option");
-    empty.value = "";
-    empty.textContent = "Seleccione perfil base";
-    cmbPerfilBaseCompare.appendChild(empty);
-
-    perfilesList.forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = p.nombre;
-        cmbPerfilBaseCompare.appendChild(opt);
+    perfs.forEach(p => {
+        const o = document.createElement("option");
+        o.value = p.id;
+        o.textContent = p.nombre;
+        cmbPerfilBaseCompare.appendChild(o);
     });
 
-    const baseDefault = perfilActualPorAmbito[ambito] || (perfilesList[0] ? perfilesList[0].id : "");
-    if (baseDefault) cmbPerfilBaseCompare.value = baseDefault;
-
-    // Lista de perfiles (checkboxes) - no pre-selecciono todos, solo 1 por defecto para que no explote visualmente
     listaPerfilesCompareDiv.innerHTML = "";
-    perfilesList.forEach((p, idx) => {
+    perfs.forEach(p => {
         const row = document.createElement("div");
         row.className = "lista-perfiles-item";
 
         const chk = document.createElement("input");
         chk.type = "checkbox";
         chk.value = p.id;
-        chk.id = "chk_compare_" + p.id;
-
-        // Por defecto: marca el mismo del base (si existe), si no el primero
-        if ((baseDefault && p.id === baseDefault) || (!baseDefault && idx === 0)) chk.checked = true;
+        chk.id = "chkComp_" + p.id;
 
         const lbl = document.createElement("label");
         lbl.setAttribute("for", chk.id);
@@ -2198,577 +2395,327 @@ function cargarCompareViewPorAmbito() {
         row.appendChild(lbl);
         listaPerfilesCompareDiv.appendChild(row);
 
-        chk.addEventListener("change", mostrarDetalleRolesYComparacionCompare);
-    });
-}
-
-function getPerfilesSeleccionadosCompare() {
-    const ambito = cmbAmbitoCompare.value;
-    const perfilesList = dataPerfiles[ambito] || [];
-    const ids = Array.from(listaPerfilesCompareDiv.querySelectorAll("input[type='checkbox']:checked"))
-        .map(chk => chk.value);
-
-    return ids.map(id => perfilesList.find(p => p.id === id)).filter(Boolean);
-}
-
-function getPerfilBaseCompare() {
-    const ambito = cmbAmbitoCompare.value;
-    const perfilesList = dataPerfiles[ambito] || [];
-    const idBase = cmbPerfilBaseCompare.value;
-    if (!idBase) return null;
-    return perfilesList.find(p => p.id === idBase) || null;
-}
-
-function mostrarDetalleRolesYComparacionCompare() {
-    const perfilesSeleccionados = getPerfilesSeleccionadosCompare();
-    const perfilBase = getPerfilBaseCompare();
-
-    if (!perfilesSeleccionados.length) {
-        detalleRolesCompareDiv.innerHTML = "<div>Seleccione al menos un perfil para ver sus roles combinados.</div>";
-        compareAreaCompare.innerHTML = "";
-        return;
-    }
-
-    // Tabla detalle (matriz)
-    const rolesUnicos = new Set();
-    perfilesSeleccionados.forEach(p => (p.roles || []).forEach(r => rolesUnicos.add(r)));
-    const idsOrdenados = Array.from(rolesUnicos).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-
-    let html = `<table class="roles-table"><thead><tr><th>Rol / Funcionalidad</th>`;
-    perfilesSeleccionados.forEach(p => {
-        html += `<th style="text-align:center;">${escapeHtml(p.nombre)}</th>`;
-    });
-    html += `</tr></thead><tbody>`;
-
-    idsOrdenados.forEach(rid => {
-        const desc = rolesCatalogo[rid] || "Descripción no disponible";
-        html += `<tr><td><strong>${rid}</strong> - ${escapeHtml(desc)}</td>`;
-        perfilesSeleccionados.forEach(p => {
-            const tiene = (p.roles || []).includes(rid);
-            html += `<td style="text-align:center;"><input type="checkbox" ${tiene ? "checked" : ""} disabled></td>`;
-        });
-        html += `</tr>`;
+        chk.addEventListener("change", renderComparacionSinUsuario);
     });
 
-    html += `</tbody></table>`;
-    detalleRolesCompareDiv.innerHTML = html;
-
-    // Comparación vs base
-    compareAreaCompare.innerHTML = "";
-
-    if (!perfilBase) {
-        compareAreaCompare.innerHTML = "<div>Seleccione un perfil base para comparar.</div>";
-        return;
-    }
-
-    const rolesSel = new Set(idsOrdenados);
-    const rolesBase = new Set((perfilBase.roles || []));
-
-    const union = new Set([...rolesSel, ...rolesBase]);
-    const todos = Array.from(union).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-
-    todos.forEach(rol => {
-        const enSel = rolesSel.has(rol);
-        const enBase = rolesBase.has(rol);
-
-        let clase = "unchanged";
-        let estado = "Sin cambios";
-
-        // Seleccionados vs base:
-        // - added: está en seleccionados pero no en base
-        // - removed: está en base pero no en seleccionados
-        if (enSel && !enBase) { clase = "added"; estado = "En seleccionados (no está en base)"; }
-        else if (!enSel && enBase) { clase = "removed"; estado = "Está en base (no está en seleccionados)"; }
-
-        const desc = rolesCatalogo[rol] || "Descripción no disponible";
-        const div = document.createElement("div");
-        div.className = "compare-item " + clase;
-        div.innerHTML = `<strong>${rol}</strong> - ${escapeHtml(desc)}`;
-
-        if (estado !== "Sin cambios") {
-            const span = document.createElement("span");
-            span.textContent = " " + estado;
-            span.style.fontWeight = "bold";
-            div.appendChild(span);
-        }
-
-        compareAreaCompare.appendChild(div);
-    });
+    cmbPerfilBaseCompare.addEventListener("change", renderComparacionSinUsuario);
+    renderComparacionSinUsuario();
 }
 
-cmbAmbitoCompare.addEventListener("change", () => {
-    cargarCompareViewPorAmbito();
-    mostrarDetalleRolesYComparacionCompare();
-});
-
-// Importante: al cambiar el base NO se resetean checks, solo recalcula
-cmbPerfilBaseCompare.addEventListener("change", () => {
-    mostrarDetalleRolesYComparacionCompare();
-});
-
-// Botones nuevos
 btnCompareSelectAll.addEventListener("click", () => {
-    listaPerfilesCompareDiv
-        .querySelectorAll("input[type='checkbox']")
-        .forEach(chk => chk.checked = true);
-
-    mostrarDetalleRolesYComparacionCompare();
+    listaPerfilesCompareDiv.querySelectorAll("input[type='checkbox']").forEach(c => c.checked = true);
+    renderComparacionSinUsuario();
 });
 
 btnCompareClear.addEventListener("click", () => {
-    listaPerfilesCompareDiv
-        .querySelectorAll("input[type='checkbox']")
-        .forEach(chk => chk.checked = false);
-
-    mostrarDetalleRolesYComparacionCompare();
+    listaPerfilesCompareDiv.querySelectorAll("input[type='checkbox']").forEach(c => c.checked = false);
+    renderComparacionSinUsuario();
 });
 
-// ---------- Modal roles (tu versión sin columna usuario) ----------
-function determinarAmbitoPorEspecialidad(especialidad) {
-    let defaultAmb = "Educación";
-    const esp = (especialidad || "").toString();
+function renderComparacionSinUsuario() {
+    const amb = cmbAmbitoCompare.value;
+    const perfs = dataPerfiles[amb] || [];
+    const baseId = cmbPerfilBaseCompare.value;
+    const baseObj = perfs.find(p => p.id === baseId);
+    const baseRoles = new Set(baseObj ? baseObj.roles : []);
 
-    if (/analista|admin/i.test(esp)) defaultAmb = "Administración";
-    if (/(kinesi|médico|medico|asistente|psicologo|enfermera|fonoaudiologo)/i.test(esp)) defaultAmb = "Asistencial";
+    const marcados = [];
+    listaPerfilesCompareDiv.querySelectorAll("input[type='checkbox']:checked").forEach(c => marcados.push(c.value));
 
-    return defaultAmb;
-}
-
-function getPerfilesAsociadosAlUsuario(u, ambito) {
-    const perfiles = dataPerfiles[ambito] || [];
-    const rolesUsuario = (u && u.roles) ? Array.from(u.roles) : [];
-
-    // Perfiles realmente asociados: roles del perfil ⊆ roles del usuario
-    const asociados = perfiles.filter(p => {
-        const r = p.roles || [];
-        if (!r.length) return false;
-        return r.every(x => rolesUsuario.includes(x));
+    const rolesSeleccionados = new Set();
+    marcados.forEach(pId => {
+        const pObj = perfs.find(p => p.id === pId);
+        if (pObj && pObj.roles) pObj.roles.forEach(r => rolesSeleccionados.add(r));
     });
 
-    // Fallback: si no hay ninguno, usar match por especialidad/nombre.
-    if (asociados.length === 0) {
-        const esp = ((u && u.especialidad) ? u.especialidad : "").toString().toLowerCase();
-        const match = perfiles.find(p => {
-            const n = (p && p.nombre ? p.nombre : "").toString().toLowerCase();
-            return esp && n && (n.includes(esp) || esp.includes(n));
+    const arrRoles = Array.from(rolesSeleccionados).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+
+    if (!arrRoles.length) {
+        detalleRolesCompareDiv.innerHTML = "<div style='color:#999;'>Seleccione al menos un perfil para ver sus roles.</div>";
+    } else {
+        let html = "<table class='roles-table'><thead><tr><th>RolId</th><th>Nombre Rol</th></tr></thead><tbody>";
+        arrRoles.forEach(r => {
+            html += `<tr><td><strong>${r}</strong></td><td>${escapeHtml(rolesCatalogo[r] || "Rol " + r)}</td></tr>`;
         });
-        if (match) return [match];
+        html += "</tbody></table>";
+        detalleRolesCompareDiv.innerHTML = html;
     }
 
-    return asociados;
+    let compHtml = "";
+    arrRoles.forEach(r => {
+        if (!baseRoles.has(r)) {
+            compHtml += `<div class="compare-item added">+ Diferencia (no está en base): <strong>${r}</strong> - ${escapeHtml(rolesCatalogo[r] || "")}</div>`;
+        } else {
+            compHtml += `<div class="compare-item unchanged">= Coincide con base: <strong>${r}</strong> - ${escapeHtml(rolesCatalogo[r] || "")}</div>`;
+        }
+    });
+
+    if (!compHtml) compHtml = "<div style='color:#999;'>Seleccione perfiles para comparar contra la base.</div>";
+    compareAreaCompare.innerHTML = compHtml;
 }
 
-function pintarModalRolesComparativo(u) {
-    const cont = document.getElementById("contenidoRoles");
+// VISTA 6: TRABAJADORES
+let honorarios = [];
+let _nextHonId = 1;
 
-    const ambito = determinarAmbitoPorEspecialidad(u ? u.especialidad : "");
-    const perfilesAsociados = getPerfilesAsociadosAlUsuario(u, ambito);
+function initHonorarios() {
+    const cmbHInst = document.getElementById("cmbHonInstituto");
+    if (cmbHInst) {
+        cmbHInst.innerHTML = "";
+        institutosGlobal.forEach(i => {
+            const o = document.createElement("option");
+            o.value = i;
+            o.textContent = i;
+            cmbHInst.appendChild(o);
+        });
+    }
 
-    // Sin columna Usuario: solo perfiles asociados
-    const union = new Set();
-    perfilesAsociados.forEach(p => (p.roles || []).forEach(r => union.add(r)));
+    const cmbAmb = document.getElementById("cmbHonAmbito");
+    if (cmbAmb) {
+        cmbAmb.addEventListener("change", honCargarPerfilesPorAmbito);
+    }
 
-    const ids = Array.from(union).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+    const cmbTipoTrab = document.getElementById("cmbHonTipoTrabajador");
+    if (cmbTipoTrab) {
+        cmbTipoTrab.addEventListener("change", actualizarTipoTrabajadorRRHH);
+    }
 
-    if (!ids.length) {
-        cont.innerHTML = "<div>No hay roles asignados.</div>";
+    document.getElementById("btnHonGuardar")?.addEventListener("click", honGuardar);
+    document.getElementById("btnHonLimpiar")?.addEventListener("click", honLimpiar);
+}
+
+function actualizarTipoTrabajadorRRHH() {
+    const esHonorario = document.getElementById("cmbHonTipoTrabajador")?.value === "Sí";
+    const panelVigencia = document.getElementById("panelVigenciaHonorario");
+    if (panelVigencia) panelVigencia.style.display = esHonorario ? "block" : "none";
+}
+
+function establecerCuentasPorDefectoRRHH() {
+    ["cmbHonCtaRed","cmbHonCtaCorreo","cmbHonCtaSIC","cmbHonCtaIntranet","cmbHonCtaFin","cmbHonCtaWF","cmbHonCtaER"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "Sí";
+    });
+}
+
+function getCuentasSeleccionadasRRHH() {
+    return {
+        red: document.getElementById("cmbHonCtaRed")?.value === "Sí" ? "Sí" : "No",
+        correo: document.getElementById("cmbHonCtaCorreo")?.value === "Sí" ? "Sí" : "No",
+        sic: document.getElementById("cmbHonCtaSIC")?.value === "Sí" ? "Sí" : "No",
+        intranet: document.getElementById("cmbHonCtaIntranet")?.value === "Sí" ? "Sí" : "No",
+        fin700: document.getElementById("cmbHonCtaFin")?.value === "Sí" ? "Sí" : "No",
+        vpn: document.getElementById("cmbHonCtaWF")?.value === "Sí" ? "Sí" : "No",
+        escritorio: document.getElementById("cmbHonCtaER")?.value === "Sí" ? "Sí" : "No"
+    };
+}
+
+function honCargarPerfilesPorAmbito() {
+    const amb = document.getElementById("cmbHonAmbito")?.value || "Educación";
+    const perfs = dataPerfiles[amb] || [];
+
+    const cmbP = document.getElementById("cmbHonPerfil");
+    if (cmbP) {
+        cmbP.innerHTML = "";
+        perfs.forEach(p => {
+            const o = document.createElement("option");
+            o.value = p.id;
+            o.textContent = p.nombre;
+            cmbP.appendChild(o);
+        });
+    }
+
+    const cont = document.getElementById("honListaPerfiles");
+    if (cont) {
+        cont.innerHTML = "";
+        perfs.forEach(p => {
+            const div = document.createElement("div");
+            div.className = "lista-perfiles-item";
+            div.innerHTML = `<input type="checkbox" value="${p.id}" id="chkHonP_${p.id}"> <label for="chkHonP_${p.id}">${escapeHtml(p.nombre)}</label>`;
+            cont.appendChild(div);
+
+            div.querySelector("input").addEventListener("change", honActualizarRoles);
+        });
+    }
+    honActualizarRoles();
+}
+
+function honActualizarRoles() {
+    const amb = document.getElementById("cmbHonAmbito")?.value || "Educación";
+    const perfs = dataPerfiles[amb] || [];
+    const cont = document.getElementById("honDetalleRoles");
+    if (!cont) return;
+
+    const marcados = [];
+    document.querySelectorAll("#honListaPerfiles input:checked").forEach(c => marcados.push(c.value));
+
+    const rolesSet = new Set();
+    marcados.forEach(pId => {
+        const pObj = perfs.find(p => p.id === pId);
+        if (pObj && pObj.roles) pObj.roles.forEach(r => rolesSet.add(r));
+    });
+
+    const arr = Array.from(rolesSet).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+    if (!arr.length) {
+        cont.innerHTML = "<div style='color:#999;'>Seleccione al menos un perfil para ver los roles.</div>";
         return;
     }
 
-    let html = `<table class="roles-table" style="width:100%;"><thead><tr><th>Rol / Funcionalidad</th>`;
-    perfilesAsociados.forEach(p => {
-        html += `<th style="text-align:center;">${escapeHtml(p.nombre)}</th>`;
+    let html = "<table class='roles-table'><thead><tr><th>RolId</th><th>Nombre Rol</th></tr></thead><tbody>";
+    arr.forEach(r => {
+        html += `<tr><td><strong>${r}</strong></td><td>${escapeHtml(rolesCatalogo[r] || "Rol " + r)}</td></tr>`;
     });
-    html += `</tr></thead><tbody>`;
-
-    ids.forEach(rid => {
-        const desc = rolesCatalogo[rid] || "Descripción no disponible";
-
-        html += `<tr>`;
-        html += `<td><strong>${rid}</strong> - ${escapeHtml(desc)}</td>`;
-
-        perfilesAsociados.forEach(p => {
-            const tienePerfil = (p.roles || []).includes(rid);
-            html += `<td style="text-align:center;"><input type="checkbox" ${tienePerfil ? "checked" : ""} disabled></td>`;
-        });
-
-        html += `</tr>`;
-    });
-
-    html += `</tbody></table>`;
+    html += "</tbody></table>";
     cont.innerHTML = html;
 }
 
-// ===================== MANTENEDOR HONORARIOS =====================
-let honorarios = [];
-let honSelIdx = null;
+function honGuardar() {
+    const rut = document.getElementById("txtHonRut").value.trim();
+    const nombre = document.getElementById("txtHonNombre").value.trim();
+    const apP = document.getElementById("txtHonApP").value.trim();
+    const apM = document.getElementById("txtHonApM").value.trim();
+    const inst = document.getElementById("cmbHonInstituto").value;
+    const esp = document.getElementById("txtHonEspecialidad").value.trim();
+    const esHonorario = document.getElementById("cmbHonTipoTrabajador").value === "Sí";
+    const fechaSolicitud = document.getElementById("txtHonFechaSolicitud").value || new Date().toISOString().slice(0,10);
 
-function initHonorarios() {
-    // Poblar combo de institutos
-    const cmbHonInst = document.getElementById("cmbHonInstituto");
-    institutosGlobal.forEach(inst => {
-        const opt = document.createElement("option");
-        opt.value = inst;
-        opt.textContent = inst;
-        cmbHonInst.appendChild(opt);
-    });
+    const msgOk = document.getElementById("honMsgOk");
+    const msgErr = document.getElementById("honMsgErr");
+    msgOk.style.display = "none";
+    msgErr.style.display = "none";
 
-    document.getElementById("btnHonGuardar").addEventListener("click", honGuardar);
-    document.getElementById("btnHonLimpiar").addEventListener("click", honLimpiar);
-    document.getElementById("btnHonEliminar").addEventListener("click", honEliminar);
-
-    // Ámbito → recarga perfiles
-    document.getElementById("cmbHonAmbito").addEventListener("change", () => honCargarPerfilesPorAmbito());
-
-    // Perfil combo → sincroniza checkbox
-    document.getElementById("cmbHonPerfil").addEventListener("change", function() {
-        const newId = this.value;
-        const lista = document.getElementById("honListaPerfiles");
-        lista.querySelectorAll("input[type='checkbox']").forEach(c => (c.checked = false));
-        const chk = lista.querySelector(`input[value="${newId}"]`);
-        if (chk) chk.checked = true;
-        honMostrarDetalleRoles();
-    });
-}
-
-/* ---- Carga checklist de perfiles del ámbito seleccionado ---- */
-function honCargarPerfilesPorAmbito(preCheckedId) {
-    const ambito = document.getElementById("cmbHonAmbito").value;
-    const perfilesList = dataPerfiles[ambito] || [];
-    const cmbHonPerfil = document.getElementById("cmbHonPerfil");
-    const lista = document.getElementById("honListaPerfiles");
-
-    // Combo perfil
-    cmbHonPerfil.innerHTML = "";
-    perfilesList.forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = p.nombre;
-        cmbHonPerfil.appendChild(opt);
-    });
-
-    // Checklist
-    lista.innerHTML = "";
-    perfilesList.forEach(p => {
-        const row = document.createElement("div");
-        row.className = "lista-perfiles-item";
-
-        const chk = document.createElement("input");
-        chk.type = "checkbox";
-        chk.value = p.id;
-        chk.id = "honChk_" + p.id;
-        if (preCheckedId && p.id === preCheckedId) {
-            chk.checked = true;
-            cmbHonPerfil.value = p.id;
-        }
-
-        const lbl = document.createElement("label");
-        lbl.setAttribute("for", chk.id);
-        lbl.textContent = p.nombre;
-
-        row.appendChild(chk);
-        row.appendChild(lbl);
-        lista.appendChild(row);
-
-        chk.addEventListener("change", () => {
-            // Sincroniza combo al último marcado
-            const marcados = lista.querySelectorAll("input:checked");
-            if (marcados.length) cmbHonPerfil.value = marcados[marcados.length - 1].value;
-            honMostrarDetalleRoles();
-        });
-    });
-
-    honMostrarDetalleRoles();
-}
-
-/* ---- Calcula y pinta roles de los perfiles marcados ---- */
-function honGetRolesMarcados() {
-    const ambito = document.getElementById("cmbHonAmbito").value;
-    const perfilesList = dataPerfiles[ambito] || [];
-    const roles = new Set();
-    document.getElementById("honListaPerfiles")
-        .querySelectorAll("input[type='checkbox']:checked")
-        .forEach(chk => {
-            const p = perfilesList.find(x => x.id === chk.value);
-            if (p && p.roles) p.roles.forEach(r => roles.add(r));
-        });
-    return Array.from(roles).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-}
-
-function honGetPerfilesSeleccionados() {
-    const ambito = document.getElementById("cmbHonAmbito").value;
-    const perfilesList = dataPerfiles[ambito] || [];
-    return Array.from(
-        document.getElementById("honListaPerfiles").querySelectorAll("input:checked")
-    ).map(chk => perfilesList.find(p => p.id === chk.value)).filter(Boolean);
-}
-
-function honMostrarDetalleRoles() {
-    const perfiles = honGetPerfilesSeleccionados();
-    const div = document.getElementById("honDetalleRoles");
-
-    if (!perfiles.length) {
-        div.innerHTML = "<div style='color:#999;'>Seleccione al menos un perfil para ver los roles.</div>";
+    if (!rut || !nombre || !apP) {
+        msgErr.textContent = "Complete RUT, Nombre y Apellido Paterno.";
+        msgErr.style.display = "block";
         return;
     }
 
-    const rolesUnicos = new Set();
-    perfiles.forEach(p => (p.roles || []).forEach(r => rolesUnicos.add(r)));
-    const idsOrdenados = Array.from(rolesUnicos).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+    const cuentas = getCuentasSeleccionadasRRHH();
+    if (!Object.values(cuentas).some(v => v === "Sí")) {
+        msgErr.textContent = "Debe seleccionar al menos una cuenta solicitada para continuar.";
+        msgErr.style.display = "block";
+        return;
+    }
 
-    let html = `<table class="roles-table"><thead><tr><th>Rol / Funcionalidad</th>`;
-    perfiles.forEach(p => { html += `<th style="text-align:center;">${escapeHtml(p.nombre)}</th>`; });
-    html += `</tr></thead><tbody>`;
+    const amb = document.getElementById("cmbHonAmbito")?.value || "Educación";
+    const perfs = dataPerfiles[amb] || [];
+    const marcados = [];
+    document.querySelectorAll("#honListaPerfiles input:checked").forEach(c => marcados.push(c.value));
 
-    idsOrdenados.forEach(rid => {
-        const desc = rolesCatalogo[rid] || "Descripción no disponible";
-        html += `<tr><td><strong>${rid}</strong> - ${escapeHtml(desc)}</td>`;
-        perfiles.forEach(p => {
-            const tiene = (p.roles || []).includes(rid);
-            html += `<td style="text-align:center;"><input type="checkbox" ${tiene ? "checked" : ""} disabled></td>`;
-        });
-        html += `</tr>`;
+    const rolesSet = new Set();
+    marcados.forEach(pId => {
+        const pObj = perfs.find(p => p.id === pId);
+        if (pObj && pObj.roles) pObj.roles.forEach(r => rolesSet.add(r));
     });
 
-    html += `</tbody></table>`;
-    div.innerHTML = html;
+    let usuarioNuevoId = usuarios.length ? Math.max(...usuarios.map(u => u.id)) + 1 : 1;
+    let fechaActualFormateada = new Date().toLocaleString('es-CL');
+
+    let nuevoUsuario = {
+        id: usuarioNuevoId,
+        _rut: rut,
+        nombre: nombre,
+        app: apP,
+        apm: apM,
+        especialidad: esp || "Sin Perfil",
+        instituto: inst,
+        roles: Array.from(rolesSet),
+        _estadoPermiso: "pendiente",
+        _fechaCreacion: fechaActualFormateada
+    };
+    usuarios.push(nuevoUsuario);
+
+    const solicitudId = _nextSolicitudCuenta++;
+    const nuevaSolicitud = {
+        id: solicitudId,
+        usuarioId: usuarioNuevoId,
+        fecha: fechaSolicitud,
+        rut: rut,
+        nombreCompleto: `${nombre} ${apP} ${apM}`.trim(),
+        tipoTrabajador: esHonorario ? "Honorarios" : "Dependiente",
+        instituto: inst,
+        cuentas: cuentas,
+        estado: "Pendiente",
+        tecnicoSoporte: "",
+        fechaInicioGestion: "",
+        fechaGestion: ""
+    };
+    solicitudesCuenta.push(nuevaSolicitud);
+    nuevoUsuario._solicitudCuenta = nuevaSolicitud;
+
+    const item = {
+        id: _nextHonId++,
+        _solicitudId: solicitudId,
+        rut, nombre, apP, apM, inst,
+        especialidad: esp,
+        perfil: marcados.join(", ") || "-",
+        roles: Array.from(rolesSet),
+        desde: esHonorario ? document.getElementById("txtHonDesde").value : "-",
+        hasta: esHonorario ? document.getElementById("txtHonHasta").value : "-",
+        tipoTrabajador: esHonorario ? "Honorarios" : "Dependiente",
+        estadoRegistro: "Pendiente"
+    };
+
+    honorarios.push(item);
+    honRenderTabla();
+    renderSolicitudesCuenta();
+    renderTicketsSoporte();
+    renderReporteria();
+    filtrarUsuarios();
+
+    msgOk.textContent = `✓ Solicitud de creación de cuenta ingresada con éxito (Solicitud SOL-${solicitudId}). La solicitud completa ya está disponible en la Bandeja de Creación de Usuarios y Perfiles.`;
+    msgOk.style.display = "block";
+    honLimpiar();
 }
 
-/* ---- Estado vigencia ---- */
-function honEstado(hasta) {
-    if (!hasta) return "Activo";
-    const hoy = new Date(); hoy.setHours(0,0,0,0);
-    return new Date(hasta + "T00:00:00") >= hoy ? "Activo" : "Vencido";
+function honLimpiar() {
+    ["txtHonRut","txtHonNombre","txtHonApP","txtHonApM","txtHonEspecialidad","txtHonTelOficina","txtHonCelular","txtHonJefe","txtHonDesde","txtHonHasta"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+    });
+    const cmbTipo = document.getElementById("cmbHonTipoTrabajador");
+    if (cmbTipo) cmbTipo.value = "No";
+    actualizarTipoTrabajadorRRHH();
+    establecerCuentasPorDefectoRRHH();
+    const fechaSolicitud = document.getElementById("txtHonFechaSolicitud");
+    if (fechaSolicitud) fechaSolicitud.value = new Date().toISOString().slice(0,10);
+    document.querySelectorAll("#honListaPerfiles input").forEach(c => c.checked = false);
+    honActualizarRoles();
 }
 
-/* ---- Render tabla listado ---- */
 function honRenderTabla() {
-    const tbody = document.getElementById("tblHonorariosCuerpo");
-    tbody.innerHTML = "";
+    const tbodyH = document.getElementById("tblHonorariosCuerpo");
+    if (!tbodyH) return;
+    tbodyH.innerHTML = "";
+
     if (!honorarios.length) {
-        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:#999;">Sin registros.</td></tr>`;
+        tbodyH.innerHTML = `<tr><td colspan="12" style="text-align:center;color:#999;">No hay registros de solicitudes.</td></tr>`;
         return;
     }
-    honorarios.forEach((h, idx) => {
-        const estado = honEstado(h.hasta);
-        const rolesLabel = h.roles && h.roles.length
-            ? `<span style="color:#0066cc;">${h.roles.length} roles</span>`
-            : `<span style="color:red;font-weight:700;">SIN ROLES</span>`;
-        const perfilLabel = escapeHtml(h.perfilNombre || "-");
 
+    honorarios.forEach(h => {
+        const sol = solicitudesCuenta.find(s => s.id === h._solicitudId);
+        const estadoLabel = sol ? sol.estado : h.estadoRegistro;
+        const colorEstado = estadoLabel === "Gestionada" ? "#136a17" : (estadoLabel === "En proceso" ? "#0066cc" : "#8a5a00");
         const tr = document.createElement("tr");
-        tr.style.cursor = "pointer";
-        if (idx === honSelIdx) tr.style.background = "#fff3cd";
         tr.innerHTML = `
-            <td style="text-align:center;"><input type="radio" name="honSel" ${idx === honSelIdx ? "checked" : ""}></td>
+            <td class="col-check"><input type="checkbox" value="${h.id}"></td>
             <td>${escapeHtml(h.rut)}</td>
             <td>${escapeHtml(h.nombre)}</td>
             <td>${escapeHtml(h.apP)}</td>
             <td>${escapeHtml(h.apM)}</td>
-            <td>${escapeHtml(h.instituto)}</td>
+            <td>${escapeHtml(h.inst)}</td>
             <td>${escapeHtml(h.especialidad)}</td>
-            <td>${perfilLabel}</td>
-            <td>${rolesLabel}</td>
-            <td>${h.desde || "-"}</td>
-            <td>${h.hasta || "-"}</td>
-            <td style="color:${estado === 'Activo' ? '#136a17' : '#8b1a1a'};font-weight:600;">${estado}</td>
+            <td>${escapeHtml(h.perfil)}</td>
+            <td>${h.roles.length ? escapeHtml(h.roles.join(",")) : "SIN ROLES"}</td>
+            <td>${escapeHtml(h.desde)}</td>
+            <td>${escapeHtml(h.hasta)}</td>
+            <td style="color:${colorEstado};font-weight:700;">${escapeHtml(estadoLabel)}</td>
         `;
-        tr.addEventListener("click", () => {
-            honSelIdx = idx;
-            honCargarFormulario(idx);
-            honRenderTabla();
-        });
-        tbody.appendChild(tr);
+        tbodyH.appendChild(tr);
     });
 }
 
-/* ---- Carga formulario desde un registro existente ---- */
-function honCargarFormulario(idx) {
-    const h = honorarios[idx];
-    document.getElementById("txtHonRut").value        = h.rut;
-    document.getElementById("txtHonNombre").value     = h.nombre;
-    document.getElementById("txtHonApP").value        = h.apP;
-    document.getElementById("txtHonApM").value        = h.apM;
-    document.getElementById("cmbHonInstituto").value  = h.instituto;
-    document.getElementById("txtHonEspecialidad").value = h.especialidad;
-    document.getElementById("txtHonDesde").value      = h.desde;
-    document.getElementById("txtHonHasta").value      = h.hasta;
-
-    // Restaurar ámbito + perfiles marcados
-    const cmbHonAmbito = document.getElementById("cmbHonAmbito");
-    if (h.ambito) cmbHonAmbito.value = h.ambito;
-    // preCheckedId es solo el primero del array; los demás se marcan tras cargar checklist
-    honCargarPerfilesPorAmbito(null);
-    // Marcar todos los perfiles guardados
-    if (h.perfilesIds && h.perfilesIds.length) {
-        const lista = document.getElementById("honListaPerfiles");
-        lista.querySelectorAll("input[type='checkbox']").forEach(chk => {
-            chk.checked = h.perfilesIds.includes(chk.value);
-        });
-        const cmbHonPerfil = document.getElementById("cmbHonPerfil");
-        cmbHonPerfil.value = h.perfilesIds[h.perfilesIds.length - 1];
-        honMostrarDetalleRoles();
-    }
-
-    document.getElementById("btnHonEliminar").disabled = false;
-    honMsgLimpiar();
-}
-
-/* ---- Leer formulario ---- */
-function honLeerFormulario() {
-    const ambito = document.getElementById("cmbHonAmbito").value;
-    const perfilesSeleccionados = honGetPerfilesSeleccionados();
-    const rolesCalculados = honGetRolesMarcados();
-    const perfilNombre = perfilesSeleccionados.map(p => p.nombre).join(" + ") || "-";
-
-    return {
-        rut:          document.getElementById("txtHonRut").value.trim(),
-        nombre:       document.getElementById("txtHonNombre").value.trim(),
-        apP:          document.getElementById("txtHonApP").value.trim(),
-        apM:          document.getElementById("txtHonApM").value.trim(),
-        instituto:    document.getElementById("cmbHonInstituto").value,
-        especialidad: document.getElementById("txtHonEspecialidad").value.trim(),
-        desde:        document.getElementById("txtHonDesde").value,
-        hasta:        document.getElementById("txtHonHasta").value,
-        ambito,
-        perfilesIds:  perfilesSeleccionados.map(p => p.id),
-        perfilNombre,
-        roles:        rolesCalculados,
-    };
-}
-
-/* ---- Guardar ---- */
-function honGuardar() {
-    honMsgLimpiar();
-    const d = honLeerFormulario();
-    if (!d.rut || !d.nombre || !d.apP) {
-        honMsgErr("RUT, Nombre y Apellido Paterno son obligatorios.");
-        return;
-    }
-    if (!d.roles.length) {
-        honMsgErr("Debe seleccionar al menos un perfil con roles antes de guardar.");
-        return;
-    }
-    if (honSelIdx !== null) {
-        const rutAnterior = honorarios[honSelIdx].rut;
-        const idAnterior  = honorarios[honSelIdx]._usuarioId;
-        honorarios[honSelIdx] = d;
-        d._usuarioId = honSyncUsuario(d, idAnterior);
-        honMsgOk(`Registro actualizado. ${d.roles.length} roles asignados.`);
-    } else {
-        const dup = honorarios.findIndex(x => x.rut === d.rut);
-        if (dup !== -1) { honMsgErr("Ya existe un honorario con ese RUT."); return; }
-        d._usuarioId = honSyncUsuario(d, null);
-        honorarios.push(d);
-        honMsgOk(`Honorario agregado correctamente. ${d.roles.length} roles asignados.`);
-    }
-    honLimpiar();
-    honRenderTabla();
-}
-
-/* ---- Eliminar ---- */
-function honEliminar() {
-    if (honSelIdx === null) return;
-    if (!confirm("¿Eliminar este registro de honorario?")) return;
-    const rut = honorarios[honSelIdx].rut;
-    honorarios.splice(honSelIdx, 1);
-    honRemoveUsuario(rut);
-    honLimpiar();
-    honRenderTabla();
-    honMsgOk("Registro eliminado.");
-}
-
-/* ---- Limpiar formulario ---- */
-function honLimpiar() {
-    honSelIdx = null;
-    ["txtHonRut","txtHonNombre","txtHonApP","txtHonApM","txtHonEspecialidad"].forEach(id => {
-        document.getElementById(id).value = "";
-    });
-    document.getElementById("txtHonDesde").value = "";
-    document.getElementById("txtHonHasta").value = "";
-    document.getElementById("cmbHonInstituto").selectedIndex = 0;
-    document.getElementById("cmbHonAmbito").value = "Educación";
-    document.getElementById("btnHonEliminar").disabled = true;
-    honCargarPerfilesPorAmbito();
-    honMsgLimpiar();
-}
-
-/* ---- Mensajes ---- */
-function honMsgOk(msg) {
-    const el = document.getElementById("honMsgOk");
-    el.textContent = "✔ " + msg; el.style.display = "block";
-    setTimeout(() => { el.style.display = "none"; }, 3500);
-}
-function honMsgErr(msg) {
-    const el = document.getElementById("honMsgErr");
-    el.textContent = "✖ " + msg; el.style.display = "block";
-    setTimeout(() => { el.style.display = "none"; }, 4500);
-}
-function honMsgLimpiar() {
-    document.getElementById("honMsgOk").style.display = "none";
-    document.getElementById("honMsgErr").style.display = "none";
-}
-// ===============================================================
-
-// ===================== MENÚ TOGGLE =====================
-(function() {
-    const menuDropdown = document.querySelector(".menu-dropdown");
-    const menuLabel    = menuDropdown.querySelector(".menu-label");
-
-    menuLabel.addEventListener("click", (e) => {
-        e.stopPropagation();
-        menuDropdown.classList.toggle("open");
-    });
-
-    document.addEventListener("click", (e) => {
-        if (!menuDropdown.contains(e.target)) {
-            menuDropdown.classList.remove("open");
-        }
-    });
-
-    menuDropdown.querySelectorAll(".dropdown-content a").forEach(a => {
-        a.addEventListener("click", () => {
-            menuDropdown.classList.remove("open");
-        });
-    });
-})();
-// =======================================================
-
-// ===== SYNC HONORARIO <-> USUARIOS =====
-let _honNextId = 9000;
-
-function honSyncUsuario(d, idExistente) {
-    const obj = {
-        id:           idExistente || (_honNextId++),
-        nombre:       d.nombre,
-        app:          d.apP,
-        apm:          d.apM,
-        especialidad: d.perfilNombre || d.especialidad,
-        instituto:    d.instituto,
-        roles:        Array.from(d.roles),
-        _honorario:   true,
-        _rut:         d.rut,
-    };
-
-    const idx = usuarios.findIndex(u => u._rut === d.rut);
-    if (idx !== -1) {
-        const prevId = usuarios[idx].id;
-        usuarios[idx] = { ...obj, id: prevId };
-        return prevId;
-    } else {
-        usuarios.push(obj);
-        return obj.id;
-    }
-}
-
-function honRemoveUsuario(rut) {
-    const idx = usuarios.findIndex(u => u._rut === rut);
-    if (idx !== -1) usuarios.splice(idx, 1);
-}
-// =======================================
-
-init();
-
+document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
