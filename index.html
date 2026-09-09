@@ -795,15 +795,47 @@
             </div>
         </div>
         <hr />
-        <div style="overflow-x:auto;">
+        
+        <!-- FILTROS -->
+        <div class="card" style="background:#fafafa; position:sticky; top:60px; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+            <div class="section-title">Filtros de búsqueda</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:12px;">
+                <div class="form-row" style="flex-direction:column; gap:4px; margin:0;">
+                    <label style="font-size:12px; font-weight:600;">Nombre</label>
+                    <input type="text" id="reportNombre" placeholder="Nombre o apellido" />
+                </div>
+                <div class="form-row" style="flex-direction:column; gap:4px; margin:0;">
+                    <label style="font-size:12px; font-weight:600;">Instituto</label>
+                    <select id="reportInstituto">
+                        <option value="">-- Todos --</option>
+                    </select>
+                </div>
+                <div class="form-row" style="flex-direction:column; gap:4px; margin:0;">
+                    <label style="font-size:12px; font-weight:600;">Desde</label>
+                    <input type="date" id="reportFechaDesde" />
+                </div>
+                <div class="form-row" style="flex-direction:column; gap:4px; margin:0;">
+                    <label style="font-size:12px; font-weight:600;">Hasta</label>
+                    <input type="date" id="reportFechaHasta" />
+                </div>
+            </div>
+            <div style="margin-top:12px; display:flex; gap:8px;">
+                <button class="btn-primary" id="btnReportFiltrar">Filtrar</button>
+                <button class="btn-secondary" id="btnReportLimpiar">Limpiar filtros</button>
+                <button class="btn-secondary" id="btnReportExcel">📊 Exportar a Excel</button>
+            </div>
+        </div>
+
+        <!-- TABLA -->
+        <div style="overflow-x:auto; margin-top:12px;">
             <table id="tblReporteria" style="width:100%;">
                 <thead>
                     <tr>
                         <th style="width:60px;">ID</th>
-                        <th style="width:150px;">Nombre</th>
+                        <th style="width:180px;">Nombre</th>
                         <th style="width:110px;">RUT</th>
                         <th style="width:120px;">Instituto</th>
-                        <th style="width:130px;">Fecha Creación</th>
+                        <th style="width:140px;">Fecha Creación</th>
                         <th style="width:120px;">Perfil</th>
                         <th style="width:100px;">Estado</th>
                     </tr>
@@ -811,6 +843,7 @@
                 <tbody id="tblReporteriaBody"></tbody>
             </table>
         </div>
+        <div id="reportMsg" style="display:none; margin-top:10px; padding:10px; background:#fff3cd; border:1px solid #ffc107; border-radius:3px;"></div>
     </div>
 </main>
 
@@ -1701,6 +1734,12 @@ function gestionarSolicitudSoporte(usuarioId) {
         const hon = honorarios.find(h => h._solicitudId === sol.id);
         if (hon) hon.estadoRegistro = "Activo";
         honRenderTabla();
+        
+        // ACTUALIZAR ESTADO DEL USUARIO A GESTIONADA
+        const usuario = usuarios.find(u => u.id === usuarioId);
+        if (usuario) {
+            usuario._estadoPermiso = "gestionada";
+        }
     }
     renderSolicitudesCuenta();
     renderTicketsSoporte();
@@ -3394,33 +3433,178 @@ if (_tipoTrabajador) _tipoTrabajador.addEventListener("change", actualizarTipoTr
 renderTicketsSoporte();
 init();
 
-// ========== MÓDULO REPORTERÍA ==========
-function renderReporteria() {
-    const tblBody = document.getElementById("tblReporteriaBody");
-    if (!tblBody) return;
-    tblBody.innerHTML = "";
+// ========== MÓDULO REPORTERÍA COMPLETO ==========
+function inicializarReporteria() {
+    const cmbInstituto = document.getElementById("reportInstituto");
+    const btnFiltrar = document.getElementById("btnReportFiltrar");
+    const btnLimpiar = document.getElementById("btnReportLimpiar");
+    const btnExcel = document.getElementById("btnReportExcel");
+    const txtNombre = document.getElementById("reportNombre");
+    const txtFechaDesde = document.getElementById("reportFechaDesde");
+    const txtFechaHasta = document.getElementById("reportFechaHasta");
     
-    if (usuarios.length === 0) {
-        tblBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#999;">No hay usuarios registrados.</td></tr>';
+    // Cargar institutos
+    if (cmbInstituto) {
+        const institutos = [...new Set(usuarios.map(u => u.instituto))].sort();
+        institutos.forEach(inst => {
+            const opt = document.createElement("option");
+            opt.value = inst;
+            opt.textContent = inst;
+            cmbInstituto.appendChild(opt);
+        });
+    }
+    
+    // Evento buscar
+    if (btnFiltrar) btnFiltrar.addEventListener("click", filtrarReporteria);
+    
+    // Evento limpiar
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener("click", () => {
+            txtNombre.value = "";
+            cmbInstituto.value = "";
+            txtFechaDesde.value = "";
+            txtFechaHasta.value = "";
+            filtrarReporteria();
+        });
+    }
+    
+    // Evento exportar Excel
+    if (btnExcel) btnExcel.addEventListener("click", exportarReporteriaExcel);
+    
+    // Enter en nombre
+    if (txtNombre) {
+        txtNombre.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") filtrarReporteria();
+        });
+    }
+    
+    // Mostrar todos al cargar
+    filtrarReporteria();
+}
+
+function filtrarReporteria() {
+    const txtNombre = document.getElementById("reportNombre").value.trim().toLowerCase();
+    const instituto = document.getElementById("reportInstituto").value;
+    const fechaDesde = document.getElementById("reportFechaDesde").value;
+    const fechaHasta = document.getElementById("reportFechaHasta").value;
+    const tbody = document.getElementById("tblReporteriaBody");
+    const msg = document.getElementById("reportMsg");
+    
+    tbody.innerHTML = "";
+    msg.style.display = "none";
+    
+    // MOSTRAR TODOS (activos e inactivos)
+    let resultados = usuarios.filter(u => {
+        // Filtro nombre
+        if (txtNombre) {
+            const cadena = (u.nombre + " " + u.app + " " + u.apm).toLowerCase();
+            if (!cadena.includes(txtNombre)) return false;
+        }
+        
+        // Filtro instituto
+        if (instituto && u.instituto !== instituto) return false;
+        
+        // Filtro fechas
+        if (fechaDesde || fechaHasta) {
+            const fechaCreacion = u._fechaCreacion || "";
+            const fechaObj = new Date(fechaCreacion.split(" ")[0]);
+            
+            if (fechaDesde) {
+                const desde = new Date(fechaDesde);
+                if (fechaObj < desde) return false;
+            }
+            if (fechaHasta) {
+                const hasta = new Date(fechaHasta);
+                hasta.setDate(hasta.getDate() + 1); // Incluir todo el día
+                if (fechaObj >= hasta) return false;
+            }
+        }
+        
+        return true;
+    });
+    
+    if (resultados.length === 0) {
+        msg.textContent = "No se encontraron usuarios con los filtros aplicados.";
+        msg.style.display = "block";
         return;
     }
     
-    usuarios.forEach(u => {
-        const solicitud = solicitudesCuenta.find(s => s.usuarioId === u.id);
-        const estado = solicitud ? solicitud.estado : (u._estadoPermiso === "inactivo" ? "Inactivo" : "Pendiente");
+    // Renderizar tabla
+    resultados.forEach(u => {
+        const estado = u._estadoPermiso || "pendiente";
+        const estadoLabel = estado.charAt(0).toUpperCase() + estado.slice(1);
+        const colorEstado = estado === "inactivo" ? "#d9534f" : 
+                           estado === "gestionada" ? "#5cb85c" : "#f0ad4e";
         
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${u.id}</td>
-            <td>${escapeHtml(u.nombre + " " + u.app + " " + u.apm)}</td>
+            <td><strong>${escapeHtml(u.nombre)}</strong> ${escapeHtml(u.app)} ${escapeHtml(u.apm)}</td>
             <td>${escapeHtml(u._rut || "-")}</td>
             <td>${escapeHtml(u.instituto || "-")}</td>
             <td>${escapeHtml(u._fechaCreacion || "-")}</td>
             <td>${escapeHtml(u.especialidad || "-")}</td>
-            <td style="color:${estado === "Inactivo" ? "#d9534f" : (estado === "Gestionada" ? "#5cb85c" : "#f0ad4e")}; font-weight:bold;">${escapeHtml(estado)}</td>
+            <td style="color:${colorEstado}; font-weight:bold;">${escapeHtml(estadoLabel)}</td>
         `;
-        tblBody.appendChild(tr);
+        tbody.appendChild(tr);
     });
+    
+    msg.textContent = `Mostrando ${resultados.length} de ${usuarios.length} usuarios.`;
+    msg.style.display = "block";
+    msg.style.background = "#d4edda";
+    msg.style.borderColor = "#28a745";
+    msg.style.color = "#155724";
+}
+
+function exportarReporteriaExcel() {
+    if (usuarios.length === 0) {
+        alert("No hay usuarios para exportar.");
+        return;
+    }
+    
+    // Obtener datos filtrados
+    const txtNombre = document.getElementById("reportNombre").value.trim().toLowerCase();
+    const instituto = document.getElementById("reportInstituto").value;
+    const fechaDesde = document.getElementById("reportFechaDesde").value;
+    const fechaHasta = document.getElementById("reportFechaHasta").value;
+    
+    let datos = usuarios.filter(u => {
+        if (txtNombre) {
+            const cadena = (u.nombre + " " + u.app + " " + u.apm).toLowerCase();
+            if (!cadena.includes(txtNombre)) return false;
+        }
+        if (instituto && u.instituto !== instituto) return false;
+        if (fechaDesde || fechaHasta) {
+            const fechaCreacion = u._fechaCreacion || "";
+            const fechaObj = new Date(fechaCreacion.split(" ")[0]);
+            if (fechaDesde) {
+                const desde = new Date(fechaDesde);
+                if (fechaObj < desde) return false;
+            }
+            if (fechaHasta) {
+                const hasta = new Date(fechaHasta);
+                hasta.setDate(hasta.getDate() + 1);
+                if (fechaObj >= hasta) return false;
+            }
+        }
+        return true;
+    });
+    
+    // Crear CSV
+    let csv = "ID,Nombre,Apellido Paterno,Apellido Materno,RUT,Instituto,Fecha Creación,Especialidad,Estado\n";
+    
+    datos.forEach(u => {
+        const estado = (u._estadoPermiso || "pendiente").charAt(0).toUpperCase() + (u._estadoPermiso || "pendiente").slice(1);
+        csv += `${u.id},"${u.nombre}","${u.app}","${u.apm}","${u._rut || ""}","${u.instituto}","${u._fechaCreacion || ""}","${u.especialidad}","${estado}"\n`;
+    });
+    
+    // Descargar
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Reporteria_Usuarios_${new Date().toLocaleDateString('es-CL')}.csv`);
+    link.click();
 }
 
 // ========== MÓDULO DESACTIVAR USUARIO ==========
@@ -3435,51 +3619,56 @@ function renderReporteria() {
     
     if (!btnBuscar) return;
     
-    function buscarYMostrar() {
-        const q = txtBuscar.value.trim().toLowerCase();
+    function renderizarUsuariosActivos(filtro = "") {
         tbody.innerHTML = "";
         msg.style.display = "none";
         
-        if (!q) {
-            tbl.style.display = "none";
-            msg.textContent = "Ingresa nombre o ID para buscar.";
-            msg.style.display = "block";
-            return;
-        }
+        const q = (filtro || "").trim().toLowerCase();
         
+        // Filtrar: solo activos y que coincidan con búsqueda
         const resultados = usuarios.filter(u => {
             if (u._estadoPermiso === "inactivo") return false;
-            const cadena = (u.id + " " + u.nombre + " " + u.app + " " + u.apm + " " + u.especialidad).toLowerCase();
+            if (!q) return true;
+            const cadena = (u.id + " " + u.nombre + " " + u.app + " " + u.apm + " " + u.especialidad + " " + u.instituto).toLowerCase();
             return cadena.includes(q);
         });
         
         if (resultados.length === 0) {
-            tbl.style.display = "none";
-            msg.textContent = "No se encontraron usuarios activos.";
+            if (usuarios.length === 0) {
+                msg.textContent = "No hay usuarios en el sistema.";
+            } else if (q) {
+                msg.textContent = "No se encontraron usuarios activos que coincidan.";
+            } else {
+                msg.textContent = "No hay usuarios activos para desactivar.";
+            }
             msg.style.display = "block";
+            tbl.style.display = "none";
             return;
         }
         
+        // Renderizar tabla
         resultados.forEach(u => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td>${u.id}</td>
-                <td>${escapeHtml(u.nombre + " " + u.app + " " + u.apm)}</td>
+                <td><strong>${escapeHtml(u.nombre)}</strong> ${escapeHtml(u.app)} ${escapeHtml(u.apm)}</td>
                 <td>${escapeHtml(u._rut || "-")}</td>
                 <td>${escapeHtml(u.instituto || "-")}</td>
                 <td>${escapeHtml(u.especialidad || "-")}</td>
-                <td><button class="btn-primary" onclick="return false;" data-id="${u.id}">Inactivar</button></td>
+                <td><button class="btn-primary" onclick="return false;" data-id="${u.id}">Desactivar</button></td>
             `;
             tbody.appendChild(tr);
             
             tr.querySelector("button").addEventListener("click", () => {
-                const motivo = prompt("Motivo de desactivación:\n\n1. Renuncia\n2. Término de contrato\n3. Despido\n4. Otra\n\nIngresa el motivo:");
+                const motivo = prompt("DESACTIVAR USUARIO\n\n" + u.nombre + " " + u.app + " " + u.apm + "\n\nMotivo de desactivación:\n\n1. Renuncia\n2. Término de contrato\n3. Despido\n4. Jubilación\n5. Otro\n\nIngresa el número o describe el motivo:");
+                
                 if (motivo && motivo.trim()) {
                     const usuario = usuarios.find(x => x.id === u.id);
                     if (usuario) {
                         usuario._estadoPermiso = "inactivo";
-                        alert(`✓ ${usuario.nombre} ${usuario.app} marcado como inactivo.\nMotivo: ${motivo}`);
-                        buscarYMostrar();
+                        alert(`✓ ${usuario.nombre} ${usuario.app} ha sido marcado como INACTIVO.\n\nMotivo: ${motivo}`);
+                        renderizarUsuariosActivos(txtBuscar.value);
+                        filtrarReporteria(); // Actualiza reportería también
                     }
                 }
             });
@@ -3488,32 +3677,56 @@ function renderReporteria() {
         tbl.style.display = "table";
     }
     
-    btnBuscar.addEventListener("click", buscarYMostrar);
+    // Función para que se llame cuando se abre la vista
+    window.inicializarDesactivarUsuario = function() {
+        txtBuscar.value = "";
+        renderizarUsuariosActivos();
+    };
+    
+    // Buscar mientras escribe (predictivo)
+    txtBuscar.addEventListener("input", () => {
+        renderizarUsuariosActivos(txtBuscar.value);
+    });
+    
+    btnBuscar.addEventListener("click", () => {
+        renderizarUsuariosActivos(txtBuscar.value);
+    });
     
     btnLimpiar.addEventListener("click", () => {
         txtBuscar.value = "";
-        tbl.style.display = "none";
-        msg.style.display = "none";
-        tbody.innerHTML = "";
+        renderizarUsuariosActivos("");
     });
     
     btnClear.addEventListener("click", () => {
         txtBuscar.value = "";
         txtBuscar.focus();
-        buscarYMostrar();
+        renderizarUsuariosActivos("");
     });
     
     txtBuscar.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") buscarYMostrar();
+        if (e.key === "Enter") {
+            renderizarUsuariosActivos(txtBuscar.value);
+        }
     });
 })();
 
-// Renderizar reportería cuando se abre la vista
+// Renderizar reportería y desactivar usuario cuando se abre la vista
 const mostrarVistaOriginal = window.mostrarVista;
 window.mostrarVista = function(vistaId) {
     mostrarVistaOriginal(vistaId);
     if (vistaId === "reportView") {
-        setTimeout(() => renderReporteria(), 50);
+        setTimeout(() => {
+            if (window.inicializarReporteria) {
+                window.inicializarReporteria();
+            }
+        }, 50);
+    }
+    if (vistaId === "inactivoView") {
+        setTimeout(() => {
+            if (window.inicializarDesactivarUsuario) {
+                window.inicializarDesactivarUsuario();
+            }
+        }, 50);
     }
 };
 
