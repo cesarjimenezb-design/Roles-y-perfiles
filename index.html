@@ -797,7 +797,7 @@
         <hr />
         
         <!-- FILTROS -->
-        <div class="card" style="background:#fafafa; position:sticky; top:60px; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <div class="card" style="background:#fff; position:sticky; top:0; z-index:100; box-shadow:0 4px 12px rgba(0,0,0,0.15); border-bottom:2px solid #ddd; margin-bottom:16px; border-radius:4px;">
             <div class="section-title">Filtros de búsqueda</div>
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:12px;">
                 <div class="form-row" style="flex-direction:column; gap:4px; margin:0;">
@@ -827,7 +827,7 @@
         </div>
 
         <!-- TABLA -->
-        <div style="overflow-x:auto; margin-top:12px;">
+        <div style="overflow-x:auto; margin-top:16px; scroll-margin-top:200px;">
             <table id="tblReporteria" style="width:100%;">
                 <thead>
                     <tr>
@@ -1921,7 +1921,7 @@ function abrirEditorConUsuario(idusuario) {
     const solicitudCuenta = getSolicitudCuentaPorUsuario(u.id) || u._solicitudCuenta;
     const panelRolesGestion = document.getElementById("panelRolesGestion");
     const contenidoRolesGestion = document.getElementById("contenidoRolesGestion");
-    if (panelRolesGestion) panelRolesGestion.style.display = solicitudCuenta ? "block" : "none";
+    if (panelRolesGestion) panelRolesGestion.style.display = "block"; // SIEMPRE mostrar para poder editar roles
     if (contenidoRolesGestion) contenidoRolesGestion.style.display = "none";
     if (panelAprov && contCuentas) {
         panelAprov.style.display = solicitudCuenta ? "block" : "none";
